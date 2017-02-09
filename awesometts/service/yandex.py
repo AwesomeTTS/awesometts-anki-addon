@@ -129,40 +129,22 @@ class Yandex(Service):
     def run(self, text, options, path):
         """
         Downloads from Yandex directly to an MP3.
-
-        Yandex will occasionally fail by returning a tiny MP3 file. If this
-        happens, we retry the download (for a total of five tries).
         """
 
-        def download():
-            """Attempt a download of the given phrase."""
-            self.net_download(
-                path,
-                [
-                    ('http://tts.voicetech.yandex.net/tts', dict(
-                        format='mp3',
-                        quality=options['quality'],
-                        lang=options['voice'],
-                        text=subtext,
-                    ))
+        self.net_download(
+            path,
+            [
+                ('http://tts.voicetech.yandex.net/tts', dict(
+                    format='mp3',
+                    quality=options['quality'],
+                    lang=options['voice'],
+                    text=subtext,
+                ))
 
-                    # n.b. limit seems to be much higher than 750, but this is
-                    # a safe place to start (the web UI limits the user to 100)
-                    for subtext in self.util_split(text, 750)
-                ],
-                require=dict(mime='audio/mpeg', size=1024),
-                add_padding=True,
-            )
-
-        # TODO: This workaround is just fine for now, but it would be nice if
-        # it were part of the net_download() call. That way, net_download()
-        # could retry just the single segment that failed if the user is
-        # playing back a long multi-segment phrase.
-
-        for _ in range(5):
-            try:
-                download()
-            except self.TinyDownloadError:
-                pass
-            else:
-                break
+                # n.b. limit seems to be much higher than 750, but this is
+                # a safe place to start (the web UI limits the user to 100)
+                for subtext in self.util_split(text, 750)
+            ],
+            require=dict(mime='audio/mpeg', size=1024),
+            add_padding=True,
+        )
