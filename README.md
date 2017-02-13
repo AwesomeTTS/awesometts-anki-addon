@@ -1,11 +1,10 @@
 # AwesomeTTS Anki add-on
 
 AwesomeTTS makes it easy for language-learners and other students to add
-speech to their personal [Anki](http://ankisrs.net) card decks.
+speech to their personal [Anki](https://apps.ankiweb.net) card decks.
 
-Once loaded into the [Anki](http://ankisrs.net) `addons` directory, the
-AwesomeTTS add-on code enables both on-demand playback and recording
-functionality.
+Once loaded into the Anki `addons` directory, the AwesomeTTS add-on code
+enables both on-demand playback and recording functionality.
 
 
 ## License

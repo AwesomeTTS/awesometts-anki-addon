@@ -31,7 +31,7 @@ if __name__ == "__main__":
     stderr.write(
         "AwesomeTTS is a text-to-speech add-on for Anki.\n"
         "It is not intended to be run directly.\n"
-        "To learn more or download Anki, please visit <http://ankisrs.net>.\n"
+        "To learn more or download Anki, visit <https://apps.ankiweb.net>.\n"
     )
     exit(1)
 
