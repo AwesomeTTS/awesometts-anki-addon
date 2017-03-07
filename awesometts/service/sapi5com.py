@@ -23,6 +23,8 @@ Service implementation for SAPI 5 on the Windows platform via win32com
 from .base import Service
 from .common import Trait
 
+from .sapi5js import LANGUAGE_CODES
+
 __all__ = ['SAPI5COM']
 
 
@@ -117,11 +119,18 @@ class SAPI5COM(Service):
                 else value
             )
 
+        def get_voice_desc(name):
+            try:
+                lang = str(self._voice_map[name].getAttribute('language')).lower().strip()
+                return '%s (%s)' % (name, LANGUAGE_CODES.get(lang, lang))
+            except:
+                return name
+
         return [
             dict(
                 key='voice',
                 label="Voice",
-                values=[(voice, voice)
+                values=[(voice, get_voice_desc(voice))
                         for voice in sorted(self._voice_map.keys())],
                 transform=transform_voice,
             ),
