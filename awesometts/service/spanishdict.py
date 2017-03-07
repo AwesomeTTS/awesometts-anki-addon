@@ -79,7 +79,7 @@ class SpanishDict(Service):
         self.net_download(
             path,
             [
-                ('http://audio.spanishdict.com/audio', dict(
+                ('https://audio1.spanishdict.com/audio', dict(
                     lang=options['voice'],
                     text=subtext,
                 ))
