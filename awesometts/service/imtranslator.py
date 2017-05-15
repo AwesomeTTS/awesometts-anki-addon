@@ -29,6 +29,9 @@ from .common import Trait
 __all__ = ['ImTranslator']
 
 
+URL = 'http://imtranslator.net/translate-and-speak/sockets/tts.asp'
+
+
 class ImTranslator(Service):
     """
     Provides a Service-compliant implementation for ImTranslator.
@@ -156,12 +159,12 @@ class ImTranslator(Service):
                     try:
                         logger.info("ImTranslator net_stream: attempt %d", i)
                         result = self.net_stream(
-                            ('http://imtranslator.net/translate-and-speak/'
-                             'sockets/tts.asp',
+                            (URL,
                              dict(text=subtext, vc=options['voice'],
                                   speed=options['speed'], FA=1)),
                             require=dict(mime='text/html', size=256),
                             method='POST',
+                            custom_headers={'Referer': URL}
                         )
 
                         result = self._RE_SWF.search(result)
