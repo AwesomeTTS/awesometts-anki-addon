@@ -75,6 +75,7 @@ class Google(Service):
         'is': "Icelandic",
         'it': "Italian",
         'ja': "Japanese",
+        'km': "Khmer",
         'ko': "Korean",
         'la': "Latin",
         'lv': "Latvian",
