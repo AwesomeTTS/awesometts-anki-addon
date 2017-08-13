@@ -48,6 +48,7 @@ from .voicetext import VoiceText
 from .wiktionary import Wiktionary
 from .yandex import Yandex
 from .youdao import Youdao
+from .forvo import Forvo
 
 __all__ = [
     # common
@@ -80,4 +81,5 @@ __all__ = [
     'Wiktionary',
     'Yandex',
     'Youdao',
+    'Forvo',
 ]
