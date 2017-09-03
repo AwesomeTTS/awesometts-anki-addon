@@ -59,6 +59,13 @@ then
     cp -v "$target/awesometts/config.db" "$saveConf"
 fi
 
+if [ -d "$target/awesometts/.cache" ]
+then
+    echo 'Saving cache...'
+    saveCache=$(mktemp -d /tmp/anki_cacheXXXXXXXXXX)
+    cp -rv "$target/awesometts/.cache/*" "$saveCache/"
+fi
+
 echo 'Cleaning up...'
 rm -fv "$target/AwesomeTTS.py"*
 rm -rfv "$target/awesometts"
@@ -76,4 +83,10 @@ if [ -n "$saveConf" ]
 then
     echo 'Restoring configuration...'
     mv -v "$saveConf" "$target/awesometts/config.db"
+fi
+
+if [ -n "$saveCache" ]
+then
+    echo 'Restoring cache...'
+    mv -rv "$saveConf/*" "$target/awesometts/.cache/"
 fi
