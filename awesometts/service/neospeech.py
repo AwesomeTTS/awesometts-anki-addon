@@ -31,13 +31,15 @@ __all__ = ['NeoSpeech']
 
 VOICES = [('en-GB', 'male', "Hugh", 33), ('en-GB', 'female', "Bridget", 4),
           ('en-US', 'male', "James", 10), ('en-US', 'male', "Paul", 1),
-          ('en-US', 'female', "Ashley", 14),
-          ('en-US', 'female', "Beth", 35),
-          ('en-US', 'female', "Julie", 3),
-          ('en-US', 'female', "Kate", 2), ('es-MX', 'male', "Francisco", 31),
-          ('es-MX', 'female', "Gloria", 32), ('es-MX', 'female', "Violeta", 5),
-          ('fr-CA', 'female', "Chloe", 13), ('ja', 'male', "Ryo", 28),
-          ('ja', 'male', "Show", 8), ('ja', 'male', "Takeru", 30),
+          ('en-US', 'female', "Ashley", 14), ('en-US', 'female', "Beth", 35), ('en-US', 'female', "Julie", 3), ('en-US', 'female', "Kate", 2), 
+		  ('de', 'male', "Tim", 44), ('de', 'female', "Lena", 43),											#Tim 44, Lena 43
+		  ('fr-EU', 'male', "Louis", 50), ('fr-EU', 'female', "Roxane", 49),								#Louis 50, Roxane 49
+		  ('fr-CA', 'female', "Chloe", 13), ('fr-CA', 'male', "Leo", 34), 									#Leo 34
+		  ('es-EU', 'male', "Manuel", 46), ('es-EU', 'female', "Lola", 45),									#Manuel 46, Lola 45
+		  ('es-MX', 'male', "Francisco", 31), ('es-MX', 'female', "Gloria", 32), ('es-MX', 'female', "Violeta", 5),
+		  ('it', 'male', "Roberto", 48), ('it', 'female', "Elisa", 47),										#Roberto 48, Elisa 47
+          ('pt-BR', 'male', "Rafael", 42), ('pt-BR', 'female', "Helena", 41),								#Rafael 42, Helena 41
+		  ('ja', 'male', "Ryo", 28), ('ja', 'male', "Show", 8), ('ja', 'male', "Takeru", 30),
           ('ja', 'female', "Haruka", 26), ('ja', 'female', "Hikari", 29),
           ('ja', 'female', "Misaki", 9), ('ja', 'female', "Sayaka", 27),
           ('ko', 'male', "Jihun", 21), ('ko', 'male', "Junwoo", 6),
@@ -45,8 +47,11 @@ VOICES = [('en-GB', 'male', "Hugh", 33), ('en-GB', 'female', "Bridget", 4),
           ('ko', 'female', "Hyuna", 19), ('ko', 'female', "Jimin", 20),
           ('ko', 'female', "Sena", 22), ('ko', 'female', "Yumi", 7),
           ('ko', 'female', "Yura", 23), ('zh', 'male', "Liang", 12),
-          ('zh', 'male', "Qiang", 25), ('zh', 'female', "Hong", 24),
-          ('zh', 'female', "Hui", 11)]
+          ('zh', 'male', "Qiang", 25), ('zh', 'female', "Hong", 24), ('zh', 'female', "Hui", 11),
+		  ('zh-TW', 'female', "Yafang", 36),																#Yafang 36
+		  ('zh-CA', 'male', "Kano", 37), ('zh-CA', 'female', "Kayan", 38),									#Kano 37, Kayan 38
+		  ('th', 'male', "Sarawut", 39), ('th', 'female', "Somsi", 40),										#Sarawut 39, Somsi 40
+		  ('aa', 'female', "Test51", 51), ('aa', 'male', "Test52", 52)]
 
 MAP = {name: api_id for language, gender, name, api_id in VOICES}
 
