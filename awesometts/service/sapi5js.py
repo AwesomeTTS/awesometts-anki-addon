@@ -115,7 +115,7 @@ class SAPI5JS(Service):
 
         def hex2uni(string):
             """Convert hexadecimal-escaped string back to unicode."""
-            return ''.join(unichr(int(string[i:i + 4], 16))
+            return ''.join(chr(int(string[i:i + 4], 16))
                            for i in range(0, len(string), 4))
 
         def convlang(string):

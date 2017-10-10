@@ -20,8 +20,8 @@
 Service implementation for Duden
 """
 
-from BeautifulSoup import BeautifulSoup
-from HTMLParser import HTMLParser
+from bs4 import BeautifulSoup
+from html.parser import HTMLParser
 from re import compile as re
 from unicodedata import normalize as unicode_normalize
 
@@ -100,13 +100,13 @@ class Duden(Service):
            `IGNORE_ARTICLES`), remove it
         """
 
-        text = ''.join('Ae' if char == u'\u00c4'
-                       else 'Oe' if char == u'\u00d6'
-                       else 'Ue' if char == u'\u00dc'
-                       else 'sz' if char == u'\u00df'
-                       else 'ae' if char == u'\u00e4'
-                       else 'oe' if char == u'\u00f6'
-                       else 'ue' if char == u'\u00fc'
+        text = ''.join('Ae' if char == '\u00c4'
+                       else 'Oe' if char == '\u00d6'
+                       else 'Ue' if char == '\u00dc'
+                       else 'sz' if char == '\u00df'
+                       else 'ae' if char == '\u00e4'
+                       else 'oe' if char == '\u00f6'
+                       else 'ue' if char == '\u00fc'
                        else char
                        for char in text
                        if char.isalpha() or char == ' ' or char == '-')
@@ -152,11 +152,11 @@ class Duden(Service):
             raise IOError("Your input text uses characters that cannot be "
                           "accurately searched for in the Duden.")
 
-        text_search = text.replace('sz', u'\u00df')
+        text_search = text.replace('sz', '\u00df')
         self._logger.debug('Duden: Searching on "%s"', text_search)
         try:
             search_html = self.net_stream((SEARCH_FORM, dict(s=text_search)),
-                                          require=dict(mime='text/html'))
+                                          require=dict(mime='text/html')).decode()
         except IOError as io_error:
             if getattr(io_error, 'code', None) == 404:
                 raise IOError("Duden does not recognize this input.")
@@ -209,17 +209,17 @@ class Duden(Service):
                                    'match; skipping', article_url)
                 continue
 
-            article_html = self.net_stream(article_url)
+            article_html = self.net_stream(article_url).decode()
 
             for mp3_match in RE_MP3.finditer(article_html):
                 guide = mp3_match.group(3)
                 guide = ''.join(HTML_PARSER.unescape(node)
                                 for node
-                                in BeautifulSoup(guide).findAll(text=True))
+                                in BeautifulSoup(guide, 'html.parser').findAll(text=True))
                 guide_normalized = unicode_normalize(
                     'NFKD',
                     self.modify(guide).replace('-', '').replace(' ', ''),
-                ).encode('ASCII', 'ignore')
+                ).encode('ASCII', 'ignore').decode()
 
                 mp3_url = mp3_match.group(5)
 

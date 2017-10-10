@@ -47,5 +47,5 @@ class Bundle(object):  # exposes attributes, not methods, pylint:disable=R0903
         attribute on the instance.
         """
 
-        for key, value in kwargs.items():
+        for key, value in list(kwargs.items()):
             setattr(self, key, value)

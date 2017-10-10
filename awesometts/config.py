@@ -130,7 +130,7 @@ class Config(object):
         containing one column.
         """
 
-        if isinstance(triggers, basestring):
+        if isinstance(triggers, str):
             triggers = [triggers]
 
         for trigger in triggers:
@@ -171,7 +171,7 @@ class Config(object):
             # detect any new columns not present in database
             missing_cols = [
                 col
-                for col in self._cols.values()
+                for col in list(self._cols.values())
                 if col[0].lower() not in existing_cols
             ]
 
@@ -201,7 +201,7 @@ class Config(object):
             # populate in-memory store of the values from database
             row = cursor.execute('SELECT * FROM %s' % self._db.table) \
                 .fetchone()
-            for name, col in self._cols.items():
+            for name, col in list(self._cols.items()):
                 # attempt to retrieve value; if it fails, use the default
                 try:
                     self._cache[name] = col[3](row[col[0]])
@@ -209,7 +209,7 @@ class Config(object):
                     self._cache[name] = col[2]
 
         else:
-            all_cols = self._cols.values()
+            all_cols = list(self._cols.values())
 
             self._logger.info("Creating new configuration table")
 
@@ -232,7 +232,7 @@ class Config(object):
             )
 
             # populate in-memory store with the defaults we just inserted
-            for name, col in self._cols.items():
+            for name, col in list(self._cols.items()):
                 self._cache[name] = col[2]
 
         # close database connection
@@ -241,7 +241,7 @@ class Config(object):
 
         # since this is the initial load, notify all registered event handlers
         unique_callbacks = set()
-        for callbacks in self._events.values():
+        for callbacks in list(self._events.values()):
             unique_callbacks.update(callbacks)
         for callback in unique_callbacks:
             callback(self)
@@ -296,7 +296,7 @@ class Config(object):
             in [
                 (self._db.normalize(unnormalized_name), value)
                 for unnormalized_name, value
-                in updates.items()
+                in list(updates.items())
             ]
             if value != self._cache[name]  # filter out unchanged values
         ]

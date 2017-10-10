@@ -141,7 +141,7 @@ class NeoSpeech(Service):
                 except KeyError:
                     raise KeyError("Cannot find the audio URL in the response "
                                    "from the NeoSpeech service")
-                assert isinstance(url, basestring) and len(url) > 2 and \
+                assert isinstance(url, str) and len(url) > 2 and \
                     url[0] == '/' and url[1].isalnum(), \
                     "The audio URL from NeoSpeech does not seem to be valid"
 

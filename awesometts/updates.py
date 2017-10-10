@@ -20,17 +20,12 @@
 Update detection and callback handling
 """
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 __all__ = ['Updates']
 
 
-_SIGNAL_NEED = QtCore.SIGNAL('awesomeTtsUpdateNeeded')
-_SIGNAL_GOOD = QtCore.SIGNAL('awesomeTtsUpdateGood')
-_SIGNAL_FAIL = QtCore.SIGNAL('awesomeTtsUpdateFailure')
-
-
-class Updates(QtGui.QWidget):
+class Updates(QtWidgets.QWidget):
     """
     Handles managing a thread and executing callbacks when checking for
     updates.
@@ -50,7 +45,7 @@ class Updates(QtGui.QWidget):
         update check and a logger.
         """
 
-        super(Updates, self).__init__()
+        super().__init__()
 
         self._agent = agent
         self._endpoint = endpoint
@@ -90,9 +85,10 @@ class Updates(QtGui.QWidget):
         self._worker = dict(callbacks=callbacks, got_finished=False,
                             got_signal=False, instance=instance)
 
-        self.connect(instance, _SIGNAL_NEED, self._on_signal_need)
-        self.connect(instance, _SIGNAL_GOOD, self._on_signal_good)
-        self.connect(instance, _SIGNAL_FAIL, self._on_signal_fail)
+        instance.signal_need.connect(self._on_signal_need)
+        instance.signal_good.connect(self._on_signal_good)
+        instance.signal_fail.connect(self._on_signal_fail)
+
         instance.finished.connect(self._on_finished)
         instance.start()
 
@@ -144,10 +140,10 @@ class Updates(QtGui.QWidget):
         self._logger.error(
             "Exception (%s) during update check\n%s",
 
-            exception.message or "no message",
+            str(exception),
 
             "\n".join("!!! " + line for line in stack_trace.split("\n"))
-            if isinstance(stack_trace, basestring)
+            if isinstance(stack_trace, str)
             else "Stack trace unavailable",
         )
 
@@ -200,6 +196,10 @@ class _Worker(QtCore.QThread):
     returning a response to the main thread via a signal.
     """
 
+    signal_need = QtCore.pyqtSignal(str, dict, name='awesomeTtsUpdateNeeded')
+    signal_good = QtCore.pyqtSignal(name='awesomeTtsUpdateGood')
+    signal_fail = QtCore.pyqtSignal(Exception, str, name='awesomeTtsUpdateFailure')
+
     __slots__ = [
         '_agent',         # which user agent to use
         '_endpoint',      # what URL to check for updates
@@ -226,9 +226,9 @@ class _Worker(QtCore.QThread):
         try:
             self._logger.debug("Downloading JSON from %s", self._endpoint)
 
-            import urllib2
-            response = urllib2.urlopen(
-                urllib2.Request(
+            import urllib.request, urllib.error, urllib.parse
+            response = urllib.request.urlopen(
+                urllib.request.Request(
                     url=self._endpoint,
                     headers={'User-Agent': self._agent},
                 ),
@@ -254,24 +254,24 @@ class _Worker(QtCore.QThread):
 
             if update is True:
                 info = self._validate_update(payload)
-                self.emit(_SIGNAL_NEED, info['version'], info)
+                self.signal_need.emit(info['version'], info)
 
             elif update is False:
-                self.emit(_SIGNAL_GOOD)
+                self.signal_good.emit()
 
             else:
                 message = payload.get('message')
 
-                if isinstance(message, basestring) and message.strip():
+                if isinstance(message, str) and message.strip():
                     raise EnvironmentError(message)
                 else:
                     raise IOError("Update service did not return a status")
 
         except Exception as exception:  # catch all, pylint:disable=W0703
             from traceback import format_exc
-            self.emit(_SIGNAL_FAIL, exception, format_exc())
+            self.signal_fail.emit(exception, format_exc())
 
-    def _validate_update(self, payload):
+    def _validate_update(self, payload) -> dict:
         """
         Since we are going to display this data to the user, we are very
         careful that it is safe and formatted properly.
@@ -289,7 +289,7 @@ class _Worker(QtCore.QThread):
         for key in ['intro', 'synopsis', 'version']:
             info[key] = payload.get(key)
             if info[key]:
-                if not isinstance(info[key], basestring):
+                if not isinstance(info[key], str):
                     raise ValueError(key + " should have been a string")
                 info[key] = info[key].strip()
 
@@ -306,7 +306,7 @@ class _Worker(QtCore.QThread):
             info['notes'] = [
                 note.strip()
                 for note in info['notes']
-                if isinstance(note, basestring) and note.strip()
+                if isinstance(note, str) and note.strip()
             ]
 
             if count != len(info['notes']):

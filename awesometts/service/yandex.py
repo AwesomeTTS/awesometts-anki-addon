@@ -70,7 +70,7 @@ class Yandex(Service):
         voice_lookup = dict([
             # two-character language codes
             (self.normalize(code[:2]), code)
-            for code in self._VOICE_CODES.keys()
+            for code in list(self._VOICE_CODES.keys())
         ] + [
             # aliases for Spanish, European
             (self.normalize(alias), 'es_ES')
@@ -86,15 +86,15 @@ class Yandex(Service):
         ] + [
             # then add/override for full names (e.g. Spanish, European)
             (self.normalize(name), code)
-            for code, name in self._VOICE_CODES.items()
+            for code, name in list(self._VOICE_CODES.items())
         ] + [
             # then add/override for shorter names (e.g. Spanish)
             (self.normalize(name.split(',')[0]), code)
-            for code, name in self._VOICE_CODES.items()
+            for code, name in list(self._VOICE_CODES.items())
         ] + [
             # then add/override for official voices (e.g. es_ES)
             (self.normalize(code), code)
-            for code in self._VOICE_CODES.keys()
+            for code in list(self._VOICE_CODES.keys())
         ])
 
         def transform_voice(value):

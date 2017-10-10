@@ -58,7 +58,7 @@ class Youdao(Service):
             for alias in ['English', 'en', 'eng']
         ] + [
             (self.normalize(code), code)
-            for code in VOICE_LOOKUP.keys()
+            for code in list(VOICE_LOOKUP.keys())
         ])
 
         def transform_voice(value):

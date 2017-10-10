@@ -76,7 +76,7 @@ class RHVoice(Service):
                         tokens = line.split('=', 1)
                         lookup[tokens[0]] = tokens[1].strip()
                 return lookup
-            except StandardError:
+            except Exception:
                 return {}
 
         def get_voices_from(path):
@@ -115,9 +115,9 @@ class RHVoice(Service):
                             if isfile(voice_file)
                         )
                     ),
-                    key=lambda (voice_name, voice_info): (
-                        voice_info.get(LANGUAGE_KEY),
-                        voice_info.get(NAME_KEY, voice_name),
+                    key=lambda voice_name_voice_info: (
+                        voice_name_voice_info[1].get(LANGUAGE_KEY),
+                        voice_name_voice_info[1].get(NAME_KEY, voice_name_voice_info[0]),
                     )
                 )
             ]
@@ -131,7 +131,7 @@ class RHVoice(Service):
             try:
                 self._voice_list = get_voices_from(path)
                 break
-            except StandardError:
+            except Exception:
                 continue
         else:
             raise EnvironmentError("No usable voices could be found")

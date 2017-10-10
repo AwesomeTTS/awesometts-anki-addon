@@ -102,11 +102,11 @@ class SAPI5COM(Service):
         voice_lookup = dict([
             # normalized with characters w/ diacritics stripped
             (self.normalize(voice[0]), voice[0])
-            for voice in self._voice_map.keys()
+            for voice in list(self._voice_map.keys())
         ] + [
             # normalized with diacritics converted
             (self.normalize(self.util_approx(voice[0])), voice[0])
-            for voice in self._voice_map.keys()
+            for voice in list(self._voice_map.keys())
         ])
 
         def transform_voice(value):

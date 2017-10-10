@@ -26,8 +26,8 @@ alert windows. It also may have more visual components in the future.
 
 import re
 
-from BeautifulSoup import BeautifulSoup
-from PyQt4.QtCore import Qt
+from bs4 import BeautifulSoup
+from PyQt5.QtCore import Qt
 
 from .common import key_event_combo
 
@@ -259,7 +259,7 @@ class Reviewer(object):
                        show_errors=True):
         """Helper method for _play_html()."""
 
-        text = from_template(unicode(tag))
+        text = from_template(str(tag))
         if not text:
             return
 
@@ -273,7 +273,7 @@ class Reviewer(object):
                 if show_errors:
                     self._alerts(
                         X_FOR_THIS_TAG_MSG % (attr['group'], "group",
-                                              tag.prettify().decode('utf-8')),
+                                              tag.prettify()),
                         parent,
                     )
             else:
@@ -289,7 +289,7 @@ class Reviewer(object):
                             not show_errors or
                             self._alerts(
                                 "Unable to play this group tag:\n%s\n\n%s" % (
-                                    tag.prettify().decode('utf-8').strip(),
+                                    tag.prettify().strip(),
                                     exception.message,
                                 ),
                                 parent,
@@ -306,7 +306,7 @@ class Reviewer(object):
                 if show_errors:
                     self._alerts(
                         X_FOR_THIS_TAG_MSG % (attr['preset'], "preset",
-                                              tag.prettify().decode('utf-8')),
+                                              tag.prettify()),
                         parent,
                     )
                 return
@@ -317,7 +317,7 @@ class Reviewer(object):
             if show_errors:
                 self._alerts(
                     "This tag needs a 'service' attribute:\n%s" %
-                    tag.prettify().decode('utf-8'),
+                    tag.prettify(),
                     parent,
                 )
             return
@@ -342,7 +342,7 @@ class Reviewer(object):
                          if self._addon.router.has_trait(svc_id, 'DICTIONARY')
                          else "Unable to play this tag:\n%s\n\n%s")
                         % (
-                            tag.prettify().decode('utf-8').strip(),
+                            tag.prettify().strip(),
                             exception.message,
                         ),
                         parent,
@@ -478,8 +478,9 @@ class BeautifulTTS(BeautifulSoup):  # pylint:disable=abstract-method
     treats TTS tags as nestable.
     """
 
-    NESTABLE_TAGS = dict(BeautifulSoup.NESTABLE_TAGS.items() +
-                         [('tts', [])])
+    def __init__(self, markup, parser='html.parser', **kwargs):
+        # as long as we use 'html.parser' all tags are assumed nestable
+        super().__init__(markup, parser, **kwargs)
 
 
 def lax_dict_lookup(src, key, return_none=False):
@@ -495,7 +496,7 @@ def lax_dict_lookup(src, key, return_none=False):
     except KeyError:
         try:
             key = key.strip().lower()
-            return next(v for k, v in src.items() if k.strip().lower() == key)
+            return next(v for k, v in list(src.items()) if k.strip().lower() == key)
         except StopIteration:
             if return_none:
                 return None

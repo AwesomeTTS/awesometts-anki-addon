@@ -90,7 +90,7 @@ class Howjsay(Service):
         if len(text) > 100:
             raise IOError("Input text is too long for Howjsay")
 
-        from urllib2 import quote
+        from urllib.parse import quote
 
         try:
             self.net_download(

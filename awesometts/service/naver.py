@@ -146,7 +146,7 @@ class Naver(Service):
                 vcode = self.net_stream(
                     (TRANSLATE_INIT, dict(text=subtext)),
                     method='POST',
-                )
+                ).decode()
                 vcode = ''.join(char for char in vcode if char.isdigit())
 
                 self.net_download(

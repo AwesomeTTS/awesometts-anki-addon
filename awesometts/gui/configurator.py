@@ -23,7 +23,7 @@ import os
 import os.path
 from sys import platform
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 from .base import Dialog
 from .common import Checkbox, Label, Note, Slate
@@ -59,8 +59,8 @@ class Configurator(Dialog):
         'throttle_threshold', 'tts_key_a', 'tts_key_q', 'updates_enabled',
     ]
 
-    _PROPERTY_WIDGETS = (Checkbox, QtGui.QComboBox, QtGui.QLineEdit,
-                         QtGui.QPushButton, QtGui.QSpinBox, QtGui.QListView)
+    _PROPERTY_WIDGETS = (Checkbox, QtWidgets.QComboBox, QtWidgets.QLineEdit,
+                         QtWidgets.QPushButton, QtWidgets.QSpinBox, QtWidgets.QListView)
 
     __slots__ = ['_alerts', '_ask', '_preset_editor', '_group_editor',
                  '_sul_compiler']
@@ -89,7 +89,7 @@ class Configurator(Dialog):
         """Returns tab widget w/ Playback, Text, MP3s, Advanced."""
 
         use_icons = not platform.startswith('darwin')
-        tabs = QtGui.QTabWidget()
+        tabs = QtWidgets.QTabWidget()
 
         for content, icon, label in [
                 (self._ui_tabs_playback, 'player-time', "Playback"),
@@ -111,7 +111,7 @@ class Configurator(Dialog):
     def _ui_tabs_playback(self):
         """Returns the "Playback" tab."""
 
-        vert = QtGui.QVBoxLayout()
+        vert = QtWidgets.QVBoxLayout()
         vert.addWidget(self._ui_tabs_playback_group(
             'automatic_questions', 'tts_key_q',
             'delay_questions_', "Questions / Fronts of Cards",
@@ -125,7 +125,7 @@ class Configurator(Dialog):
                              'tags. See "Help" for more information.'))
         vert.addStretch()
 
-        tab = QtGui.QWidget()
+        tab = QtWidgets.QWidget()
         tab.setLayout(vert)
         return tab
 
@@ -136,7 +136,7 @@ class Configurator(Dialog):
         of Cards" input groups.
         """
 
-        hor = QtGui.QHBoxLayout()
+        hor = QtWidgets.QHBoxLayout()
         automatic = Checkbox("Automatically play on-the-fly <tts> tags",
                              automatic_key)
         errors = Checkbox("Show errors", automatic_key + '_errors')
@@ -144,21 +144,21 @@ class Configurator(Dialog):
         hor.addWidget(errors)
         hor.addStretch()
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addLayout(hor)
 
         wait_widgets = {}
         for subkey, desc in [('onthefly', "on-the-fly <tts> tags"),
                              ('stored_ours', "AwesomeTTS [sound] tags"),
                              ('stored_theirs', "other [sound] tags")]:
-            spinner = QtGui.QSpinBox()
+            spinner = QtWidgets.QSpinBox()
             spinner.setObjectName(delay_key_prefix + subkey)
             spinner.setRange(0, 30)
             spinner.setSingleStep(1)
             spinner.setSuffix(" seconds")
             wait_widgets[subkey] = spinner
 
-            hor = QtGui.QHBoxLayout()
+            hor = QtWidgets.QHBoxLayout()
             hor.addWidget(Label("Wait"))
             hor.addWidget(spinner)
             hor.addWidget(Label("before automatically playing " + desc))
@@ -170,20 +170,20 @@ class Configurator(Dialog):
             wait_widgets['onthefly'].setEnabled(enabled),
         ))
 
-        hor = QtGui.QHBoxLayout()
+        hor = QtWidgets.QHBoxLayout()
         hor.addWidget(Label("To manually play on-the-fly <tts> tags, strike"))
         hor.addWidget(self._factory_shortcut(shortcut_key))
         hor.addStretch()
         layout.addLayout(hor)
 
-        group = QtGui.QGroupBox(label)
+        group = QtWidgets.QGroupBox(label)
         group.setLayout(layout)
         return group
 
     def _ui_tabs_text(self):
         """Returns the "Text" tab."""
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(10, 0, 10, 0)
         layout.addWidget(self._ui_tabs_text_mode(
             '_template_',
@@ -206,30 +206,31 @@ class Configurator(Dialog):
              ('remove', "remove entirely")],
         ), 50)
 
-        tab = QtGui.QWidget()
+        tab = QtWidgets.QWidget()
         tab.setLayout(layout)
         return tab
 
     def _ui_tabs_text_mode(self, infix, label, *args, **kwargs):
         """Returns group box for the given text manipulation context."""
 
-        subtabs = QtGui.QTabWidget()
-        subtabs.setTabPosition(QtGui.QTabWidget.West)
+        subtabs = QtWidgets.QTabWidget()
+        subtabs.setTabPosition(QtWidgets.QTabWidget.West)
 
         for sublabel, sublayout in [
                 ("Simple", self._ui_tabs_text_mode_simple(infix, *args,
                                                           **kwargs)),
                 ("Advanced", self._ui_tabs_text_mode_adv(infix)),
         ]:
-            subwidget = QtGui.QWidget()
+            subwidget = QtWidgets.QWidget()
             subwidget.setLayout(sublayout)
             subtabs.addTab(subwidget, sublabel)
 
-        layout = QtGui.QVBoxLayout()
-        layout.setMargin(0)
+        layout = QtWidgets.QVBoxLayout()
+        # TODO
+        # layout.setCanvasMargin(0)
         layout.addWidget(subtabs)
 
-        group = QtGui.QGroupBox(label)
+        group = QtWidgets.QGroupBox(label)
         group.setFlat(True)
         group.setLayout(layout)
 
@@ -246,22 +247,22 @@ class Configurator(Dialog):
         available for manipulating text from the given context.
         """
 
-        select = QtGui.QComboBox()
+        select = QtWidgets.QComboBox()
         for option_value, option_text in cloze_options:
             select.addItem(option_text, option_value)
         select.setObjectName(infix.join(['sub', 'cloze']))
 
-        hor = QtGui.QHBoxLayout()
+        hor = QtWidgets.QHBoxLayout()
         hor.addWidget(Label(cloze_description))
         hor.addWidget(select)
         hor.addStretch()
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(10, 0, 10, 0)
         layout.addLayout(hor)
 
         if template_options:
-            hor = QtGui.QHBoxLayout()
+            hor = QtWidgets.QHBoxLayout()
             hor.addWidget(Checkbox("For cloze answers, read revealed text "
                                    "only", 'otf_only_revealed_cloze'))
             hor.addWidget(Checkbox("Ignore {{hint}} fields",
@@ -273,7 +274,7 @@ class Configurator(Dialog):
             infix.join(['ellip', 'newlines'])
         ))
 
-        hor = QtGui.QHBoxLayout()
+        hor = QtWidgets.QHBoxLayout()
         hor.addWidget(Label("Strip off text within:"))
         for option_subkey, option_label in [('parens', "parentheses"),
                                             ('brackets', "brackets"),
@@ -296,12 +297,12 @@ class Configurator(Dialog):
                                        wrap=False):
         """Returns a layout for specific character handling."""
 
-        line_edit = QtGui.QLineEdit()
+        line_edit = QtWidgets.QLineEdit()
         line_edit.setObjectName(infix.join(['spec', suffix]))
         line_edit.setValidator(self._ui_tabs_text_mode_simple_spec.ucsv)
         line_edit.setFixedWidth(50)
 
-        hor = QtGui.QHBoxLayout()
+        hor = QtWidgets.QHBoxLayout()
         hor.addWidget(Label(labels[0]))
         hor.addWidget(line_edit)
         hor.addWidget(Label(labels[1]))
@@ -339,35 +340,35 @@ class Configurator(Dialog):
     def _ui_tabs_mp3gen(self):
         """Returns the "MP3s" tab."""
 
-        vert = QtGui.QVBoxLayout()
+        vert = QtWidgets.QVBoxLayout()
         vert.addWidget(self._ui_tabs_mp3gen_filenames())
         vert.addWidget(self._ui_tabs_mp3gen_lame())
         vert.addWidget(self._ui_tabs_mp3gen_throttle())
         vert.addStretch()
 
-        tab = QtGui.QWidget()
+        tab = QtWidgets.QWidget()
         tab.setLayout(vert)
         return tab
 
     def _ui_tabs_mp3gen_filenames(self):
         """Returns the "Filenames of MP3s" group."""
 
-        dropdown = QtGui.QComboBox()
+        dropdown = QtWidgets.QComboBox()
         dropdown.setObjectName('filenames')
         dropdown.addItem("hashed (safe and portable)", 'hash')
         dropdown.addItem("human-readable (may not work everywhere)", 'human')
 
-        dropdown_line = QtGui.QHBoxLayout()
+        dropdown_line = QtWidgets.QHBoxLayout()
         dropdown_line.addWidget(Label("Filenames should be "))
         dropdown_line.addWidget(dropdown)
         dropdown_line.addStretch()
 
-        human = QtGui.QLineEdit()
+        human = QtWidgets.QLineEdit()
         human.setObjectName('filenames_human')
         human.setPlaceholderText("e.g. {{service}} {{voice}} - {{text}}")
         human.setEnabled(False)
 
-        human_line = QtGui.QHBoxLayout()
+        human_line = QtWidgets.QHBoxLayout()
         human_line.addWidget(Label("Format human-readable filenames as "))
         human_line.addWidget(human)
         human_line.addWidget(Label(".mp3"))
@@ -375,12 +376,12 @@ class Configurator(Dialog):
         dropdown.currentIndexChanged. \
             connect(lambda index: human.setEnabled(index > 0))
 
-        vertical = QtGui.QVBoxLayout()
+        vertical = QtWidgets.QVBoxLayout()
         vertical.addLayout(dropdown_line)
         vertical.addLayout(human_line)
         vertical.addWidget(Note("Changes are not retroactive to old files."))
 
-        group = QtGui.QGroupBox("Filenames of MP3s Stored in Your Collection")
+        group = QtWidgets.QGroupBox("Filenames of MP3s Stored in Your Collection")
         group.setLayout(vertical)
 
         return group
@@ -388,38 +389,38 @@ class Configurator(Dialog):
     def _ui_tabs_mp3gen_lame(self):
         """Returns the "LAME Transcoder" input group."""
 
-        flags = QtGui.QLineEdit()
+        flags = QtWidgets.QLineEdit()
         flags.setObjectName('lame_flags')
         flags.setPlaceholderText("e.g. '-q 5' for medium quality")
 
         rtr = self._addon.router
-        vert = QtGui.QVBoxLayout()
+        vert = QtWidgets.QVBoxLayout()
         vert.addWidget(Note("Specify flags passed to lame when making MP3s."))
         vert.addWidget(flags)
         vert.addWidget(Note("Affects %s. Changes are not retroactive to old "
                             "files." %
                             ', '.join(rtr.by_trait(rtr.Trait.TRANSCODING))))
 
-        group = QtGui.QGroupBox("LAME Transcoder")
+        group = QtWidgets.QGroupBox("LAME Transcoder")
         group.setLayout(vert)
         return group
 
     def _ui_tabs_mp3gen_throttle(self):
         """Returns the "Download Throttling" input group."""
 
-        threshold = QtGui.QSpinBox()
+        threshold = QtWidgets.QSpinBox()
         threshold.setObjectName('throttle_threshold')
         threshold.setRange(5, 1000)
         threshold.setSingleStep(5)
         threshold.setSuffix(" operations")
 
-        sleep = QtGui.QSpinBox()
+        sleep = QtWidgets.QSpinBox()
         sleep.setObjectName('throttle_sleep')
         sleep.setRange(15, 10800)
         sleep.setSingleStep(15)
         sleep.setSuffix(" seconds")
 
-        hor = QtGui.QHBoxLayout()
+        hor = QtWidgets.QHBoxLayout()
         hor.addWidget(Label("After "))
         hor.addWidget(threshold)
         hor.addWidget(Label(" sleep for "))
@@ -427,21 +428,21 @@ class Configurator(Dialog):
         hor.addStretch()
 
         rtr = self._addon.router
-        vert = QtGui.QVBoxLayout()
+        vert = QtWidgets.QVBoxLayout()
         vert.addWidget(Note("Tweak how often AwesomeTTS takes a break when "
                             "mass downloading files from online services."))
         vert.addLayout(hor)
         vert.addWidget(Note("Affects %s." %
                             ', '.join(rtr.by_trait(rtr.Trait.INTERNET))))
 
-        group = QtGui.QGroupBox("Download Throttling during Batch Processing")
+        group = QtWidgets.QGroupBox("Download Throttling during Batch Processing")
         group.setLayout(vert)
         return group
 
     def _ui_tabs_windows(self):
         """Returns the "Window" tab."""
 
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         for i, (desc, sub) in enumerate([
                 ("open configuration in main window", 'configurator'),
                 ("insert <tts> tag in template editor", 'templater'),
@@ -453,10 +454,10 @@ class Configurator(Dialog):
             grid.addWidget(self._factory_shortcut('launch_' + sub), i, 1)
         grid.setColumnStretch(1, 1)
 
-        group = QtGui.QGroupBox("Window Shortcuts")
+        group = QtWidgets.QGroupBox("Window Shortcuts")
         group.setLayout(grid)
 
-        vert = QtGui.QVBoxLayout()
+        vert = QtWidgets.QVBoxLayout()
         vert.addWidget(group)
         vert.addWidget(Note(
             "* By default, AwesomeTTS binds %(native)s for most actions. If "
@@ -475,105 +476,105 @@ class Configurator(Dialog):
                             "experiment to find what works best."))
         vert.addStretch()
 
-        tab = QtGui.QWidget()
+        tab = QtWidgets.QWidget()
         tab.setLayout(vert)
         return tab
 
     def _ui_tabs_advanced(self):
         """Returns the "Advanced" tab."""
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self._ui_tabs_advanced_presets())
         layout.addWidget(self._ui_tabs_advanced_update())
         layout.addWidget(self._ui_tabs_advanced_cache())
         layout.addStretch()
 
-        tab = QtGui.QWidget()
+        tab = QtWidgets.QWidget()
         tab.setLayout(layout)
         return tab
 
     def _ui_tabs_advanced_presets(self):
         """Returns the "Presets" input group."""
 
-        presets_button = QtGui.QPushButton("Manage Presets...")
+        presets_button = QtWidgets.QPushButton("Manage Presets...")
         presets_button.clicked.connect(self._on_presets)
 
-        groups_button = QtGui.QPushButton("Manage Groups...")
+        groups_button = QtWidgets.QPushButton("Manage Groups...")
         groups_button.clicked.connect(self._on_groups)
 
-        hor = QtGui.QHBoxLayout()
+        hor = QtWidgets.QHBoxLayout()
         hor.addWidget(presets_button)
         hor.addWidget(groups_button)
         hor.addStretch()
 
-        vert = QtGui.QVBoxLayout()
+        vert = QtWidgets.QVBoxLayout()
         vert.addWidget(Note("Setup services for easy access, menu playback, "
                             "randomization, or fallbacks."))
         vert.addLayout(hor)
 
-        group = QtGui.QGroupBox("Service Presets and Groups")
+        group = QtWidgets.QGroupBox("Service Presets and Groups")
         group.setLayout(vert)
         return group
 
     def _ui_tabs_advanced_update(self):
         """Returns the "Updates" input group."""
 
-        button = QtGui.QPushButton(QtGui.QIcon(':/icons/find.png'),
+        button = QtWidgets.QPushButton(QtGui.QIcon(':/icons/find.png'),
                                    "Check Now")
-        button.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        button.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         button.setObjectName('updates_button')
         button.clicked.connect(self._on_update_request)
 
         state = Note()
         state.setObjectName('updates_state')
 
-        hor = QtGui.QHBoxLayout()
+        hor = QtWidgets.QHBoxLayout()
         hor.addWidget(button)
         hor.addWidget(state)
 
-        vert = QtGui.QVBoxLayout()
+        vert = QtWidgets.QVBoxLayout()
         vert.addWidget(Checkbox("automatically check for AwesomeTTS updates "
                                 "at start-up", 'updates_enabled'))
         vert.addLayout(hor)
 
-        group = QtGui.QGroupBox("Updates")
+        group = QtWidgets.QGroupBox("Updates")
         group.setLayout(vert)
         return group
 
     def _ui_tabs_advanced_cache(self):
         """Returns the "Caching" input group."""
 
-        days = QtGui.QSpinBox()
+        days = QtWidgets.QSpinBox()
         days.setObjectName('cache_days')
         days.setRange(0, 9999)
         days.setSuffix(" days")
 
-        hor = QtGui.QHBoxLayout()
+        hor = QtWidgets.QHBoxLayout()
         hor.addWidget(Label("Delete files older than"))
         hor.addWidget(days)
         hor.addWidget(Label("at exit (zero clears everything)"))
         hor.addStretch()
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(Note("AwesomeTTS caches generated audio files and "
                               "remembers failures during each session to "
                               "speed up repeated playback."))
         layout.addLayout(hor)
 
-        abutton = QtGui.QPushButton("Delete Files")
+        abutton = QtWidgets.QPushButton("Delete Files")
         abutton.setObjectName('on_cache')
         abutton.clicked.connect(lambda: self._on_cache_clear(abutton))
 
-        fbutton = QtGui.QPushButton("Forget Failures")
+        fbutton = QtWidgets.QPushButton("Forget Failures")
         fbutton.setObjectName('on_forget')
         fbutton.clicked.connect(lambda: self._on_forget_failures(fbutton))
 
-        hor = QtGui.QHBoxLayout()
+        hor = QtWidgets.QHBoxLayout()
         hor.addWidget(abutton)
         hor.addWidget(fbutton)
         layout.addLayout(hor)
 
-        group = QtGui.QGroupBox("Caching")
+        group = QtWidgets.QGroupBox("Caching")
         group.setLayout(layout)
         return group
 
@@ -582,7 +583,7 @@ class Configurator(Dialog):
     def _factory_shortcut(self, object_name):
         """Returns a push button capable of being assigned a shortcut."""
 
-        shortcut = QtGui.QPushButton()
+        shortcut = QtWidgets.QPushButton()
         shortcut.atts_pending = False
         shortcut.setObjectName(object_name)
         shortcut.setCheckable(True)
@@ -608,19 +609,19 @@ class Configurator(Dialog):
             if isinstance(widget, Checkbox):
                 widget.setChecked(value)
                 widget.stateChanged.emit(value)
-            elif isinstance(widget, QtGui.QLineEdit):
+            elif isinstance(widget, QtWidgets.QLineEdit):
                 widget.setText(value)
-            elif isinstance(widget, QtGui.QPushButton):
+            elif isinstance(widget, QtWidgets.QPushButton):
                 widget.atts_value = value
                 widget.setText(key_combo_desc(widget.atts_value))
-            elif isinstance(widget, QtGui.QComboBox):
+            elif isinstance(widget, QtWidgets.QComboBox):
                 widget.setCurrentIndex(max(widget.findData(value), 0))
-            elif isinstance(widget, QtGui.QSpinBox):
+            elif isinstance(widget, QtWidgets.QSpinBox):
                 widget.setValue(value)
-            elif isinstance(widget, QtGui.QListView):
+            elif isinstance(widget, QtWidgets.QListView):
                 widget.setModel(value)
 
-        widget = self.findChild(QtGui.QPushButton, 'on_cache')
+        widget = self.findChild(QtWidgets.QPushButton, 'on_cache')
         widget.atts_list = (
             [filename for filename in os.listdir(self._addon.paths.cache)]
             if os.path.isdir(self._addon.paths.cache) else []
@@ -633,7 +634,7 @@ class Configurator(Dialog):
             widget.setEnabled(False)
             widget.setText("Delete Files")
 
-        widget = self.findChild(QtGui.QPushButton, 'on_forget')
+        widget = self.findChild(QtWidgets.QPushButton, 'on_forget')
         fail_count = self._addon.router.get_failure_count()
         if fail_count:
             widget.setEnabled(True)
@@ -648,21 +649,21 @@ class Configurator(Dialog):
     def accept(self):
         """Saves state on inputs; rough opposite of show()."""
 
-        for list_view in self.findChildren(QtGui.QListView):
-            for editor in list_view.findChildren(QtGui.QWidget, 'editor'):
+        for list_view in self.findChildren(QtWidgets.QListView):
+            for editor in list_view.findChildren(QtWidgets.QWidget, 'editor'):
                 list_view.commitData(editor)  # if an editor is open, save it
 
         self._addon.config.update({
             widget.objectName(): (
                 widget.isChecked() if isinstance(widget, Checkbox)
-                else widget.atts_value if isinstance(widget, QtGui.QPushButton)
-                else widget.value() if isinstance(widget, QtGui.QSpinBox)
+                else widget.atts_value if isinstance(widget, QtWidgets.QPushButton)
+                else widget.value() if isinstance(widget, QtWidgets.QSpinBox)
                 else widget.itemData(widget.currentIndex()) if isinstance(
-                    widget, QtGui.QComboBox)
+                    widget, QtWidgets.QComboBox)
                 else [
                     i for i in widget.model().raw_data
                     if i['compiled'] and 'bad_replace' not in i
-                ] if isinstance(widget, QtGui.QListView)
+                ] if isinstance(widget, QtWidgets.QListView)
                 else widget.text()
             )
             for widget in self.findChildren(self._PROPERTY_WIDGETS)
@@ -674,11 +675,11 @@ class Configurator(Dialog):
     def help_request(self):
         """Launch browser to the URL for the user's current tab."""
 
-        tabs = self.findChild(QtGui.QTabWidget)
+        tabs = self.findChild(QtWidgets.QTabWidget)
         self._launch_link('config/' +
                           tabs.tabText(tabs.currentIndex()).lower())
 
-    def keyPressEvent(self, key_event):  # from PyQt4, pylint:disable=C0103
+    def keyPressEvent(self, key_event):  # from PyQt5, pylint:disable=C0103
         """Assign new combo for shortcut buttons undergoing changes."""
 
         buttons = self._get_pressed_shortcut_buttons()
@@ -704,7 +705,7 @@ class Configurator(Dialog):
             button.atts_pending = combo
             button.setText(key_combo_desc(combo))
 
-    def keyReleaseEvent(self, key_event):  # from PyQt4, pylint:disable=C0103
+    def keyReleaseEvent(self, key_event):  # from PyQt5, pylint:disable=C0103
         """Disengage all shortcut buttons undergoing changes."""
 
         buttons = self._get_pressed_shortcut_buttons()
@@ -725,7 +726,7 @@ class Configurator(Dialog):
         """Returns all shortcut buttons that are pressed."""
 
         return [button
-                for button in self.findChildren(QtGui.QPushButton)
+                for button in self.findChildren(QtWidgets.QPushButton)
                 if (button.isChecked() and
                     (button.objectName().startswith('launch_') or
                      button.objectName().startswith('tts_key_')))]
@@ -760,7 +761,7 @@ class Configurator(Dialog):
     def _on_update_request(self):
         """Attempts update request w/ add-on updates interface."""
 
-        button = self.findChild(QtGui.QPushButton, 'updates_button')
+        button = self.findChild(QtWidgets.QPushButton, 'updates_button')
         button.setEnabled(False)
         state = self.findChild(Note, 'updates_state')
         state.setText("Querying update server...")

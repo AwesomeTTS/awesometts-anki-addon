@@ -92,10 +92,11 @@ class Wiktionary(Service):
             dict(
                 key='voice',
                 label="Voice",
-                values=[(code, "%s" % (name))
-                        for code, name in sorted(self._LANGUAGE_CODES.items(),
+                values=[(code, name)
+                        for code, name in sorted(list(self._LANGUAGE_CODES.items()),
                                                  key=lambda x: x[1])],
                 transform=lambda x: x,
+                test_default='en'
             ),
         ]
 
@@ -142,7 +143,7 @@ class Wiktionary(Service):
                 ),
             ),
             require=dict(mime='text/html'),
-        )
+        ).decode()
 
         # Now parse the page, looking for the ogg file.  This will
         # find at most one match, as we expect there to be no more
@@ -152,6 +153,7 @@ class Wiktionary(Service):
         # way to choose between them, this should be good enough
         # for now.
         matcher = re.search("//.*\\.ogg", webpage)
+
         if not matcher:
             raise IOError("Wiktionary doesn't have any audio for this input.")
         oggurl = "https:" + matcher.group(0)

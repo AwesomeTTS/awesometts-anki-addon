@@ -21,7 +21,7 @@ Updater dialog
 """
 
 from time import time
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 from .base import Dialog
 from .common import Note
@@ -95,9 +95,9 @@ class Updater(Dialog):
         if self._info['notes']:
             list_icon = QtGui.QIcon(':/icons/rating.png')
 
-            list_widget = QtGui.QListWidget()
+            list_widget = QtWidgets.QListWidget()
             for note in self._info['notes']:
-                list_widget.addItem(QtGui.QListWidgetItem(list_icon, note))
+                list_widget.addItem(QtWidgets.QListWidgetItem(list_icon, note))
             list_widget.setHorizontalScrollBarPolicy(_NO_SCROLLBAR)
             list_widget.setWordWrap(True)
             layout.addWidget(list_widget)
@@ -123,9 +123,9 @@ class Updater(Dialog):
         from the superclass.
         """
 
-        buttons = QtGui.QDialogButtonBox()
+        buttons = QtWidgets.QDialogButtonBox()
 
-        now_button = QtGui.QPushButton(
+        now_button = QtWidgets.QPushButton(
             QtGui.QIcon(':/icons/emblem-favorite.png'),
             "Update Now",
         )
@@ -137,21 +137,21 @@ class Updater(Dialog):
             now_button.setEnabled(False)
 
         if self._is_manual:
-            later_button = QtGui.QPushButton(
+            later_button = QtWidgets.QPushButton(
                 QtGui.QIcon(':/icons/fileclose.png'),
                 "Don't Update",
             )
             later_button.clicked.connect(self.reject)
 
         else:
-            menu = QtGui.QMenu()
+            menu = QtWidgets.QMenu()
             menu.addAction("Remind Me Next Session", self._remind_session)
             menu.addAction("Remind Me Tomorrow", self._remind_tomorrow)
             menu.addAction("Remind Me in a Week", self._remind_week)
             menu.addAction("Skip v%s" % self._version, self._skip_version)
             menu.addAction("Stop Checking for Updates", self._disable)
 
-            later_button = QtGui.QPushButton(
+            later_button = QtWidgets.QPushButton(
                 QtGui.QIcon(':/icons/clock16.png'),
                 "Not Now",
             )
@@ -160,8 +160,8 @@ class Updater(Dialog):
         later_button.setAutoDefault(False)
         later_button.setDefault(False)
 
-        buttons.addButton(now_button, QtGui.QDialogButtonBox.YesRole)
-        buttons.addButton(later_button, QtGui.QDialogButtonBox.NoRole)
+        buttons.addButton(now_button, QtWidgets.QDialogButtonBox.YesRole)
+        buttons.addButton(later_button, QtWidgets.QDialogButtonBox.NoRole)
 
         return buttons
 
@@ -174,7 +174,7 @@ class Updater(Dialog):
 
         self.accept()
 
-        if isinstance(self.parentWidget(), QtGui.QDialog):
+        if isinstance(self.parentWidget(), QtWidgets.QDialog):
             self.parentWidget().reject()
 
         dlb = self._addon.downloader
@@ -195,7 +195,7 @@ class Updater(Dialog):
                         **dlb.kwargs
                     )
 
-                    for name, value in dlb.attrs.items():
+                    for name, value in list(dlb.attrs.items()):
                         setattr(self, name, value)
 
             addon_dialog = OurGetAddons()

@@ -121,7 +121,7 @@ class ESpeak(Service):
                 for match in [re_voice.match(line) for line in lines]
                 if match
             ]
-            for key, lines in output.items()
+            for key, lines in list(output.items())
         }
 
         self._lookup['voices'] = (

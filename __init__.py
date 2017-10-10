@@ -39,7 +39,7 @@ if __name__ == "__main__":
 # n.b. Import is intentionally placed down here so that Python processes it
 # only if the module check above is not tripped.
 
-import awesometts  # noqa, pylint:disable=wrong-import-position
+from . import awesometts  # noqa, pylint:disable=wrong-import-position
 
 
 # If a specific component of AwesomeTTS that you do not need is causing a

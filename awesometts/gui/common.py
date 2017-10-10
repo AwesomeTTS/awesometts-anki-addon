@@ -25,8 +25,8 @@ As everything done from the add-on code has to do with AwesomeTTS, these
 all carry a speaker icon (if supported by the desktop environment).
 """
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import Qt
+from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5.QtCore import Qt
 
 __all__ = ['ICON', 'key_event_combo', 'key_combo_desc', 'Action', 'Button',
            'Checkbox', 'Filter', 'HTML', 'Label', 'Note']
@@ -60,6 +60,7 @@ def key_event_combo(event):
     return key + sum(flag
                      for flag in key_event_combo.MOD_FLAGS
                      if modifiers & flag)
+
 
 key_event_combo.MOD_FLAGS = [Qt.AltModifier, Qt.ControlModifier,
                              Qt.MetaModifier, Qt.ShiftModifier]
@@ -98,14 +99,16 @@ class _Connector(object):  # used like a mixin, pylint:disable=R0903
     GUI element still exists.
     """
 
-    def __init__(self, signal, target):
+    def __init__(self, signal_name, target, **kwargs):
         """
         Store the target for future use and wire up the passed signal.
         """
+        super().__init__(**kwargs)
 
         self._target = target
         self._instance = None
 
+        signal = getattr(self, signal_name)
         signal.connect(self._show)
 
     def _show(self):
@@ -123,7 +126,7 @@ class _Connector(object):  # used like a mixin, pylint:disable=R0903
         self._instance.show()
 
 
-class Action(QtGui.QAction, _Connector):
+class Action(QtWidgets.QAction, _Connector):
     """
     Provides a menu action to show a dialog when triggered.
     """
@@ -150,18 +153,26 @@ class Action(QtGui.QAction, _Connector):
         If the specified parent is a QMenu, this new action will
         automatically be added to it.
         """
-
-        QtGui.QAction.__init__(self, ICON, text, parent)
-        _Connector.__init__(self, self.triggered, target)
+        # PyQt5 uses an odd behaviour for multi-inheritance super() calls,
+        # please see: http://pyqt.sourceforge.net/Docs/PyQt5/multiinheritance.html
+        # Importantly there is no way to pass self.triggered to _Connector
+        # before initialization of the QAction (and I do not know if it is
+        # possible # to change order of initialization without changing the
+        # order in mro). So one trick is to pass the signal it in a closure
+        # so it will be kind of lazy evaluated later and the other option is to
+        # pass only signal name and use getattr in _Connector. For now the latter
+        # is used (more elegant, but less flexible).
+        # Maybe composition would be more predictable here?
+        super().__init__(ICON, text, parent, signal_name='triggered', target=target)
 
         self.setShortcut(sequence)
         self._sequence = sequence
 
-        if isinstance(parent, QtGui.QMenu):
+        if isinstance(parent, QtWidgets.QMenu):
             parent.addAction(self)
 
 
-class Button(QtGui.QPushButton, _Connector):
+class Button(QtWidgets.QPushButton, _Connector):
     """
     Provides a button to show a dialog when clicked.
     """
@@ -174,7 +185,7 @@ class Button(QtGui.QPushButton, _Connector):
         different from ones without text.
         """
 
-        QtGui.QPushButton.__init__(self, ICON, text)
+        QtWidgets.QPushButton.__init__(self, ICON, text)
         _Connector.__init__(self, self.clicked, target)
 
         if text:
@@ -193,7 +204,7 @@ class Button(QtGui.QPushButton, _Connector):
             self.setStyle(style)
 
 
-class Checkbox(QtGui.QCheckBox):
+class Checkbox(QtWidgets.QCheckBox):
     """Provides a checkbox with a better constructor."""
 
     def __init__(self, text=None, object_name=None, parent=None):
@@ -230,7 +241,7 @@ class Filter(QtCore.QObject):
         return bool(self._when(event) and self._relay(event))
 
 
-class HTML(QtGui.QLabel):
+class HTML(QtWidgets.QLabel):
     """Label with HTML enabled."""
 
     def __init__(self, *args, **kwargs):
@@ -238,7 +249,7 @@ class HTML(QtGui.QLabel):
         self.setTextFormat(QtCore.Qt.RichText)
 
 
-class Label(QtGui.QLabel):
+class Label(QtWidgets.QLabel):
     """Label with HTML disabled."""
 
     def __init__(self, *args, **kwargs):
@@ -254,7 +265,7 @@ class Note(Label):
         self.setWordWrap(True)
 
 
-class Slate(QtGui.QHBoxLayout):  # pylint:disable=too-few-public-methods
+class Slate(QtWidgets.QHBoxLayout):  # pylint:disable=too-few-public-methods
     """Horizontal panel for dealing with lists of things."""
 
     def __init__(self, thing, ListViewClass, list_view_args, list_name,
@@ -266,7 +277,7 @@ class Slate(QtGui.QHBoxLayout):  # pylint:disable=too-few-public-methods
                               ("Move Selected Up", 'arrow-up'),
                               ("Move Selected Down", 'arrow-down'),
                               ("Remove Selected", 'editdelete')]:
-            btn = QtGui.QPushButton(QtGui.QIcon(':/icons/%s.png' % icon), "")
+            btn = QtWidgets.QPushButton(QtGui.QIcon(':/icons/%s.png' % icon), "")
             btn.setIconSize(QtCore.QSize(16, 16))
             btn.setFlat(True)
             btn.setToolTip(tooltip)
@@ -275,10 +286,10 @@ class Slate(QtGui.QHBoxLayout):  # pylint:disable=too-few-public-methods
         list_view_args.append(buttons)
         list_view = ListViewClass(*list_view_args)
         list_view.setObjectName(list_name)
-        list_view.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding,
-                                QtGui.QSizePolicy.Ignored)
+        list_view.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
+                                QtWidgets.QSizePolicy.Ignored)
 
-        vert = QtGui.QVBoxLayout()
+        vert = QtWidgets.QVBoxLayout()
         for btn in buttons:
             vert.addWidget(btn)
         vert.insertStretch(len(buttons) - 1)

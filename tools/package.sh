@@ -63,6 +63,6 @@ zip -9 "$target" \
     awesometts/gui/*.py \
     awesometts/service/*.py \
     awesometts/service/*.js \
-    AwesomeTTS.py
+    __init__.py
 
 cd "$oldPwd" || exit 1
