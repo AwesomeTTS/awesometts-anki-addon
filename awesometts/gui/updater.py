@@ -207,7 +207,7 @@ class Updater(Dialog):
                 "Unable to automatically update AwesomeTTS (%s); you may "
                 "want to restart Anki and then update the add-on manually "
                 "from the Tools menu." %
-                (exception.message or format(exception))
+                (exception.message if hasattr(exception, 'message') else str(exception))
             )
 
     def _remind_session(self):

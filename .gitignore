@@ -10,3 +10,4 @@ __pycache__/
 *.py[cod]
 
 /awesometts/.cache/
+anki_root

@@ -3,6 +3,8 @@ from urllib.error import HTTPError
 from anki_testing import anki_running
 from pytest import raises
 
+from awesometts.updates import _Worker
+
 
 def test_addon_initialization():
     with anki_running() as anki_app:
@@ -101,3 +103,4 @@ def test_services():
                     callbacks=callbacks,
                     async=False
                 )
+

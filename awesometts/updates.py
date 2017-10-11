@@ -237,7 +237,7 @@ class _Worker(QtCore.QThread):
 
             if not response or response.getcode() != 200:
                 raise IOError("Cannot communicate with update service")
-            if response.info().gettype() != 'application/json':
+            if response.getheader('Content-Type') != 'application/json':
                 raise IOError("Update service did not return JSON")
 
             payload = response.read().strip()
