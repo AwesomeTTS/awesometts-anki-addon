@@ -30,6 +30,7 @@ __all__ = [
     'CONFIG',
     'LOG',
     'TEMP',
+    'ICONS'
 ]
 
 
@@ -43,6 +44,8 @@ ADDON_IS_LINKED = os.path.islink(ADDON)
 BLANK = os.path.join(ADDON, 'blank.mp3')
 
 CACHE = os.path.join(ADDON, '.cache')
+
+ICONS = os.path.join(ADDON, 'icons')
 
 os.makedirs(CACHE, exist_ok=True)
 

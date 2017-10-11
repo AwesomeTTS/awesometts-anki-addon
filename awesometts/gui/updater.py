@@ -21,8 +21,9 @@ Updater dialog
 """
 
 from time import time
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
+from ..paths import ICONS
 from .base import Dialog
 from .common import Note
 
@@ -93,7 +94,7 @@ class Updater(Dialog):
             layout.addWidget(Note(self._info['intro']))
 
         if self._info['notes']:
-            list_icon = QtGui.QIcon(':/icons/rating.png')
+            list_icon = QtGui.QIcon(f'{ICONS}/rating.png')
 
             list_widget = QtWidgets.QListWidget()
             for note in self._info['notes']:
@@ -126,7 +127,7 @@ class Updater(Dialog):
         buttons = QtWidgets.QDialogButtonBox()
 
         now_button = QtWidgets.QPushButton(
-            QtGui.QIcon(':/icons/emblem-favorite.png'),
+            QtGui.QIcon(f'{ICONS}/emblem-favorite.png'),
             "Update Now",
         )
         now_button.setAutoDefault(False)
@@ -138,7 +139,7 @@ class Updater(Dialog):
 
         if self._is_manual:
             later_button = QtWidgets.QPushButton(
-                QtGui.QIcon(':/icons/fileclose.png'),
+                QtGui.QIcon(f'{ICONS}/fileclose.png'),
                 "Don't Update",
             )
             later_button.clicked.connect(self.reject)
@@ -152,7 +153,7 @@ class Updater(Dialog):
             menu.addAction("Stop Checking for Updates", self._disable)
 
             later_button = QtWidgets.QPushButton(
-                QtGui.QIcon(':/icons/clock16.png'),
+                QtGui.QIcon(f'{ICONS}/clock16.png'),
                 "Not Now",
             )
             later_button.setMenu(menu)

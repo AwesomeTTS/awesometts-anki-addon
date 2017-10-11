@@ -28,11 +28,13 @@ all carry a speaker icon (if supported by the desktop environment).
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import Qt
 
+from ..paths import ICONS
+
 __all__ = ['ICON', 'key_event_combo', 'key_combo_desc', 'Action', 'Button',
            'Checkbox', 'Filter', 'HTML', 'Label', 'Note']
 
 
-ICON = QtGui.QIcon(':/icons/speaker.png')
+ICON = QtGui.QIcon(f'{ICONS}/speaker.png')
 
 
 def key_event_combo(event):
@@ -277,7 +279,7 @@ class Slate(QtWidgets.QHBoxLayout):  # pylint:disable=too-few-public-methods
                               ("Move Selected Up", 'arrow-up'),
                               ("Move Selected Down", 'arrow-down'),
                               ("Remove Selected", 'editdelete')]:
-            btn = QtWidgets.QPushButton(QtGui.QIcon(':/icons/%s.png' % icon), "")
+            btn = QtWidgets.QPushButton(QtGui.QIcon(f'{ICONS}/{icon}.png'), "")
             btn.setIconSize(QtCore.QSize(16, 16))
             btn.setFlat(True)
             btn.setToolTip(tooltip)

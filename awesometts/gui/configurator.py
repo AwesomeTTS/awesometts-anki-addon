@@ -25,6 +25,7 @@ from sys import platform
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
+from ..paths import ICONS
 from .base import Dialog
 from .common import Checkbox, Label, Note, Slate
 from .common import key_event_combo, key_combo_desc
@@ -99,7 +100,7 @@ class Configurator(Dialog):
                 (self._ui_tabs_advanced, 'configure', "Advanced"),
         ]:
             if use_icons:
-                tabs.addTab(content(), QtGui.QIcon(':/icons/%s.png' % icon),
+                tabs.addTab(content(), QtGui.QIcon(f'{ICONS}/{icon}.png'),
                             label)
             else:  # active tabs do not display correctly on Mac OS X w/ icons
                 tabs.addTab(content(), label)
@@ -519,7 +520,7 @@ class Configurator(Dialog):
     def _ui_tabs_advanced_update(self):
         """Returns the "Updates" input group."""
 
-        button = QtWidgets.QPushButton(QtGui.QIcon(':/icons/find.png'),
+        button = QtWidgets.QPushButton(QtGui.QIcon(f'{ICONS}/find.png'),
                                    "Check Now")
         button.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         button.setObjectName('updates_button')

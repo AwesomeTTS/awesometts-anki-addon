@@ -26,6 +26,8 @@ use with AwesomeTTS.
 import inspect
 
 from PyQt5 import QtCore, QtWidgets, QtGui
+
+from ..paths import ICONS
 from .common import Label, Note, ICON
 
 __all__ = ['Dialog', 'ServiceDialog']
@@ -324,7 +326,7 @@ class ServiceDialog(Dialog):
                                QtWidgets.QSizePolicy.Preferred)
         dropdown.activated.connect(self._on_preset_activated)
 
-        delete = QtWidgets.QPushButton(QtGui.QIcon(':/icons/editdelete.png'), "")
+        delete = QtWidgets.QPushButton(QtGui.QIcon(f'{ICONS}/editdelete.png'), "")
         delete.setObjectName('presets_delete')
         delete.setIconSize(QtCore.QSize(16, 16))
         delete.setFixedSize(18, 18)
