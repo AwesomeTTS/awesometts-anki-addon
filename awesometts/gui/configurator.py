@@ -520,8 +520,7 @@ class Configurator(Dialog):
     def _ui_tabs_advanced_update(self):
         """Returns the "Updates" input group."""
 
-        button = QtWidgets.QPushButton(QtGui.QIcon(f'{ICONS}/find.png'),
-                                   "Check Now")
+        button = QtWidgets.QPushButton(QtGui.QIcon(f'{ICONS}/find.png'), "Check Now")
         button.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         button.setObjectName('updates_button')
         button.clicked.connect(self._on_update_request)
@@ -772,12 +771,15 @@ class Configurator(Dialog):
             callbacks=dict(
                 done=lambda: button.setEnabled(True),
                 fail=lambda exception: state.setText("Check failed: %s" % (
-                    (exception.message if hasattr(exception, 'message') else str(exception)) or
+                    (
+                        exception.message if hasattr(exception, 'message')
+                        else str(exception)
+                    ) or
                     "Nothing further known"
                 )),
                 good=lambda: state.setText("No update needed at this time."),
                 need=lambda version, info: (
-                    state.setText("Update to %s is available" % version),
+                    state.setText(f"Update to {version} is available"),
                     [updater.show()
                      for updater in [Updater(
                          version=version,

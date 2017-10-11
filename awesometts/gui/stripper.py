@@ -129,7 +129,7 @@ class BrowserStripper(Dialog):
         layout = QtWidgets.QVBoxLayout()
         for field in sorted({field
                              for note in self._notes
-                             for field in list(note.keys())}):
+                             for field in note.keys()}):
             checkbox = Checkbox(field)
             checkbox.atts_field_name = field
             layout.addWidget(checkbox)

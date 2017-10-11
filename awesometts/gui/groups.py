@@ -97,7 +97,7 @@ class Groups(Dialog):
 
         self._groups = {
             name: {'mode': group['mode'], 'presets': group['presets'][:]}
-            for name, group in list(self._addon.config['groups'].items())
+            for name, group in self._addon.config['groups'].items()
         }
         self._on_refresh()
 

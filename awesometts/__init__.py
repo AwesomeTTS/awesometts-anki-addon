@@ -721,7 +721,7 @@ def reviewer_hooks():
                                                            preset,
                                                            window),
                     )
-                for item in sorted(list(config['presets'].items()),
+                for item in sorted(config['presets'].items(),
                                    key=lambda item: item[0].lower()):
                     preset_glue(item)
 
@@ -740,7 +740,7 @@ def reviewer_hooks():
                                                                  group,
                                                                  window),
                     )
-                for item in sorted(list(config['groups'].items()),
+                for item in sorted(config['groups'].items(),
                                    key=lambda item: item[0].lower()):
                     group_glue(item)
 
@@ -861,7 +861,7 @@ def window_shortcuts():
 
     def on_sequence_change(new_config):
         """Update sequences on configuration changes."""
-        for key, sequence in list(sequences.items()):
+        for key, sequence in sequences.items():
             new_sequence = QKeySequence(new_config['launch_' + key] or None)
             sequence.swap(new_sequence)
 
@@ -872,5 +872,5 @@ def window_shortcuts():
             pass
 
     on_sequence_change(config)  # set config menu if created before we ran
-    config.bind(['launch_' + key for key in list(sequences.keys())],
+    config.bind(['launch_' + key for key in sequences.keys()],
                 on_sequence_change)

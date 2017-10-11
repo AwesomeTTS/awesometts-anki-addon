@@ -139,10 +139,12 @@ def substitution_json(rules):
 
     return (
         compact_json([
-            dict((key, value)
-                 for key, value
-                 in list(item.items())
-                 if key != 'compiled')
+            {
+                key: value
+                for key, value
+                in item.items()
+                if key != 'compiled'
+            }
             for item in rules
         ])
         if rules and isinstance(rules, list)

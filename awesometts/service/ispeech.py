@@ -100,7 +100,7 @@ class ISpeech(Service):
         """Provides access to voice only."""
 
         voice_lookup = {self.normalize(api_name): api_name
-                        for api_name in list(VOICES.keys())}
+                        for api_name in VOICES.keys()}
 
         def transform_voice(user_value):
             """Fixes whitespace and casing only."""
@@ -111,10 +111,9 @@ class ISpeech(Service):
         return [
             dict(key='voice',
                  label="Voice",
-                 values=[(api_name,
-                          "%s (%s %s)" % (api_name, gender, language))
+                 values=[(api_name, f"{api_name} ({gender} {language})")
                          for api_name, (language, gender)
-                         in sorted(list(VOICES.items()),
+                         in sorted(VOICES.items(),
                                    key=lambda item: (item[1][0],
                                                      item[1][1]))],
                  transform=transform_voice),

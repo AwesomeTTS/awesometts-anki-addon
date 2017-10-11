@@ -93,7 +93,7 @@ class Wiktionary(Service):
                 key='voice',
                 label="Voice",
                 values=[(code, name)
-                        for code, name in sorted(list(self._LANGUAGE_CODES.items()),
+                        for code, name in sorted(self._LANGUAGE_CODES.items(),
                                                  key=lambda x: x[1])],
                 transform=lambda x: x,
                 test_default='en'

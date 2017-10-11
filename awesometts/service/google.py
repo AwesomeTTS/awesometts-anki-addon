@@ -159,11 +159,11 @@ class Google(Service):
         ] + [
             # then add/override for full names (e.g. Spanish, Americas)
             (self.normalize(name), code)
-            for code, name in list(self._VOICE_CODES.items())
+            for code, name in self._VOICE_CODES.items()
         ] + [
             # then add/override for official voices (e.g. es-419)
             (self.normalize(code), code)
-            for code in list(self._VOICE_CODES.keys())
+            for code in self._VOICE_CODES.keys()
         ])
 
         def transform_voice(value):

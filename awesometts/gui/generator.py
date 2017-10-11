@@ -184,7 +184,7 @@ class BrowserGenerator(ServiceDialog):
         fields = sorted({
             field
             for note in self._notes
-            for field in list(note.keys())
+            for field in note.keys()
         })
 
         config = self._addon.config
@@ -232,16 +232,16 @@ class BrowserGenerator(ServiceDialog):
         eligible_notes = [
             note
             for note in self._notes
-            if source in list(note.keys()) and dest in list(note.keys())
+            if source in note and dest in note
         ]
 
         if not eligible_notes:
             self._alerts(
-                "Of the %d notes selected in the browser, none have both "
-                "'%s' and '%s' fields." % (len(self._notes), source, dest)
+                f"Of the {len(self._notes)} notes selected in the browser, "
+                f"none have both '{source}' and '{dest}' fields."
                 if len(self._notes) > 1
-                else "The selected note does not have both '%s' and '%s'"
-                     "fields." % (source, dest),
+                else f"The selected note does not have both "
+                     f"'{source}' and '{dest}' fields.",
                 self,
             )
             return
@@ -543,7 +543,7 @@ class BrowserGenerator(ServiceDialog):
                     "\n%s (%d time%s)" %
                     (message, count, "s" if count != 1 else "")
                     for message, count
-                    in list(proc['exceptions'].items())
+                    in proc['exceptions'].items()
                 ]
             else:
                 messages.append("The following problems were encountered:")
@@ -551,7 +551,7 @@ class BrowserGenerator(ServiceDialog):
                     "\n- %s (%d time%s)" %
                     (message, count, "s" if count != 1 else "")
                     for message, count
-                    in list(proc['exceptions'].items())
+                    in proc['exceptions'].items()
                 ]
 
         else:
@@ -586,6 +586,7 @@ class BrowserGenerator(ServiceDialog):
 
         source, dest, append, behavior = self._get_field_values()
 
+        # TODO: could be rewritten with {**, **} syntax
         return dict(
             list(super(BrowserGenerator, self)._get_all().items()) +
             [

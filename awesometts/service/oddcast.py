@@ -229,7 +229,7 @@ class Oddcast(Service):
     def options(self):
         """Provides access to voice only."""
 
-        voice_lookup = {self.normalize(key): key for key in list(VOICES.keys())}
+        voice_lookup = {self.normalize(key): key for key in VOICES.keys()}
 
         def transform_voice(value):
             """Fixes whitespace and casing errors only."""
@@ -254,7 +254,7 @@ class Oddcast(Service):
                                         if variant else LANGUAGES[lang_id]),
                     )
                     for key, (_, lang_id, _, variant, gend, name)
-                    in sorted(list(VOICES.items()), key=voice_sorter)
+                    in sorted(VOICES.items(), key=voice_sorter)
                 ],
                 transform=transform_voice,
             ),

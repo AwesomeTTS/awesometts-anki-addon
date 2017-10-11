@@ -139,9 +139,7 @@ class Updates(QtWidgets.QWidget):
 
         self._logger.error(
             "Exception (%s) during update check\n%s",
-
             str(exception),
-
             "\n".join("!!! " + line for line in stack_trace.split("\n"))
             if isinstance(stack_trace, str)
             else "Stack trace unavailable",

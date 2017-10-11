@@ -60,7 +60,7 @@ class Updater(Dialog):
         self._set_inhibited(kwargs.get('addon'))
 
         super(Updater, self).__init__(
-            title="AwesomeTTS v%s Available" % version,
+            title=f"AwesomeTTS v{version} Available",
             *args, **kwargs
         )
 
@@ -196,18 +196,19 @@ class Updater(Dialog):
                         **dlb.kwargs
                     )
 
-                    for name, value in list(dlb.attrs.items()):
+                    for name, value in dlb.attrs.items():
                         setattr(self, name, value)
 
             addon_dialog = OurGetAddons()
             addon_dialog.accept()  # see base, pylint:disable=E1101
 
         except Exception as exception:  # catch all, pylint:disable=W0703
+            msg = getattr(exception, 'message', default=str(exception))
             dlb.fail(
-                "Unable to automatically update AwesomeTTS (%s); you may "
-                "want to restart Anki and then update the add-on manually "
-                "from the Tools menu." %
-                (exception.message if hasattr(exception, 'message') else str(exception))
+                f"Unable to automatically update AwesomeTTS ({msg}); "
+                f"you may want to restart Anki and then update the "
+                f"add-on manually from the Tools menu."
+
             )
 
     def _remind_session(self):

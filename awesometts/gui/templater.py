@@ -249,7 +249,7 @@ class Templater(ServiceDialog):
 
         return dict(
             list(super(Templater, self)._get_all().items()) +
-            [('templater_' + name, value) for name, value in list(combos.items())] +
+            [('templater_' + name, value) for name, value in combos.items()] +
             (
                 [(
                     'templater_cloze',

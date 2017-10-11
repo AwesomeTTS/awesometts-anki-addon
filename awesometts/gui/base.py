@@ -673,7 +673,7 @@ class ServiceDialog(Dialog):
         if presets:
             label.hide()
             dropdown.show()
-            dropdown.addItems(sorted(list(presets.keys()),
+            dropdown.addItems(sorted(presets.keys(),
                                      key=lambda key: key.lower()))
             if select:
                 if select is True:
@@ -746,7 +746,7 @@ class ServiceDialog(Dialog):
 
                 if len(options) > 1 else
 
-                "Please enter a name for <strong>%s</strong>." % svc_name
+                f"Please enter a name for <strong>{svc_name}</strong>."
             ),
             default=(svc_name if not options.get('voice')
                      else "%s (%s)" % (svc_name, options['voice'])),
@@ -908,8 +908,8 @@ class ServiceDialog(Dialog):
         svc_id, values = self._get_service_values()
         return {
             'last_service': svc_id,
-            'last_options': dict(
-                list(self._addon.config['last_options'].items()) +
-                [(svc_id, values)]
-            ),
+            'last_options': {
+                **self._addon.config['last_options'],
+                **{svc_id: values}
+            },
         } if values else dict(last_service=svc_id)

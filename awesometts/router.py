@@ -622,7 +622,7 @@ class Router(object):
             key: value
             for key, value in [
                 (self._services.normalize(key), value)
-                for key, value in list(options.items())
+                for key, value in options.items()
             ]
             if key in svc_options_keys
         }

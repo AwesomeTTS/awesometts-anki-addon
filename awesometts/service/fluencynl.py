@@ -94,7 +94,7 @@ class FluencyNl(Service):
     def options(self):
         """Provides access to voice and speed."""
 
-        voice_lookup = {self.normalize(key): key for key in list(VOICE_MAP.keys())}
+        voice_lookup = {self.normalize(key): key for key in VOICE_MAP.keys()}
 
         def transform_voice(user_value):
             """Tries to figure out our short value from user input."""
