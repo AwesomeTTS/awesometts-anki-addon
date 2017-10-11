@@ -31,10 +31,11 @@ from PyQt5.QtCore import Qt
 from ..paths import ICONS
 
 __all__ = ['ICON', 'key_event_combo', 'key_combo_desc', 'Action', 'Button',
-           'Checkbox', 'Filter', 'HTML', 'Label', 'Note']
+           'Checkbox', 'Filter', 'HTML', 'Label', 'Note', 'HTMLButton']
 
 
-ICON = QtGui.QIcon(f'{ICONS}/speaker.png')
+ICON_FILE = f'{ICONS}/speaker.png'
+ICON = QtGui.QIcon(ICON_FILE)
 
 
 def key_event_combo(event):
@@ -94,26 +95,23 @@ def key_combo_desc(combo):
         if combo else "unassigned"
 
 
-class _Connector(object):  # used like a mixin, pylint:disable=R0903
+class _Connector:  # used like a mixin, pylint:disable=R0903
     """
     Handles deferring construction of the target class until it's
     needed and then keeping a reference to it as long as its triggering
     GUI element still exists.
     """
 
-    def __init__(self, signal_name, target, **kwargs):
+    def __init__(self, target, **kwargs):
         """
-        Store the target for future use and wire up the passed signal.
+        Store the target for future use.
         """
         super().__init__(**kwargs)
 
         self._target = target
         self._instance = None
 
-        signal = getattr(self, signal_name)
-        signal.connect(self._show)
-
-    def _show(self):
+    def _show(self, *args, **kwargs):
         """
         If the target has not yet been constructed, do so now, and then
         show it.
@@ -128,7 +126,48 @@ class _Connector(object):  # used like a mixin, pylint:disable=R0903
         self._instance.show()
 
 
-class Action(QtWidgets.QAction, _Connector):
+class _QtConnector(_Connector):
+    """
+    Connector for Qt Widgets.
+    """
+    def __init__(self, target, signal_name, **kwargs):
+        """
+        Wire up the passed signal.
+        """
+        super().__init__(target, **kwargs)
+
+        signal = getattr(self, signal_name)
+        signal.connect(self._show)
+
+
+class _HTMLConnector(_Connector):
+
+    @staticmethod
+    def generate_link_id(owner, base_id='btn'):
+
+        new_id = base_id
+
+        while True:
+            if new_id in owner._links:
+                new_id += 'X'
+            else:
+                return new_id
+
+    def __init__(self, target, owner, link_id=None, **kwargs):
+        """
+        Create a link for WebView-Python bridge,
+        placing it on owner's list of links.
+        """
+        super().__init__(target, **kwargs)
+
+        self.link_id = link_id or self.generate_link_id(owner)
+
+        # access to private, though that is the way proposed in Anki 2.1 docs:
+        # https://apps.ankiweb.net/docs/addons21.html#hooks
+        owner._links[self.link_id] = self._show
+
+
+class Action(QtWidgets.QAction, _QtConnector):
     """
     Provides a menu action to show a dialog when triggered.
     """
@@ -174,7 +213,16 @@ class Action(QtWidgets.QAction, _Connector):
             parent.addAction(self)
 
 
-class Button(QtWidgets.QPushButton, _Connector):
+class AbstractButton:
+
+    @staticmethod
+    def tooltip_text(tooltip, sequence=None):
+        if sequence:
+            return f"{tooltip} ({key_combo_desc(sequence)})"
+        return tooltip
+
+
+class Button(QtWidgets.QPushButton, _QtConnector, AbstractButton):
     """
     Provides a button to show a dialog when clicked.
     """
@@ -186,9 +234,7 @@ class Button(QtWidgets.QPushButton, _Connector):
         Note that buttons that have text get one set of styling
         different from ones without text.
         """
-
-        QtWidgets.QPushButton.__init__(self, ICON, text)
-        _Connector.__init__(self, self.clicked, target)
+        super().__init__(ICON, text, signal_name='clicked', target=target)
 
         if text:
             self.setIconSize(QtCore.QSize(15, 15))
@@ -199,11 +245,35 @@ class Button(QtWidgets.QPushButton, _Connector):
             self.setFocusPolicy(Qt.NoFocus)
 
         self.setShortcut(sequence)
-        self.setToolTip("%s (%s)" % (tooltip, key_combo_desc(sequence))
-                        if sequence else tooltip)
+        self.setToolTip(self.tooltip_text(tooltip, sequence))
 
         if style:
             self.setStyle(style)
+
+
+class HTMLButton(AbstractButton, _HTMLConnector):
+
+    def __init__(self, buttons, owner, target, tooltip, sequence, text=None, link_id=None):
+        """
+        Initializes the button and wires its 'clicked' event.
+
+        Note that HTMLButton does not connect key-sequence as a shortcut
+        to target action, as such an option is not exposed in Anki API.
+        """
+
+        _HTMLConnector.__init__(self, target, owner, link_id)
+        self.buttons = buttons
+
+        # access to private, though that is the way proposed in Anki 2.1 docs:
+        # https://apps.ankiweb.net/docs/addons21.html#hooks
+        self.html = owner._addButton(
+            ICON_FILE,
+            self.link_id,
+            self.tooltip_text(tooltip, sequence),
+            label=text
+        )
+
+        self.buttons.append(self.html)
 
 
 class Checkbox(QtWidgets.QCheckBox):

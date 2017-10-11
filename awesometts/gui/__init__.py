@@ -23,6 +23,7 @@ GUI classes for AwesomeTTS
 from .common import (
     Action,
     Button,
+    HTMLButton,
     Filter,
     ICON,
 )
@@ -46,6 +47,7 @@ __all__ = [
     # common
     'Action',
     'Button',
+    'HTMLButton',
     'Filter',
     'ICON',
 

@@ -560,25 +560,38 @@ def editor_button():
 
     anki.hooks.addHook(
         'setupEditorButtons',
-        lambda editor: editor.iconsBox.addWidget(
-            gui.Button(
-                tooltip="Record and insert an audio clip here w/ AwesomeTTS",
-                sequence=sequences['editor_generator'],
-                target=Bundle(
-                    constructor=gui.EditorGenerator,
-                    args=(),
-                    kwargs=dict(editor=editor,
-                                addon=addon,
-                                alerts=aqt.utils.showWarning,
-                                ask=aqt.utils.getText,
-                                parent=editor.parentWindow),
-                ),
-                style=editor.plastiqueStyle,
-            ),
-        ),
+        lambda buttons, editor: gui.HTMLButton(
+            buttons, editor,
+            link_id='awesometts_btn',
+            tooltip="Record and insert an audio clip here w/ AwesomeTTS",
+            sequence=sequences['editor_generator'],
+            target=Bundle(
+                constructor=gui.EditorGenerator,
+                args=(),
+                kwargs=dict(editor=editor,
+                            addon=addon,
+                            alerts=aqt.utils.showWarning,
+                            ask=aqt.utils.getText,
+                            parent=editor.parentWindow),
+            )
+        ).buttons
     )
 
-    # Editor buttons are now in the webview, not sure how (and if)
+    anki.hooks.addHook(
+        'setupEditorShortcuts',
+        lambda shortcuts, editor: shortcuts.append(
+            (
+                sequences['editor_generator'].toString(),
+                # TODO: how to wire to target now? Ideally it would be:
+                editor._links.get('awesometts_btn', lambda: None)
+                # but as for now, the default is always used, as shortcuts hook
+                # fires before editor buttons. There is a PR pending to fix this:
+                # https://github.com/dae/anki/pull/213
+            )
+        )
+    )
+
+    # TODO: Editor buttons are now in the WebView, not sure how (and if)
     # we should implement muzzling. Please see:
     # https://github.com/dae/anki/commit/a001553f66efe75e660eb0702cd29a9d62503fc4
     """
