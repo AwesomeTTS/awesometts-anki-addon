@@ -135,7 +135,7 @@ class Router(object):
         return sorted([
             service['name']
             for service
-            in list(self._services.lookup.values())
+            in self._services.lookup.values()
             if trait in service['traits']
         ], key=lambda name: name.lower())
 
@@ -179,12 +179,12 @@ class Router(object):
         if not self._services.avail:
             self._logger.debug("Building the list of services...")
 
-            for service in list(self._services.lookup.values()):
+            for service in self._services.lookup.values():
                 self._load_service(service)
 
             self._services.avail = sorted([
                 (svc_id, service['name'])
-                for svc_id, service in list(self._services.lookup.items())
+                for svc_id, service in self._services.lookup.items()
                 if service['instance']
             ], key=lambda service: service[1].lower())
 
@@ -234,7 +234,7 @@ class Router(object):
         """
 
         now = time()
-        for path, (when, _) in list(self._failures.items()):
+        for path, (when, _) in self._failures.items():
             if now - when > FAILURE_CACHE_SECS:
                 del self._failures[path]
 
@@ -471,7 +471,7 @@ class Router(object):
                         pass
 
                     try:
-                        for other_key in list(note.keys()):
+                        for other_key in note.keys():
                             if other_key.strip().lower() == lower:
                                 return note[other_key]  # fuzzy field match
                     except:  # ignore error, pylint:disable=bare-except
@@ -981,7 +981,7 @@ class _Pool(QtWidgets.QWidget):
 
         thread_ids = [
             thread_id
-            for thread_id, thread in list(self._threads.items())
+            for thread_id, thread in self._threads.items()
             if thread['done'] and thread['worker'].isFinished()
         ]
 
