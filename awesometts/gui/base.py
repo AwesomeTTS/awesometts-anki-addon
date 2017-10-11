@@ -204,7 +204,7 @@ class Dialog(QtWidgets.QDialog):
 
         url = '/'.join([self._addon.web, path])
         self._addon.logger.debug("Launching %s", url)
-        QtWidgets.QDesktopServices.openUrl(QtCore.QUrl(url))
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
 
 
 class ServiceDialog(Dialog):
@@ -818,7 +818,7 @@ class ServiceDialog(Dialog):
             okay=self._addon.player.preview,
             fail=lambda exception: self._alerts(
                 "Cannot preview the input phrase with these settings.\n\n%s" %
-                exception.message,
+                str(exception),
                 self,
             ),
             then=text_input.setFocus,
