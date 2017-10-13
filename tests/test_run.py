@@ -1,9 +1,7 @@
 from urllib.error import HTTPError
 
-from anki_testing import anki_running
+from .anki_testing import anki_running
 from pytest import raises
-
-from awesometts.updates import _Worker
 
 
 def test_addon_initialization():

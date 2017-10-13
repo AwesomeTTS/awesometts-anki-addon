@@ -98,7 +98,7 @@ class Abair(Service):
                 ),
             ),
             method='POST',
-        )
+        ).decode()
 
         match = RE_FILENAME.search(payload)
         if not match:
