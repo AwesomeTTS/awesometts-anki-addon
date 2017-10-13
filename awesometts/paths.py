@@ -45,7 +45,7 @@ BLANK = os.path.join(ADDON, 'blank.mp3')
 
 CACHE = os.path.join(ADDON, '.cache')
 
-ICONS = os.path.join(ADDON, 'icons')
+ICONS = os.path.join(ADDON, 'gui/icons')
 
 os.makedirs(CACHE, exist_ok=True)
 
