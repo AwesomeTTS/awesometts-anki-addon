@@ -21,7 +21,6 @@ Path and directory initialization
 """
 
 import os
-import sys
 import tempfile
 
 __all__ = [
@@ -31,22 +30,24 @@ __all__ = [
     'CONFIG',
     'LOG',
     'TEMP',
+    'ICONS'
 ]
 
 
 # n.b. When determining the code directory, abspath() is needed since
 # the __file__ constant is not a full path by itself.
 
-ADDON = os.path.dirname(os.path.abspath(__file__)) \
-    .decode(sys.getfilesystemencoding())  # sqlite (and others?) needs unicode
+ADDON = os.path.dirname(os.path.abspath(__file__))
 
 ADDON_IS_LINKED = os.path.islink(ADDON)
 
 BLANK = os.path.join(ADDON, 'blank.mp3')
 
 CACHE = os.path.join(ADDON, '.cache')
-if not os.path.isdir(CACHE):
-    os.mkdir(CACHE)
+
+ICONS = os.path.join(ADDON, 'gui/icons')
+
+os.makedirs(CACHE, exist_ok=True)
 
 CONFIG = os.path.join(ADDON, 'config.db')
 

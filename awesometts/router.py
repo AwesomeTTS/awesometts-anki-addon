@@ -24,19 +24,17 @@ import os
 import os.path
 from random import shuffle
 import re
-from httplib import IncompleteRead
+from http.client import IncompleteRead
 from socket import error as SocketError
 from time import time
-from urllib2 import URLError
+from urllib.error import URLError
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 from .service import Trait as BaseTrait
 
 __all__ = ['Router']
 
-
-_SIGNAL = QtCore.SIGNAL('awesomeTtsThreadDone')
 
 FAILURE_CACHE_SECS = 3600  # ignore/dump failures from cache after one hour
 
@@ -154,7 +152,7 @@ class Router(object):
         if svc_id in self._services.aliases:
             svc_id = self._services.aliases[svc_id]
 
-        if isinstance(trait, basestring):
+        if isinstance(trait, str):
             trait = getattr(BaseTrait, trait.upper())
 
         try:
@@ -334,7 +332,7 @@ class Router(object):
             try_next()
 
     def __call__(self, svc_id, text, options, callbacks,
-                 want_human=False, note=None):
+                 want_human=False, note=None, async=True):
         """
         Given the service ID and associated options, pass the text into
         the service for processing.
@@ -379,6 +377,9 @@ class Router(object):
         how the caller wants the filename in the path to be formatted.
         Additionally, note may be passed to provide mustache values for
         the given template string.
+
+        For synchronous testing (without the use of main event loop and
+        process spawning) async=False can be used.
         """
 
         self._call_assert_callbacks(callbacks)
@@ -482,7 +483,7 @@ class Router(object):
             filename = RE_UNSAFE.sub('', filename)
             filename = RE_WHITESPACE.sub(' ', filename).strip()
             if not filename or filename.lower() in WINDOWS_RESERVED:
-                filename = u'AwesomeTTS Audio'
+                filename = 'AwesomeTTS Audio'
             else:
                 filename = filename[0:90]  # accommodate NTFS path limits
             filename = 'ATTS ' + filename + '.mp3'
@@ -552,12 +553,23 @@ class Router(object):
                 if 'then' in callbacks:
                     callbacks['then']()
 
-            def do_spawn():
-                """Call if ready to start a thread to run the service."""
-                self._pool.spawn(
-                    task=lambda: service['instance'].run(text, options, path),
-                    callback=completion_callback,
-                )
+            def task():
+                service['instance'].run(text, options, path)
+
+            if async:
+                def do_spawn():
+                    """Call if ready to start a thread to run the service."""
+                    self._pool.spawn(
+                        task=task,
+                        callback=completion_callback,
+                    )
+            else:
+                callback_exception = None
+                try:
+                    task()
+                except Exception as exception:
+                    callback_exception = exception
+                completion_callback(callback_exception)
 
             if hasattr(service['instance'], 'prerun'):
                 def prerun_ok(result):
@@ -853,7 +865,7 @@ class Router(object):
             ';'.join(
                 '='.join([
                     key,
-                    value if isinstance(value, basestring) else str(value),
+                    value if isinstance(value, str) else str(value),
                 ])
                 for key, value
                 in sorted(options.items())
@@ -863,7 +875,7 @@ class Router(object):
         from hashlib import sha1
 
         hex_digest = sha1(
-            hash_input.encode('utf-8') if isinstance(hash_input, unicode)
+            hash_input.encode('utf-8') if isinstance(hash_input, str)
             else hash_input
         ).hexdigest().lower()
 
@@ -880,7 +892,7 @@ class Router(object):
         )
 
 
-class _Pool(QtGui.QWidget):
+class _Pool(QtWidgets.QWidget):
     """
     Managers a pool of worker threads to keep the UI responsive.
     """
@@ -917,7 +929,8 @@ class _Pool(QtGui.QWidget):
             'worker': _Worker(self._current_id, task),
         }
 
-        self.connect(thread['worker'], _SIGNAL, self._on_worker_signal)
+        thread['worker'].tts_thread_done.connect(self._on_worker_signal)
+        thread['worker'].tts_thread_raised.connect(self._on_worker_signal)
         thread['worker'].finished.connect(self._on_worker_finished)
         thread['worker'].start()
 
@@ -934,8 +947,9 @@ class _Pool(QtGui.QWidget):
 
         if exception:
             if not (hasattr(exception, 'message') and
-                    isinstance(exception.message, basestring) and
+                    isinstance(exception.message, str) and
                     exception.message):
+
                 exception.message = format(exception) or \
                     "No additional details available"
 
@@ -945,7 +959,7 @@ class _Pool(QtGui.QWidget):
                 thread_id, exception.message,
 
                 _prefixed(stack_trace)
-                if isinstance(stack_trace, basestring)
+                if isinstance(stack_trace, str)
                 else "Stack trace unavailable",
             )
 
@@ -988,6 +1002,9 @@ class _Worker(QtCore.QThread):
     Generic worker for running processes in the background.
     """
 
+    tts_thread_done = QtCore.pyqtSignal(int, name='awesomeTtsThreadDone')
+    tts_thread_raised = QtCore.pyqtSignal(int, Exception, str, name='awesomeTtsThreadRaised')
+
     __slots__ = [
         '_thread_id',  # my thread ID; used to communicate back to main thread
         '_task',       # the task I will need to call when run
@@ -1013,7 +1030,7 @@ class _Worker(QtCore.QThread):
             self._task()
         except Exception as exception:  # catch all, pylint:disable=W0703
             from traceback import format_exc
-            self.emit(_SIGNAL, self._id, exception, format_exc())
+            self.tts_thread_raised.emit(self._id, exception, format_exc())
             return
 
-        self.emit(_SIGNAL, self._id)
+        self.tts_thread_done.emit(self._id)

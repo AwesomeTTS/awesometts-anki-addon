@@ -165,7 +165,7 @@ class ImTranslator(Service):
                             require=dict(mime='text/html', size=256),
                             method='POST',
                             custom_headers={'Referer': URL}
-                        )
+                        ).decode()
 
                         result = self._RE_SWF.search(result)
                         if not result or not result.group():

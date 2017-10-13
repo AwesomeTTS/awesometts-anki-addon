@@ -21,9 +21,9 @@ Basic manipulation and sanitization of input text
 """
 
 import re
-from StringIO import StringIO
+from io import StringIO
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 import anki
 
 __all__ = ['RE_CLOZE_BRACED', 'RE_CLOZE_RENDERED', 'RE_ELLIPSES',
@@ -81,7 +81,7 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
                 self._log(applied + ["early exit"], '')
                 return ''
 
-            if isinstance(rule, basestring):  # always run these rules
+            if isinstance(rule, str):  # always run these rules
                 applied.append(rule)
                 text = getattr(self, '_rule_' + rule)(text)
 
@@ -211,7 +211,7 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
 
         return ' ... '.join(
             ''.join(
-                unicode(content)
+                str(content)
                 for content in tag.contents
             )
             for tag in revealed_tags
@@ -285,7 +285,7 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
         while hints:
             hints.pop().extract()
 
-        return unicode(soup)
+        return str(soup)
 
     def _rule_hint_links(self, text):
         """

@@ -35,10 +35,10 @@ __all__ = ['Service']
 DEFAULT_UA = 'Mozilla/5.0'
 DEFAULT_TIMEOUT = 15
 
-PADDING = '\0' * 2**11
+PADDING = b'\0' * 2**11
 
 
-class Service(object):
+class Service(object, metaclass=abc.ABCMeta):
     """
     Represents a TTS service, providing an interface for the framework
     to interact with the service (initialization, description, options,
@@ -58,8 +58,6 @@ class Service(object):
     particular set of arguments (because the media files it produces are
     retained on the file system).
     """
-
-    __metaclass__ = abc.ABCMeta
 
     class TinyDownloadError(ValueError):
         """Raises when a download is too small."""
@@ -96,22 +94,22 @@ class Service(object):
 
     # work-in-progress
     APPROX_MAPPER = {
-        u'\u00c1': 'A', u'\u00c4': 'A', u'\u00c5': 'A', u'\u00c9': 'E',
-        u'\u00cb': 'E', u'\u00cd': 'I', u'\u00d1': 'N', u'\u00d3': 'O',
-        u'\u00d6': 'O', u'\u00da': 'U', u'\u00dc': 'U', u'\u00df': 'ss',
-        u'\u00e1': 'a', u'\u00e4': 'a', u'\u00e5': 'a', u'\u00e9': 'e',
-        u'\u00eb': 'e', u'\u00ed': 'i', u'\u00cf': 'I', u'\u00ef': 'i',
-        u'\u0152': 'OE', u'\u0153': 'oe', u'\u00d8': 'O', u'\u00f8': 'o',
-        u'\u00c7': 'C', u'\u00e7': 'c', u'\u00f1': 'n', u'\u00f3': 'o',
-        u'\u00f6': 'o', u'\u00fa': 'u', u'\u00fc': 'u', u'\u2018': "'",
-        u'\u2019': "'", u'\u201c': '"', u'\u201d': '"', u'\u212b': 'A',
+        '\u00c1': 'A', '\u00c4': 'A', '\u00c5': 'A', '\u00c9': 'E',
+        '\u00cb': 'E', '\u00cd': 'I', '\u00d1': 'N', '\u00d3': 'O',
+        '\u00d6': 'O', '\u00da': 'U', '\u00dc': 'U', '\u00df': 'ss',
+        '\u00e1': 'a', '\u00e4': 'a', '\u00e5': 'a', '\u00e9': 'e',
+        '\u00eb': 'e', '\u00ed': 'i', '\u00cf': 'I', '\u00ef': 'i',
+        '\u0152': 'OE', '\u0153': 'oe', '\u00d8': 'O', '\u00f8': 'o',
+        '\u00c7': 'C', '\u00e7': 'c', '\u00f1': 'n', '\u00f3': 'o',
+        '\u00f6': 'o', '\u00fa': 'u', '\u00fc': 'u', '\u2018': "'",
+        '\u2019': "'", '\u201c': '"', '\u201d': '"', '\u212b': 'A',
     }
 
     SPLIT_PRIORITY = [
-        ['.', '?', '!', u'\u3002'],
-        [',', ';', ':', u'\u3001'],
-        [' ', u'\u3000'],
-        ['-', u'\u2027', u'\u30fb'],
+        ['.', '?', '!', '\u3002'],
+        [',', ';', ':', '\u3001'],
+        [' ', '\u3000'],
+        ['-', '\u2027', '\u30fb'],
     ]
 
     SPLIT_CHARACTERS = ''.join(
@@ -322,7 +320,7 @@ class Service(object):
         if not returned:
             raise EnvironmentError("Call returned no output")
 
-        if not isinstance(returned, unicode):
+        if not isinstance(returned, str):
             for encoding in self.CLI_DECODINGS:
                 try:
                     returned = returned.decode(encoding)
@@ -424,7 +422,7 @@ class Service(object):
         """
 
         args = [
-            arg if isinstance(arg, basestring) else str(arg)
+            arg if isinstance(arg, str) else str(arg)
             for arg in self._flatten(args)
         ]
 
@@ -449,7 +447,7 @@ class Service(object):
         given path.
         """
 
-        args = [arg if isinstance(arg, basestring) else str(arg)
+        args = [arg if isinstance(arg, str) else str(arg)
                 for arg in args]
 
         self._logger.debug("Piping %s into %s binary with %s then onto %s",
@@ -468,7 +466,7 @@ class Service(object):
         the session has ended.
         """
 
-        args = [arg if isinstance(arg, basestring) else str(arg)
+        args = [arg if isinstance(arg, str) else str(arg)
                 for arg in self._flatten(args)]
 
         self._logger.debug("Spinning up %s binary w/ %s to run in background",
@@ -485,12 +483,17 @@ class Service(object):
 
         self._logger.debug("GET %s for headers", url)
         self._netops += 1
-
-        from urllib2 import urlopen, Request
+        from urllib.request import urlopen, Request
         return urlopen(
             Request(url=url, headers={'User-Agent': DEFAULT_UA}),
             timeout=DEFAULT_TIMEOUT,
         ).headers
+
+    def parse_mime_type(self, raw_mime):
+        raw_mime = raw_mime.replace('/x-', '/')
+        if 'charset' in raw_mime:
+            raw_mime = raw_mime.split(';')[0]
+        return raw_mime
 
     def net_stream(self, targets, require=None, method='GET',
                    awesome_ua=False, add_padding=False,
@@ -518,11 +521,12 @@ class Service(object):
         """
 
         assert method in ['GET', 'POST'], "method must be GET or POST"
-        from urllib2 import urlopen, Request, quote
+        from urllib.request import urlopen, Request
+        from urllib.parse import quote
 
         targets = targets if isinstance(targets, list) else [targets]
         targets = [
-            (target, None) if isinstance(target, basestring)
+            (target, None) if isinstance(target, str)
             else (
                 target[0],
                 '&'.join(
@@ -533,13 +537,11 @@ class Service(object):
                                                    key in custom_quoter)
                             else quote
                         )(
-                            val.encode('utf-8') if isinstance(val, unicode)
-                            else val if isinstance(val, str)
-                            else str(val),
+                            str(val),
                             safe='',
                         ),
                     ])
-                    for key, val in target[1].items()
+                    for key, val in list(target[1].items())
                 ),
             )
             for target in targets
@@ -568,7 +570,7 @@ class Service(object):
                          else url),
                     headers=headers,
                 ),
-                data=params if params and method == 'POST' else None,
+                data=params.encode() if params and method == 'POST' else None,
                 timeout=DEFAULT_TIMEOUT,
             )
 
@@ -583,18 +585,20 @@ class Service(object):
                 try:
                     value_error.payload = response.read()
                     response.close()
-                except StandardError:
+                except Exception:
                     pass
                 raise value_error
 
-            if 'mime' in require and \
-                    require['mime'] != format(response.info().
-                                              gettype()).replace('/x-', '/'):
+            got_mime = response.getheader('Content-Type')
+            simplified_mime = self.parse_mime_type(got_mime)
+
+            if 'mime' in require and require['mime'] != simplified_mime:
+
                 value_error = ValueError(
-                    "Request got %s Content-Type for %s; wanted %s" %
-                    (response.info().gettype(), desc, require['mime'])
+                    f"Request got {got_mime} Content-Type for {desc};"
+                    f" wanted {require['mime']}"
                 )
-                value_error.got_mime = response.info().gettype()
+                value_error.got_mime = got_mime
                 value_error.wanted_mime = require['mime']
                 raise value_error
 
@@ -611,7 +615,8 @@ class Service(object):
 
         if add_padding:
             payloads.append(PADDING)
-        return ''.join(payloads)
+
+        return b''.join(payloads)
 
     def net_download(self, path, *args, **kwargs):
         """
@@ -754,7 +759,7 @@ class Service(object):
             key,
         )
 
-        import _winreg as wr  # for Windows only, pylint: disable=F0401
+        import winreg as wr  # for Windows only, pylint: disable=F0401
         with wr.ConnectRegistry(None, wr.HKEY_LOCAL_MACHINE) as hklm:
             with wr.OpenKey(hklm, key) as subkey:
                 return wr.QueryValueEx(subkey, name)[0]
@@ -765,10 +770,12 @@ class Service(object):
         stripped off.
         """
 
-        return ''.join(self.APPROX_MAPPER.get(char, char)
-                       for char in text).encode('ascii', 'ignore') \
-               if isinstance(text, unicode) \
-               else text
+        return (
+            ''.join(
+                self.APPROX_MAPPER.get(char, char)
+                for char in text
+            ).encode('ascii', 'ignore').decode()
+        )
 
     def util_merge(self, input_files, output_file):
         """
@@ -855,7 +862,7 @@ class Service(object):
 # Reinitialize the CLI_LAME, CLI_SI, IS_WINDOWS, and IS_MACOSX constants
 # on the base class, if necessary given the running operating system.
 
-if subprocess.mswindows:
+if sys.platform == 'win32':
     Service.CLI_DECODINGS.append('mbcs')
     Service.CLI_LAME = 'lame.exe'
     Service.CLI_MPLAYER = 'mplayer.exe'

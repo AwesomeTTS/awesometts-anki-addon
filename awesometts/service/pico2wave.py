@@ -75,7 +75,7 @@ class Pico2Wave(Service):
                     self._binary = binary
                     break
 
-            except StandardError:
+            except Exception:
                 continue
 
         else:

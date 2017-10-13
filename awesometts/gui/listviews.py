@@ -24,7 +24,7 @@ substitution rules.
 """
 
 import re
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 from .common import Checkbox, HTML
 
 __all__ = ['GroupListView', 'SubListView']
@@ -32,7 +32,7 @@ __all__ = ['GroupListView', 'SubListView']
 # all methods might need 'self' in the future, pylint:disable=R0201
 
 
-class _ListView(QtGui.QListView):
+class _ListView(QtWidgets.QListView):
     """Abstract list view for use throughout AwesomeTTS."""
 
     __slots__ = ['_add_btn', '_up_btn', '_down_btn', '_del_btn']
@@ -142,7 +142,7 @@ class GroupListView(_ListView):
         )
 
 
-class _Delegate(QtGui.QItemDelegate):
+class _Delegate(QtWidgets.QItemDelegate):
     """Abstract delegate view for use throughout AwesomeTTS."""
 
     def sizeHint(self,            # pylint:disable=invalid-name
@@ -166,24 +166,24 @@ class _SubRuleDelegate(_Delegate):
                      option, index):  # pylint:disable=W0613
         """Return a panel to change rule values."""
 
-        edits = QtGui.QHBoxLayout()
-        edits.addWidget(QtGui.QLineEdit())
+        edits = QtWidgets.QHBoxLayout()
+        edits.addWidget(QtWidgets.QLineEdit())
         edits.addWidget(HTML("&nbsp;<strong>&rarr;</strong>&nbsp;"))
-        edits.addWidget(QtGui.QLineEdit())
+        edits.addWidget(QtWidgets.QLineEdit())
 
-        checkboxes = QtGui.QHBoxLayout()
+        checkboxes = QtWidgets.QHBoxLayout()
         for label in ["regex", "case-insensitive", "unicode"]:
             checkboxes.addStretch()
             checkboxes.addWidget(Checkbox(label))
         checkboxes.addStretch()
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addStretch()
         layout.addLayout(edits)
         layout.addLayout(checkboxes)
         layout.addStretch()
 
-        panel = QtGui.QWidget(parent)
+        panel = QtWidgets.QWidget(parent)
         panel.setObjectName('editor')
         panel.setAutoFillBackground(True)
         panel.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -194,7 +194,7 @@ class _SubRuleDelegate(_Delegate):
             layout.setMargin(0)
             layout.setSpacing(0)
 
-        for widget in [panel] + panel.findChildren(QtGui.QWidget):
+        for widget in [panel] + panel.findChildren(QtWidgets.QWidget):
             widget.setContentsMargins(0, 0, 0, 0)
 
         return panel
@@ -204,7 +204,7 @@ class _SubRuleDelegate(_Delegate):
 
         rule = index.data(QtCore.Qt.EditRole)
 
-        edits = editor.findChildren(QtGui.QLineEdit)
+        edits = editor.findChildren(QtWidgets.QLineEdit)
         edits[0].setText(rule['input'])
         edits[1].setText(rule['replace'])
 
@@ -218,7 +218,7 @@ class _SubRuleDelegate(_Delegate):
     def setModelData(self, editor, model, index):  # pylint:disable=C0103
         """Update the underlying model after edit."""
 
-        edits = editor.findChildren(QtGui.QLineEdit)
+        edits = editor.findChildren(QtWidgets.QLineEdit)
         checkboxes = editor.findChildren(Checkbox)
         obj = {'input': edits[0].text(), 'compiled': None,
                'replace': edits[1].text(), 'regex': checkboxes[0].isChecked(),
@@ -276,14 +276,14 @@ class _GroupPresetDelegate(_Delegate):
                      option, index):  # pylint:disable=W0613
         """Return a panel to change selected preset."""
 
-        dropdown = QtGui.QComboBox()
+        dropdown = QtWidgets.QComboBox()
         dropdown.addItem("(select preset)")
         dropdown.addItems(self._presets)
 
-        hor = QtGui.QHBoxLayout()
+        hor = QtWidgets.QHBoxLayout()
         hor.addWidget(dropdown)
 
-        panel = QtGui.QWidget(parent)
+        panel = QtWidgets.QWidget(parent)
         panel.setObjectName('editor')
         panel.setAutoFillBackground(True)
         panel.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -293,7 +293,7 @@ class _GroupPresetDelegate(_Delegate):
     def setEditorData(self, editor, index):  # pylint:disable=C0103
         """Changes the preset in the dropdown."""
 
-        dropdown = editor.findChild(QtGui.QComboBox)
+        dropdown = editor.findChild(QtWidgets.QComboBox)
         value = index.data(QtCore.Qt.EditRole)
         dropdown.setCurrentIndex(dropdown.findText(value) if value else 0)
 
@@ -302,7 +302,7 @@ class _GroupPresetDelegate(_Delegate):
     def setModelData(self, editor, model, index):  # pylint:disable=C0103
         """Update the underlying model after edit."""
 
-        dropdown = editor.findChild(QtGui.QComboBox)
+        dropdown = editor.findChild(QtWidgets.QComboBox)
         model.setData(
             index,
             dropdown.currentText() if dropdown.currentIndex() > 0 else ""

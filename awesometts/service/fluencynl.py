@@ -20,7 +20,7 @@
 Service implementation for Fluency.nl text-to-speech demo
 """
 
-from urllib2 import quote
+from urllib.parse import quote
 
 from .base import Service
 from .common import Trait
@@ -36,7 +36,7 @@ VOICES = [
     ('rob', 'Rob', "Rob (male)"),
     ('janneke', 'Janneke', "Janneke (female)"),
     ('miriam', 'Miriam', "Miriam (female)"),
-    ('david', 'Dav%EDd%20%2813%20jaar%29', u"Davíd (male, 13)"),
+    ('david', 'Dav%EDd%20%2813%20jaar%29', "Davíd (male, 13)"),
     ('giovanni', 'Giovanni%20%2815%20jaar%29', "Giovanni (male, 15)"),
     ('koen', 'Koen%20%2814%20jaar%29', "Koen (male, 14)"),
     ('fiona', 'Fiona%20%2816%20jaar%29', "Fiona (female, 16)"),
@@ -71,7 +71,7 @@ def _quoter(user_string):
     cases
     """
 
-    return quote(user_string.encode('latin-1', 'ignore'))
+    return quote(user_string.encode('latin-1', 'ignore').decode())
 
 
 class FluencyNl(Service):
@@ -99,7 +99,7 @@ class FluencyNl(Service):
         def transform_voice(user_value):
             """Tries to figure out our short value from user input."""
 
-            normalized_value = self.normalize(user_value.replace(u'í', 'i'))
+            normalized_value = self.normalize(user_value.replace('í', 'i'))
             if normalized_value in voice_lookup:
                 return voice_lookup[normalized_value]
 

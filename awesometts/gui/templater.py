@@ -20,7 +20,7 @@
 Template generation dialog
 """
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 
 from .base import ServiceDialog
 from .common import Checkbox, Label, Note
@@ -91,7 +91,7 @@ class Templater(ServiceDialog):
         """
 
         widgets = {}
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
 
         for row, label, name, options in [
                 (0, "Field:", 'field', [
@@ -150,7 +150,7 @@ class Templater(ServiceDialog):
         Returns a dropdown with the given list of options.
         """
 
-        dropdown = QtGui.QComboBox()
+        dropdown = QtWidgets.QComboBox()
         dropdown.setObjectName(name)
         for value, label in options:
             dropdown.addItem(label, value)
@@ -163,7 +163,7 @@ class Templater(ServiceDialog):
         """
 
         buttons = super(Templater, self)._ui_buttons()
-        buttons.findChild(QtGui.QAbstractButton, 'okay').setText("&Insert")
+        buttons.findChild(QtWidgets.QAbstractButton, 'okay').setText("&Insert")
 
         return buttons
 
@@ -178,7 +178,7 @@ class Templater(ServiceDialog):
         super(Templater, self).show(*args, **kwargs)
 
         for name in ['hide', 'target', 'field']:
-            dropdown = self.findChild(QtGui.QComboBox, name)
+            dropdown = self.findChild(QtWidgets.QComboBox, name)
             dropdown.setCurrentIndex(max(
                 dropdown.findData(self._addon.config['templater_' + name]), 0
             ))
@@ -200,7 +200,7 @@ class Templater(ServiceDialog):
         now = self._get_all()
         tform = self._card_layout.tab['tform']
         target = getattr(tform, now['templater_target'])
-        presets = self.findChild(QtGui.QComboBox, 'presets_dropdown')
+        presets = self.findChild(QtWidgets.QComboBox, 'presets_dropdown')
 
         last_service = now['last_service']
         attrs = ([('group', last_service[6:])]
@@ -211,7 +211,7 @@ class Templater(ServiceDialog):
                  sorted(now['last_options'][last_service].items()))
         if now['templater_hide'] == 'inline':
             attrs.append(('style', 'display: none'))
-        attrs = ' '.join('%s="%s"' % (key, escape(unicode(value), quote=True))
+        attrs = ' '.join('%s="%s"' % (key, escape(str(value), quote=True))
                          for key, value in attrs)
 
         cloze = now.get('templater_cloze')
@@ -244,11 +244,11 @@ class Templater(ServiceDialog):
         combos = {
             name: widget.itemData(widget.currentIndex())
             for name in ['field', 'hide', 'target']
-            for widget in [self.findChild(QtGui.QComboBox, name)]
+            for widget in [self.findChild(QtWidgets.QComboBox, name)]
         }
 
         return dict(
-            super(Templater, self)._get_all().items() +
+            list(super(Templater, self)._get_all().items()) +
             [('templater_' + name, value) for name, value in combos.items()] +
             (
                 [(

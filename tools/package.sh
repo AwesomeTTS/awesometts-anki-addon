@@ -61,8 +61,9 @@ zip -9 "$target" \
     awesometts/LICENSE.txt \
     awesometts/*.py \
     awesometts/gui/*.py \
+    awesometts/icons/*.png \
     awesometts/service/*.py \
     awesometts/service/*.js \
-    AwesomeTTS.py
+    __init__.py
 
 cd "$oldPwd" || exit 1

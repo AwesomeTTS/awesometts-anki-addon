@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+addon_id="301952613"
+
 set -e
 
 if [ -z "$1" ]
@@ -23,18 +25,18 @@ then
     echo 'Please specify your Anki addons directory.' 1>&2
     echo 1>&2
     echo "    Usage: $0 <target>" 1>&2
-    echo "     e.g.: $0 ~/Anki/addons" 1>&2
+    echo "     e.g.: $0 ~/.local/share/Anki2/addons21" 1>&2
     exit 1
 fi
 
 target=${1%/}
 
 case $target in
-    */addons)
+    */addons21)
         ;;
 
     *)
-        echo 'Expected target path to end in "/addons".' 1>&2
+        echo 'Expected target path to end in "/addons21".' 1>&2
         exit 1
 esac
 
@@ -52,23 +54,25 @@ then
     exit 1
 fi
 
-if [ -f "$target/awesometts/config.db" ]
+mkdir -p "$target/$addon_id"
+
+if [ -f "$target/$addon_id/awesometts/config.db" ]
 then
     echo 'Saving configuration...'
     saveConf=$(mktemp /tmp/config.XXXXXXXXXX.db)
-    cp -v "$target/awesometts/config.db" "$saveConf"
+    cp -v "$target/$addon_id/awesometts/config.db" "$saveConf"
 fi
 
 echo 'Cleaning up...'
-rm -fv "$target/AwesomeTTS.py"*
-rm -rfv "$target/awesometts"
+rm -fv "$target/$addon_id/__init__.py"*
+rm -rfv "$target/$addon_id/awesometts"
 
 oldPwd=$PWD
 cd "$(dirname "$0")/.." || exit 1
 
 packageZip=$(mktemp /tmp/package.XXXXXXXXXX.zip)
 ./tools/package.sh "$packageZip"
-unzip "$packageZip" -d "$target"
+unzip "$packageZip" -d "$target/$addon_id"
 rm -fv "$packageZip"
 
 cd "$oldPwd" || exit 1
@@ -76,5 +80,5 @@ cd "$oldPwd" || exit 1
 if [ -n "$saveConf" ]
 then
     echo 'Restoring configuration...'
-    mv -v "$saveConf" "$target/awesometts/config.db"
+    mv -v "$saveConf" "$target/$addon_id/awesometts/config.db"
 fi

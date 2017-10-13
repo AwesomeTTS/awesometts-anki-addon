@@ -24,8 +24,8 @@ from os.path import join
 import sys
 from time import time
 
-from PyQt4.QtCore import PYQT_VERSION_STR, Qt
-from PyQt4.QtGui import QKeySequence
+from PyQt5.QtCore import PYQT_VERSION_STR, Qt
+from PyQt5.QtGui import QKeySequence
 
 import anki
 import aqt
@@ -113,13 +113,13 @@ config = Config(
         ('extras', 'text', {}, to.deserialized_dict, to.compact_json),
         ('filenames', 'text', 'hash', str, str),
         ('filenames_human', 'text',
-         u'{{text}} ({{service}} {{voice}})', unicode, unicode),
+         '{{text}} ({{service}} {{voice}})', str, str),
         ('groups', 'text', {}, to.deserialized_dict, to.compact_json),
         ('lame_flags', 'text', '--quiet -q 2', str, str),
         ('last_mass_append', 'integer', True, to.lax_bool, int),
         ('last_mass_behavior', 'integer', True, to.lax_bool, int),
-        ('last_mass_dest', 'text', 'Back', unicode, unicode),
-        ('last_mass_source', 'text', 'Front', unicode, unicode),
+        ('last_mass_dest', 'text', 'Back', str, str),
+        ('last_mass_source', 'text', 'Front', str, str),
         ('last_options', 'text', {}, to.deserialized_dict, to.compact_json),
         ('last_service', 'text', ('sapi5js' if 'win32' in sys.platform
                                   else 'say' if 'darwin' in sys.platform
@@ -138,14 +138,14 @@ config = Config(
         ('otf_only_revealed_cloze', 'integer', False, to.lax_bool, int),
         ('otf_remove_hints', 'integer', False, to.lax_bool, int),
         ('presets', 'text', {}, to.deserialized_dict, to.compact_json),
-        ('spec_note_count', 'text', '', unicode, unicode),
+        ('spec_note_count', 'text', '', str, str),
         ('spec_note_count_wrap', 'integer', True, to.lax_bool, int),
-        ('spec_note_ellipsize', 'text', '', unicode, unicode),
-        ('spec_note_strip', 'text', '', unicode, unicode),
-        ('spec_template_count', 'text', '', unicode, unicode),
+        ('spec_note_ellipsize', 'text', '', str, str),
+        ('spec_note_strip', 'text', '', str, str),
+        ('spec_template_count', 'text', '', str, str),
         ('spec_template_count_wrap', 'integer', True, to.lax_bool, int),
-        ('spec_template_ellipsize', 'text', '', unicode, unicode),
-        ('spec_template_strip', 'text', '', unicode, unicode),
+        ('spec_template_ellipsize', 'text', '', str, str),
+        ('spec_template_strip', 'text', '', str, str),
         ('strip_note_braces', 'integer', False, to.lax_bool, int),
         ('strip_note_brackets', 'integer', False, to.lax_bool, int),
         ('strip_note_parens', 'integer', False, to.lax_bool, int),
@@ -158,7 +158,7 @@ config = Config(
         ('sul_template', 'text', [], to.substitution_list,
          to.substitution_json),
         ('templater_cloze', 'integer', True, to.lax_bool, int),
-        ('templater_field', 'text', 'Front', unicode, unicode),
+        ('templater_field', 'text', 'Front', str, str),
         ('templater_hide', 'text', 'normal', str, str),
         ('templater_target', 'text', 'front', str, str),
         ('throttle_sleep', 'integer', 30, int, int),
@@ -390,7 +390,7 @@ addon = Bundle(
 # n.b. be careful wrapping methods that have return values (see anki.hooks);
 #      in general, only the 'before' mode absolves us of responsibility
 
-# These are all called manually from the AwesomeTTS.py loader so that if there
+# These are all called manually from the __init__.py loader so that if there
 # is some sort of breakage with a specific component, it could be possibly
 # disabled easily by users who are not utilizing that functionality.
 
@@ -401,12 +401,12 @@ def browser_menus():
     disables and enables it upon selection of items.
     """
 
-    from PyQt4 import QtGui
+    from PyQt5 import QtWidgets
 
     def on_setup_menus(browser):
         """Create an AwesomeTTS menu and add browser actions to it."""
 
-        menu = QtGui.QMenu("Awesome&TTS", browser.form.menubar)
+        menu = QtWidgets.QMenu("Awesome&TTS", browser.form.menubar)
         browser.form.menubar.addMenu(menu)
 
         gui.Action(
@@ -559,24 +559,37 @@ def editor_button():
 
     anki.hooks.addHook(
         'setupEditorButtons',
-        lambda editor: editor.iconsBox.addWidget(
-            gui.Button(
-                tooltip="Record and insert an audio clip here w/ AwesomeTTS",
-                sequence=sequences['editor_generator'],
-                target=Bundle(
-                    constructor=gui.EditorGenerator,
-                    args=(),
-                    kwargs=dict(editor=editor,
-                                addon=addon,
-                                alerts=aqt.utils.showWarning,
-                                ask=aqt.utils.getText,
-                                parent=editor.parentWindow),
-                ),
-                style=editor.plastiqueStyle,
-            ),
-        ),
+        lambda buttons, editor: gui.HTMLButton(
+            buttons, editor,
+            link_id='awesometts_btn',
+            tooltip="Record and insert an audio clip here w/ AwesomeTTS",
+            sequence=sequences['editor_generator'],
+            target=Bundle(
+                constructor=gui.EditorGenerator,
+                args=(),
+                kwargs=dict(editor=editor,
+                            addon=addon,
+                            alerts=aqt.utils.showWarning,
+                            ask=aqt.utils.getText,
+                            parent=editor.parentWindow),
+            )
+        ).buttons
     )
 
+    anki.hooks.addHook(
+        'setupEditorShortcuts',
+        lambda shortcuts, editor: shortcuts.append(
+            (
+                sequences['editor_generator'].toString(),
+                editor._links['awesometts_btn']
+            )
+        )
+    )
+
+    # TODO: Editor buttons are now in the WebView, not sure how (and if)
+    # we should implement muzzling. Please see:
+    # https://github.com/dae/anki/commit/a001553f66efe75e660eb0702cd29a9d62503fc4
+    """
     aqt.editor.Editor.enableButtons = anki.hooks.wrap(
         aqt.editor.Editor.enableButtons,
         lambda editor, val=True: (
@@ -591,6 +604,7 @@ def editor_button():
         ),
         'before',
     )
+    """
 
 
 def reviewer_hooks():
@@ -600,8 +614,8 @@ def reviewer_hooks():
     context menu.
     """
 
-    from PyQt4.QtCore import QEvent
-    from PyQt4.QtGui import QMenu
+    from PyQt5.QtCore import QEvent
+    from PyQt5.QtWidgets import QMenu
 
     reviewer = gui.Reviewer(addon=addon,
                             alerts=aqt.utils.showWarning,
@@ -706,8 +720,9 @@ def reviewer_hooks():
                 else:
                     needs_separator = True
 
-                def preset_glue((name, preset)):
+                def preset_glue(xxx_todo_changeme):
                     """Closure for callback handler to access `preset`."""
+                    (name, preset) = xxx_todo_changeme
                     submenu.addAction(
                         'Say "%s" w/ %s' % (say_display, name),
                         lambda: reviewer.selection_handler(say_text,
@@ -724,8 +739,9 @@ def reviewer_hooks():
                 else:
                     needs_separator = True
 
-                def group_glue((name, group)):
+                def group_glue(xxx_todo_changeme1):
                     """Closure for callback handler to access `group`."""
+                    (name, group) = xxx_todo_changeme1
                     submenu.addAction(
                         'Say "%s" w/ %s' % (say_display, name),
                         lambda: reviewer.selection_handler_group(say_text,
@@ -853,12 +869,9 @@ def window_shortcuts():
 
     def on_sequence_change(new_config):
         """Update sequences on configuration changes."""
-
         for key, sequence in sequences.items():
-            try:
-                sequence.swap(new_config['launch_' + key] or 0)
-            except AttributeError:  # support for PyQt 4.7 and below
-                sequences[key] = QKeySequence(new_config['launch_' + key] or 0)
+            new_sequence = QKeySequence(new_config['launch_' + key] or None)
+            sequence.swap(new_sequence)
 
         try:
             aqt.mw.form.menuTools.findChild(gui.Action). \

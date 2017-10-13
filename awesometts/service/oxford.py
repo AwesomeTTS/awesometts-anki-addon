@@ -21,7 +21,7 @@ Service implementation for Oxford Dictionary
 """
 
 import re
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 
 from .base import Service
 from .common import Trait
@@ -127,7 +127,7 @@ class Oxford(Service):
         if len(text) > 100:
             raise IOError("Input text is too long for the Oxford Dictionary")
 
-        from urllib2 import quote
+        from urllib.parse import quote
         dict_url = 'https://en.oxforddictionaries.com/definition/%s%s' % (
             'us/' if options['voice'] == 'en-US' else '',
             quote(text.encode('utf-8'))
