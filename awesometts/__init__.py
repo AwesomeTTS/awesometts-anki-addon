@@ -405,7 +405,6 @@ def browser_menus():
 
     def on_setup_menus(browser):
         """Create an AwesomeTTS menu and add browser actions to it."""
-        print('fire')
 
         menu = QtWidgets.QMenu("Awesome&TTS", browser.form.menubar)
         browser.form.menubar.addMenu(menu)
