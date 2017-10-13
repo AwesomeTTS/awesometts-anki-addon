@@ -582,11 +582,7 @@ def editor_button():
         lambda shortcuts, editor: shortcuts.append(
             (
                 sequences['editor_generator'].toString(),
-                # TODO: how to wire to target now? Ideally it would be:
-                editor._links.get('awesometts_btn', lambda: None)
-                # but as for now, the default is always used, as shortcuts hook
-                # fires before editor buttons. There is a PR pending to fix this:
-                # https://github.com/dae/anki/pull/213
+                editor._links['awesometts_btn']
             )
         )
     )
