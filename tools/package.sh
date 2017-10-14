@@ -61,7 +61,7 @@ zip -9 "$target" \
     awesometts/LICENSE.txt \
     awesometts/*.py \
     awesometts/gui/*.py \
-    awesometts/icons/*.png \
+    awesometts/gui/icons/*.png \
     awesometts/service/*.py \
     awesometts/service/*.js \
     __init__.py
