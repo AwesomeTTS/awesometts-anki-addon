@@ -71,11 +71,11 @@ class Oxford(Service):
         """
 
         return "Oxford Dictionary (British and American English); " \
-            "dictionary words only with fuzzy matching"
+            "dictionary words only, with (optional) fuzzy matching"
 
     def options(self):
         """
-        Provides access to voice only.
+        Provides access to voice and fuzzy matching switch.
         """
 
         voice_lookup = dict([
@@ -106,6 +106,13 @@ class Oxford(Service):
                 default='en-GB',
                 transform=transform_voice,
             ),
+            dict(
+                key='fuzzy',
+                label="Fuzzy matching",
+                values=[(True, 'Enabled'), (False, 'Disabled')],
+                default=True,
+                transform=bool
+            )
         ]
 
     def modify(self, text):
@@ -134,7 +141,7 @@ class Oxford(Service):
         )
 
         try:
-            html_payload = self.net_stream(dict_url)
+            html_payload = self.net_stream(dict_url, allow_redirects=options['fuzzy'])
         except IOError as io_error:
             if getattr(io_error, 'code', None) == 404:
                 raise IOError(
@@ -146,6 +153,13 @@ class Oxford(Service):
                 )
             else:
                 raise
+        except ValueError as error:
+            if str(error) == "Request has been redirected":
+                raise IOError(
+                    "The Oxford Dictionary has no exact match for your input. "
+                    "You can enable fuzzy-matching in options."
+                )
+            raise error
 
         parser = OxfordLister()
         parser.feed(html_payload.decode('utf-8'))
