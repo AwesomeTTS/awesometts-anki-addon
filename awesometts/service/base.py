@@ -497,7 +497,8 @@ class Service(object, metaclass=abc.ABCMeta):
 
     def net_stream(self, targets, require=None, method='GET',
                    awesome_ua=False, add_padding=False,
-                   custom_quoter=None, custom_headers=None):
+                   custom_quoter=None, custom_headers=None,
+                   allow_redirects=True):
         """
         Returns the raw payload string from the specified target(s).
         If multiple targets are specified, their resulting payloads are
@@ -518,6 +519,8 @@ class Service(object, metaclass=abc.ABCMeta):
         If add_padding is True, then some additional null padding will
         be added onto the stream returned. This is helpful for some web
         services that sometimes return MP3s that `mplayer` clips early.
+
+        To prevent redirects one can set allow_redirects to False.
         """
 
         assert method in ['GET', 'POST'], "method must be GET or POST"
@@ -601,6 +604,9 @@ class Service(object, metaclass=abc.ABCMeta):
                 value_error.got_mime = got_mime
                 value_error.wanted_mime = require['mime']
                 raise value_error
+
+            if not allow_redirects and response.geturl() != url:
+                raise ValueError("Request has been redirected")
 
             payload = response.read()
             response.close()
