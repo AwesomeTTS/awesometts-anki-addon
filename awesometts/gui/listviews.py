@@ -191,7 +191,6 @@ class _SubRuleDelegate(_Delegate):
 
         for layout in [edits, checkboxes, layout]:
             layout.setContentsMargins(0, 0, 0, 0)
-            layout.setMargin(0)
             layout.setSpacing(0)
 
         for widget in [panel] + panel.findChildren(QtWidgets.QWidget):
