@@ -152,7 +152,7 @@ class Wiktionary(Service):
         # multiple pronunciations, but since there is no trivial
         # way to choose between them, this should be good enough
         # for now.
-        matcher = re.search("//.*\\.ogg", webpage)
+        matcher = re.search("//.*\\.og[ga]", webpage)
 
         if not matcher:
             raise IOError("Wiktionary doesn't have any audio for this input.")
