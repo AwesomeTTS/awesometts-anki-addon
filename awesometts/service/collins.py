@@ -28,7 +28,7 @@ from .common import Trait
 __all__ = ['Collins']
 
 
-BASE_PATTERN = r'data-src-mp3="(/sounds/[\w/]+/%s\w*\.mp3)"'
+BASE_PATTERN = r'data-src-mp3="(?:https://www.collinsdictionary.com)(/sounds/[\w/]+/%s\w*\.mp3)"'
 RE_ANY_SPANISH = re.compile(BASE_PATTERN % r'es_')
 
 MAPPINGS = [
