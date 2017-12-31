@@ -290,7 +290,7 @@ class Reviewer(object):
                             self._alerts(
                                 "Unable to play this group tag:\n%s\n\n%s" % (
                                     tag.prettify().strip(),
-                                    exception.message,
+                                    exception,
                                 ),
                                 parent,
                             )
