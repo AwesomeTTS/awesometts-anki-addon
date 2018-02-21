@@ -163,8 +163,8 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
         )
 
     _rule_clozes_braced.wrapper = lambda match: (
-        '... %s ...' % match.group(3).strip('.') if (match.group(3) and
-                                                     match.group(3).strip('.'))
+        '... %s ...' % match.group(4).strip('.') if (match.group(4) and
+                                                     match.group(4).strip('.'))
         else '...'
     )
 
@@ -174,7 +174,7 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
     )
 
     _rule_clozes_braced.ankier = lambda match: (
-        match.group(3) if match.group(3)
+        match.group(4) if match.group(4)
         else '...'
     )
 
