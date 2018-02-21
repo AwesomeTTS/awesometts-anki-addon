@@ -169,7 +169,7 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
     )
 
     _rule_clozes_braced.deleter = lambda match: (
-        match.group(1) if match.group(1)
+        match.group(2) if match.group(2)
         else '...'
     )
 
