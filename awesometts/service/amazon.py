@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# AwesomeTTS text-to-speech add-on for Anki
-# Copyright (C) 2010-Present  Anki AwesomeTTS Development Team
+# AWS Polly service for AwesomeTTS text-to-speech add-on
+# Copyright (C) 2018-Present Artem Yefimenko
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
