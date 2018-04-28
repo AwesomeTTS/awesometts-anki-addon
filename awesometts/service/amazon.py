@@ -24,17 +24,17 @@ from re import compile as re_compile
 
 from .base import Service
 from .common import Trait
-import os;
-
+import os
 import sys
 
 __all__ = ['Amazon']
 
 PATH_TO_BOTO3 = os.path.realpath(__file__).replace("service/amazon.py", "dependencies")
 sys.path.append(PATH_TO_BOTO3)
-print(dir(boto3)) # Find functions of interest.
 
 import boto3
+
+print(dir(boto3)) # Find functions of interest.
 
 
 LANGUAGES = {
