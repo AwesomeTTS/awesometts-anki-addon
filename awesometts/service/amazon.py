@@ -138,7 +138,6 @@ class Amazon(Service):
         lexicons = []
         if options['lexicons']:
             lexicons = options['lexicons'].split(", ")
-        print(lexicons)
         response=boto3_client.synthesize_speech(
             OutputFormat='mp3',
             Text=text,
