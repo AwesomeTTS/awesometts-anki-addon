@@ -124,8 +124,9 @@ class Amazon(Service):
                      transform=transform_voice)]
     
     def extras(self):
-        """Provides input for AWS credentials."""
-        return [dict(key='accesskey', label="AWS Access Key"), dict(key='secretkey', label="AWS Secret Key")]
+        """Provides input for AWS credentials and lexicon names."""
+        return [dict(key='accesskey', label="AWS Access Key"), dict(key='secretkey', label="AWS Secret Key"),
+                dict(key='lexicons', label="Lexicons")]
 
     def run(self, text, options, path):
         """Send request to AWS API and then download mp3."""
@@ -134,10 +135,15 @@ class Amazon(Service):
             boto3_client = boto3.client('polly', aws_access_key_id=options['accesskey'], aws_secret_access_key=options['secretkey'])
         else:
             boto3_client = boto3.client('polly')
+        lexicons = []
+        if options['lexicons']:
+            lexicons = options['lexicons'].split(", ")
+        print(lexicons)
         response=boto3_client.synthesize_speech(
             OutputFormat='mp3',
             Text=text,
-            VoiceId=options['voice']
+            VoiceId=options['voice'],
+            LexiconNames=lexicons
         )
         if response and response['AudioStream']:
             with open(path, 'wb') as response_output:
