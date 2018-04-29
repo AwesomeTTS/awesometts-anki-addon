@@ -122,11 +122,19 @@ class Amazon(Service):
                      values=[(name, "%s (%s %s)" % (name, gender, language))
                              for language, gender, name in VOICES],
                      transform=transform_voice)]
+    
+    def extras(self):
+        """Provides input for AWS credentials."""
+        return [dict(key='accesskey', label="AWS Access Key"), dict(key='secretkey', label="AWS Secret Key")]
 
     def run(self, text, options, path):
         """Send request to AWS API and then download mp3."""
 
-        response=boto3.client('polly').synthesize_speech(
+        if options['accesskey'] and options['secretkey']:
+            boto3_client = boto3.client('polly', aws_access_key_id=options['accesskey'], aws_secret_access_key=options['secretkey'])
+        else:
+            boto3_client = boto3.client('polly')
+        response=boto3_client.synthesize_speech(
             OutputFormat='mp3',
             Text=text,
             VoiceId=options['voice']

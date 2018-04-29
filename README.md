@@ -16,5 +16,5 @@ Anki is released under the [GNU GPL v3](LICENSE.txt).
 
 1. Install Anki **2.1**
 2. Download awesometts-anki-addon from this repository and install using standard install.sh file 
-3. Make sure that AWS credentials was set as described [here](https://boto3.readthedocs.io/en/latest/guide/quickstart.html#configuration)
+3. There are two ways to setup you AWS credentials: you can write them into config file as described [here](https://boto3.readthedocs.io/en/latest/guide/quickstart.html#configuration) or just input them into special fields after start AwesomeTTS and choose Amazon Polly service.
 4. Run Anki using standart executable file and check Amazon service.
