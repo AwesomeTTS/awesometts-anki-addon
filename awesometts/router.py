@@ -716,12 +716,6 @@ class Router(object):
 
         return path
 
-    def get_mapper(self, svc_id):
-        svc_id, service = self._fetch_service(svc_id)
-        if 'mapper' not in service:
-            return None
-        return service['instance'].mapper()
-
     def _fetch_options_and_extras(self, svc_id):
         """
         Identifies the service by its ID, checks to see if the options

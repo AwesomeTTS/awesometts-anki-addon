@@ -225,7 +225,6 @@ class ServiceDialog(Dialog):
         '_panel_set',    # dict, svc_id to True if panel values have been set
         '_svc_id',       # active service ID
         '_svc_count',    # how many services this dialog has access to
-        'dependent_field'
     ]
 
     def __init__(self, alerts, ask, *args, **kwargs):
@@ -240,7 +239,7 @@ class ServiceDialog(Dialog):
         self._panel_set = {}
         self._svc_id = None
         self._svc_count = 0
-        self.dependent_field = None
+
         super(ServiceDialog, self).__init__(*args, **kwargs)
 
     # UI Construction ########################################################
@@ -362,6 +361,7 @@ class ServiceDialog(Dialog):
         objects created must have setObjectName() called with 'text'
         and 'preview'.
         """
+
         text = QtWidgets.QLineEdit()
         text.keyPressEvent = lambda key_event: (
             self._on_preview()
@@ -398,6 +398,7 @@ class ServiceDialog(Dialog):
         activate its panel, populate presets, and then clear the input
         text box.
         """
+
         self._panel_set = {}  # these must be reloaded with each window open
 
         dropdown = self.findChild(QtWidgets.QComboBox, 'service')
@@ -464,7 +465,6 @@ class ServiceDialog(Dialog):
 
         combo = self.findChild(QtWidgets.QComboBox, 'service')
         svc_id = combo.itemData(idx)
-        self._svc_id = svc_id
         stack = self.findChild(QtWidgets.QStackedWidget, 'panels')
         save = self.findChild(QtWidgets.QPushButton, 'presets_save')
 
@@ -508,31 +508,14 @@ class ServiceDialog(Dialog):
                                                use_options)
 
         stack.setCurrentIndex(idx)
-        self.dependent_field=stack.widget(idx).findChild(QtWidgets.QComboBox, 'dependent_field')
-        self._combo_box_mapping(stack.widget(idx).findChild(QtWidgets.QComboBox, 'main_field').currentText())
+
         if panel_unbuilt and not initial:
             self.adjustSize()
 
+        self._svc_id = svc_id
         help_svc = self.findChild(QtWidgets.QAction, 'help_svc')
         if help_svc:
             help_svc.setText("Using the %s service" % combo.currentText())
-
-    def _combo_box_mapping(self, value):
-        if self._svc_id:
-            extras = self._addon.router.get_extras(self._svc_id)
-            if extras:
-                for extra in extras:
-                    if extra['key']=='dropdownmapper':
-                        if value.endswith(' [default]'):
-                            value = value[:-10]
-                        if extra["values"][value]:
-                            if self.dependent_field:
-                                self.dependent_field.clear()
-                                self.dependent_field.addItems(extra["values"][value])
-                                for i in range(self.dependent_field.count()):
-                                    self.dependent_field.setItemData(i, extra["values"][value][i])
-                                self.update()
-                        break
 
     def _on_service_activated_build(self, svc_id, widget, options):
         """
@@ -544,9 +527,11 @@ class ServiceDialog(Dialog):
 
         row = 1
         panel = widget.layout()
+
         for option in options:
             label = Label(option['label'])
             label.setFont(self._FONT_LABEL)
+
             if isinstance(option['values'], tuple):
                 start, end = option['values'][0], option['values'][1]
 
@@ -560,24 +545,20 @@ class ServiceDialog(Dialog):
                 if len(option['values']) > 2:
                     vinput.setSuffix(" " + option['values'][2])
                 vinput.valueChanged.connect(self._on_preset_reset)
-                if options.index(option)==0 and len(options)==2: 
-                    vinput.valueChanged.connect(self._combo_box_mapping)
+
             else:  # list of tuples
                 vinput = QtWidgets.QComboBox()
                 for value, text in option['values']:
                     vinput.addItem(text, value)
+
                 if len(option['values']) == 1:
                     vinput.setDisabled(True)
                 vinput.currentIndexChanged.connect(self._on_preset_reset)
-                if options.index(option)==0 and len(options)==2: 
-                    vinput.currentTextChanged.connect(self._combo_box_mapping)
-            if(options.index(option)==0):
-                vinput.setObjectName("main_field")
-            if(options.index(option)==1):
-                vinput.setObjectName("dependent_field")
+
             panel.addWidget(label, row, 0)
             panel.addWidget(vinput, row, 1, 1, 2)
             row += 1
+
         extras = self._addon.router.get_extras(svc_id)
         if extras:
             config = self._addon.config
@@ -599,10 +580,13 @@ class ServiceDialog(Dialog):
                     )
 
                 edit.textEdited.connect(on_text_edited)
+
+            for extra in extras:
                 label = Label(extra['label'])
                 label.setFont(self._FONT_LABEL)
 
                 edit = QtWidgets.QLineEdit()
+                key = extra['key']
                 try:
                     edit.setText(config['extras'][svc_id][key])
                 except KeyError:
@@ -723,7 +707,8 @@ class ServiceDialog(Dialog):
             delete.hide()
 
     def _on_preset_reset(self):
-        """Sets preset dropdown back and disables delete button."""        
+        """Sets preset dropdown back and disables delete button."""
+
         if next((True
                  for frame in inspect.stack()
                  if frame[3] == '_on_preset_activated'),
@@ -892,7 +877,7 @@ class ServiceDialog(Dialog):
         options = self._addon.router.get_options(svc_id)
 
         assert len(options) == len(vinputs)
-        
+
         return svc_id, {
             options[i]['key']:
                 vinputs[i].value()

@@ -66,4 +66,6 @@ zip -9 "$target" \
     awesometts/service/*.js \
     __init__.py
 
+zip -9 -r "$target" awesometts/dependencies*
+
 cd "$oldPwd" || exit 1

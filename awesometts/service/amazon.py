@@ -2,6 +2,7 @@
 
 # AWS Polly service for AwesomeTTS text-to-speech add-on
 # Copyright (C) 2018-Present Artem Yefimenko
+# Copyright (C) 2018-Present Edu Zamora
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,45 +35,58 @@ sys.path.append(PATH_TO_BOTO3)
 
 import boto3
 
-print(dir(boto3)) # Find functions of interest.
-
-
-LANGUAGES = {
-"Turkish (tr-TR)": ["Filiz (Female)"],
-"Swedish (sv-SE)": ["Astrid (Female)"],
-"Russian (ru-RU)": ["Tatyana (Female)", "Maxim (Male)"],
-"Romanian (ro-RO)": ["Carmen (Female)"],
-"Portuguese (pt-PT)": ["Ines (Female)", "Cristiano (Male)"],
-"Brazilian Portuguese (pt-BR)": ["Vitoria (Female)", "Ricardo (Male)"],
-"Polish (pl-PL)": ["Maja (Female)", "Jan (Male)", "Jacek (Male)", "Ewa (Female)"],
-"Dutch (nl-NL)": ["Ruben (Male)", "Lotte (Female)"],
-"Norwegian (nb-NO)": ["Liv (Female)"],
-"Korean (ko-KR)": ["Seoyeon (Female)"],
-"Japanese (ja-JP)": ["Takumi (Male)", "Mizuki (Female)"],
-"Italian (it-IT)": ["Giorgio (Male)", "Carla (Female)"],
-"Icelandic (is-IS)": ["Karl (Male)", "Dora (Female)"],
-"French (fr-FR)": ["Mathieu (Male)", "Celine (Female)"],
-"Canadian French (fr-CA)": ["Chantal (Female)"],
-"US Spanish (es-US)": ["Penelope (Female)", "Miguel (Male)"],
-"Castilian Spanish (es-ES)": ["Enrique (Male)", "Conchita (Female)"],
-"Welsh English (en-GB-WLS)": ["Geraint (Male)"],
-"US English (en-US)": ["Salli (Female)", "Matthew (Male)", "Kimberly (Female)", "Kendra (Female)", "Justin (Male)", "Joey (Male)", "Joanna (Female)", "Ivy (Female)"],
-"Indian English (en-IN)": ["Raveena (Female)", "Aditi (Female)"],
-"British English (en-GB)": ["Emma (Female)", "Brian (Male)", "Amy (Female)"],
-"Australian English (en-AU)": ["Russell (Male)", "Nicole (Female)"],
-"German (de-DE)": ["Vicki (Female)", "Marlene (Female)", "Hans (Male)"],
-"Danish (da-DK)": ["Naja (Female)", "Mads (Male)"],
-"Welsh (cy-GB": ["Gwyneth (Female)"]
-}
-
-LANGUAGES_LIST = list(LANGUAGES.keys())
-VOICES_LIST =  list()
-for voices_for_lang in LANGUAGES.values():
-    for voice in voices_for_lang:
-        VOICES_LIST.append(voice)
-CURRENT_LANGUAGE = "US English (en-US)"
-
-assert CURRENT_LANGUAGE in LANGUAGES_LIST
+VOICES = [('cy-GB', 'female', 'Gwyneth'),
+          ('da-DK', 'female', 'Naja'),
+          ('da-DK', 'male', 'Mads'),
+          ('de-DE', 'female', 'Vicki'),
+          ('de-DE', 'female', 'Marlene'),
+          ('de-DE', 'male', 'Hans'),
+          ('en-AU', 'female', 'Nicole'),
+          ('en-AU', 'male', 'Russell'),
+          ('en-GB', 'female', 'Emma'),
+          ('en-GB', 'female', 'Amy'),
+          ('en-GB', 'male', 'Brian'),
+          ('en-GB-WLS', 'male', 'Geraint'),
+          ('en-IN', 'female', 'Aditi'),
+          ('en-IN', 'female', 'Raveena'),
+          ('en-US', 'female', 'Ivy'),
+          ('en-US', 'female', 'Joanna'),
+          ('en-US', 'female', 'Kendra'),
+          ('en-US', 'female', 'Kimberly'),
+          ('en-US', 'female', 'Salli'),
+          ('en-US', 'male', 'Joey'),
+          ('en-US', 'male', 'Justin'),
+          ('en-US', 'male', 'Matthew'),
+          ('es-ES', 'female', 'Conchita'),
+          ('es-ES', 'male', 'Enrique'),
+          ('es-US', 'female', 'Penelope'),
+          ('es-US', 'male', 'Miguel'),
+          ('fr-FR', 'female', 'Celine'),
+          ('fr-FR', 'male', 'Mathieu'),
+          ('fr-CA', 'female', 'Chantal'),
+          ('is-IS', 'female', 'Dora'),
+          ('is-IS', 'male', 'Karl'),
+          ('it-IT', 'female', 'Carla'),
+          ('it-IT', 'male', 'Giorgio'),
+          ('ja-JP', 'female', 'Mizuki'),
+          ('ja-JP', 'male', 'Takumi'),
+          ('ko-KR', 'female', 'Seoyeon'),
+          ('nb-NO', 'female', 'Liv'),
+          ('nl-NL', 'female', 'Lotte'),
+          ('nl-NL', 'male', 'Ruben'),
+          ('pl-PL', 'female', 'Ewa'),
+          ('pl-PL', 'female', 'Maja'),
+          ('pl-PL', 'male', 'Jacek'),
+          ('pl-PL', 'male', 'Jan'),
+          ('pt-BR', 'female', 'Vitoria'),
+          ('pt-BR', 'male', 'Ricardo'),
+          ('pt-PT', 'female', 'Ines'),
+          ('pt-PT', 'male', 'Cristiano'),
+          ('ro-RO', 'female', 'Carmen'),
+          ('ru-RU', 'female', 'Tatyana'),
+          ('ru-RU', 'male',   'Maxim'),
+          ('sv-SE', 'female', 'Astrid'),
+          ('tr-TR', 'female', 'Filiz')]
 
 RE_FILENAME = re_compile(r'name="filestozip" type="hidden" value="([\d_]+)"')
 REQUIRE_MP3 = dict(mime='audio/mpeg', size=256)
@@ -83,48 +97,31 @@ class Amazon(Service):
 
     __slots__ = []
 
-    NAME = "AmazonPolly"
+    NAME = "Amazon Polly"
 
     TRAITS = [Trait.INTERNET]
 
     def desc(self):
         """Returns a short, static description."""
 
-        return "Amazon polly voice synthesiser"
+        return "Amazon Polly (%d voices)" % len(VOICES)
 
     def options(self):
-        """Provides access to language and voice."""
+        """Provides access to voice only."""
 
-        language_lookup = {self.normalize(value): value for value in LANGUAGES_LIST}
-        voice_lookup = {self.normalize(value): value for value in VOICES_LIST}
+        voice_lookup = {self.normalize(name): name
+                        for language, gender, name in VOICES}
 
-        return [
-            dict(
-                key='language',
-                label="Language",
-                values=[(value, value) for value in LANGUAGES_LIST],
-                transform=lambda value: language_lookup.get(self.normalize(value),
-                                                         value),
-                default=CURRENT_LANGUAGE,
-            ),
+        def transform_voice(value):
+            """Fixes whitespace and casing errors only."""
+            normal = self.normalize(value)
+            return voice_lookup[normal] if normal in voice_lookup else value
 
-            dict(
-                key='voice',
-                label="Voice",
-                values=[(value, value) for value in VOICES_LIST],
-                transform=lambda value: voice_lookup.get(self.normalize(value),
-                                                         value),
-            ),
-        ]
-    
-    def extras(self):
-        return [
-            dict(
-                key='dropdownmapper',
-                label="Dropdown Mapper",
-                values=LANGUAGES,
-            )
-        ]
+        return [dict(key='voice',
+                     label="Voice",
+                     values=[(name, "%s (%s %s)" % (name, gender, language))
+                             for language, gender, name in VOICES],
+                     transform=transform_voice)]
 
     def run(self, text, options, path):
         """Send request to AWS API and then download mp3."""
@@ -132,7 +129,7 @@ class Amazon(Service):
         response=boto3.client('polly').synthesize_speech(
             OutputFormat='mp3',
             Text=text,
-            VoiceId=options['voice'].split(' ')[0],
+            VoiceId=options['voice']
         )
         if response and response['AudioStream']:
             with open(path, 'wb') as response_output:
