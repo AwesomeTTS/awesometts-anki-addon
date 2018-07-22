@@ -130,7 +130,8 @@ class Amazon(Service):
 
     def run(self, text, options, path):
         """Send request to AWS API and then download mp3."""
-
+        if not text:
+            raise IOError("Please provide some text for record!")
         if options['accesskey'] and options['secretkey']:
             boto3_client = boto3.client('polly', aws_access_key_id=options['accesskey'], aws_secret_access_key=options['secretkey'])
         else:
