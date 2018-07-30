@@ -354,8 +354,10 @@ class BrowserGenerator(ServiceDialog):
             """Count the failure and the unique message."""
 
             proc['counts']['fail'] += 1
-
-            message = exception.message
+            if exception and hasattr(exception, "message"):
+                message = exception.message
+            else:
+                message = exception
             if isinstance(message, str):
                 message = self._RE_WHITESPACE.sub(' ', message).strip()
 
