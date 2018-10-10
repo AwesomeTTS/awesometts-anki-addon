@@ -97,8 +97,8 @@ class Google(Service):
         'tr': "Turkish",
         'uk': "Ukrainian",
         'vi': "Vietnamese",
-        'zh-CMN': "Chinese, Mandarin",
-        'zh-YUE': "Chinese, Cantonese",
+        'zh-cn': "Chinese, Mandarin (PRC)",
+        'zh-tw': "Chinese, Mandarin (Taiwan)",
     }
 
     def __init__(self, *args, **kwargs):
