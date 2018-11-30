@@ -355,7 +355,9 @@ class BrowserGenerator(ServiceDialog):
 
             proc['counts']['fail'] += 1
 
-            message = exception.message
+            message = 'No message'
+            if hasattr(exception, 'message'):
+                message = exception.message
             if isinstance(message, str):
                 message = self._RE_WHITESPACE.sub(' ', message).strip()
 
