@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-sudo apt-get install mplayer
+sudo apt-get install mplayer lame
 
 for required_program in 'git' 'mplayer' 'python3' 'lame' 'pip3'
 do
