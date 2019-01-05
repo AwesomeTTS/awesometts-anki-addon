@@ -1,11 +1,11 @@
 # AwesomeTTS Anki add-on
+[![Build Status](https://travis-ci.org/AwesomeTTS/awesometts-anki-addon.svg?branch=master)](https://travis-ci.org/AwesomeTTS/awesometts-anki-addon)
 
 AwesomeTTS makes it easy for language-learners and other students to add
 speech to their personal [Anki](https://apps.ankiweb.net) card decks.
 
 Once loaded into the Anki `addons` directory, the AwesomeTTS add-on code
 enables both on-demand playback and recording functionality.
-
 
 ## License
 
