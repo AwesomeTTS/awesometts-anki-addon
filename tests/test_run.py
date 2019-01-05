@@ -63,7 +63,7 @@ def test_services():
     value of an option for testing purposes only, use test_default.
     """
     require_key = ['iSpeech']
-    it_fails = ['Baidu Translate', 'Duden']
+    it_fails = ['Baidu Translate', 'Duden', 'NAVER Translate']
 
     with anki_running() as anki_app:
 
