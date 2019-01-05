@@ -11,6 +11,8 @@ do
 done
 
 bash anki_testing/install_anki.sh
-python3 -m pip install pytest==3.3.1
+
+# never versions attempt to read __init__.py on the root level which leads to multiple error
+python3 -m pip install pytest==3.7.1
 
 python3 -m pytest tests

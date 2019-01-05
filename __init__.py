@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-raise
 
 # AwesomeTTS text-to-speech add-on for Anki
 # Copyright (C) 2010-Present  Anki AwesomeTTS Development Team
