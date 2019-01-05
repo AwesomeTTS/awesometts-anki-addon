@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-for required_program in 'git' 'mplayer' 'python3.6' 'lame' 'pip'
+sudo apt-get install mplayer
+
+for required_program in 'git' 'mplayer' 'python3' 'lame' 'pip3'
 do
   hash ${required_program} 2>/dev/null || {
     echo >&2 "$required_program is required but it is not installed. Please install $required_program first."
