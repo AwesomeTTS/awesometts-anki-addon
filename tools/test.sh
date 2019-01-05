@@ -11,5 +11,6 @@ do
 done
 
 bash anki_testing/install_anki.sh
+python3 -m pip install pytest=3.3.1
 
 python3 -m pytest tests
