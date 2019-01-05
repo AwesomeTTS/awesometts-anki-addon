@@ -97,8 +97,8 @@ class Google(Service):
         'tr': "Turkish",
         'uk': "Ukrainian",
         'vi': "Vietnamese",
-        'zh-CMN': "Chinese, Mandarin",
-        'zh-YUE': "Chinese, Cantonese",
+        'zh-cn': "Chinese, Mandarin (PRC)",
+        'zh-tw': "Chinese, Mandarin (Taiwan)",
     }
 
     def __init__(self, *args, **kwargs):
@@ -121,13 +121,9 @@ class Google(Service):
         """
 
         voice_lookup = dict([
-            # aliases for Chinese, Cantonese (fewer speakers)
-            (self.normalize(alias), 'zh-YUE')
-            for alias in ['Cantonese', 'zh-TW', 'YUE']
-        ] + [
-            # aliases for Chinese, Mandarin (most speakers)
-            (self.normalize(alias), 'zh-CMN')
-            for alias in ['Mandarin', 'Chinese', 'zh', 'zh-CN', 'CMN']
+            # aliases for Chinese, Mandarin (PRC) (most speakers)
+            (self.normalize(alias), 'zh-CN')
+            for alias in ['Mandarin', 'Chinese', 'zh', 'zh-CMN', 'CMN']
         ] + [
             # aliases for Spanish, European (fewer speakers)
             (self.normalize(alias), 'es-ES')
