@@ -12,4 +12,4 @@ done
 
 bash anki_testing/install_anki.sh
 
-python3.6 -m pytest tests
+python3 -m pytest tests
