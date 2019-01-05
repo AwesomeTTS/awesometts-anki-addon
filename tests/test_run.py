@@ -1,6 +1,6 @@
 from urllib.error import HTTPError
 
-from .anki_testing import anki_running
+from anki_testing import anki_running
 from pytest import raises
 
 
@@ -99,6 +99,6 @@ def test_services():
                     text='test',
                     options=options,
                     callbacks=callbacks,
-                    async=False
+                    async_variable=False
                 )
 
