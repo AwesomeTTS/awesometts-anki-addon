@@ -1,22 +1,18 @@
 #!/usr/bin/env bash
 
-for required_program in 'git' 'mplayer' 'python3.6' 'lame' 'pip'
+sudo apt-get install mplayer lame
+
+for required_program in 'git' 'mplayer' 'python3' 'lame' 'pip3'
 do
-  hash $required_program 2>/dev/null || {
+  hash ${required_program} 2>/dev/null || {
     echo >&2 "$required_program is required but it is not installed. Please install $required_program first."
     exit 1
   }
 done
 
-anki_dir='anki_root'
+bash anki_testing/install_anki.sh
 
-if [ ! -e "$anki_dir" ]
-then
-    echo "$anki_dir not detected, cloning from master"
-    git clone https://github.com/dae/anki anki_root
-    cd anki_root
-    pip install -r requirements.txt
-    ./tools/build_ui.sh
-    cd ..
-fi
-python3.6 -m pytest tests
+# never versions attempt to read __init__.py on the root level which leads to multiple error
+python3 -m pip install pytest==3.7.1
+
+python3 -m pytest tests

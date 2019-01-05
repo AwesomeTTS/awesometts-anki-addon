@@ -127,7 +127,7 @@ class Oxford(Service):
 
     def run(self, text, options, path):
         """
-        Download wep page for given word
+        Download web page for given word
         Then extract mp3 path and download it
         """
 

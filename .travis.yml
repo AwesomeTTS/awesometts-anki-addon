@@ -1,14 +1,14 @@
+sudo: required
+dist: xenial
 language: python
 
 python:
   - 3.6
+  - 3.7
 
-install: 
-  - sudo apt-get update
-  - sudo apt-get install portaudio19-dev xvfb mplayer lame git
-  - pip install PyQt5==5.9 sip pytest
-  - start-stop-daemon --start --pidfile ~/xvfb.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1024x768x24 -ac +extension GLX +render -noreset
-  - export DISPLAY=:99
+install:
+  - git clone https://github.com/krassowski/anki_testing
+  - source anki_testing/setup.sh
 
 script:
   - bash tools/test.sh
