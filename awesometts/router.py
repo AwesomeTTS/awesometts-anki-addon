@@ -332,7 +332,7 @@ class Router(object):
             try_next()
 
     def __call__(self, svc_id, text, options, callbacks,
-                 want_human=False, note=None, async=True):
+                 want_human=False, note=None, async_variable=True):
         """
         Given the service ID and associated options, pass the text into
         the service for processing.
@@ -379,7 +379,7 @@ class Router(object):
         the given template string.
 
         For synchronous testing (without the use of main event loop and
-        process spawning) async=False can be used.
+        process spawning) async_variable=False can be used.
         """
 
         self._call_assert_callbacks(callbacks)
@@ -556,7 +556,7 @@ class Router(object):
             def task():
                 service['instance'].run(text, options, path)
 
-            if async:
+            if async_variable:
                 def do_spawn():
                     """Call if ready to start a thread to run the service."""
                     self._pool.spawn(
