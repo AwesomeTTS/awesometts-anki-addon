@@ -24,6 +24,7 @@ from .common import Trait
 
 from .abair import Abair
 from .baidu import Baidu
+from .cambridge import Cambridge
 from .collins import Collins
 from .duden import Duden
 from .ekho import Ekho
