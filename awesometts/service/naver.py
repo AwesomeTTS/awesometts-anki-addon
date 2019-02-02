@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """NAVER Translate"""
+import base64
 
 from .base import Service
 from .common import Trait
@@ -34,8 +35,8 @@ CNDIC_CONFIG = [
     ('wrapper', 0),
 ]
 
-TRANSLATE_INIT = 'http://translate.naver.com/getVcode.dic'
-TRANSLATE_ENDPOINT = 'http://translate.naver.com/tts'
+TRANSLATE_INIT = 'https://papago.naver.com/apis/tts/makeID'
+TRANSLATE_ENDPOINT = 'https://papago.naver.com/apis/tts'
 TRANSLATE_CONFIG = [
     ('from', 'translate'),
     ('service', 'translate'),
@@ -141,31 +142,29 @@ class Naver(Service):
 
         else:
             def process_subtext(output_mp3, subtext):
-                """Request a vcode and download the MP3."""
+                """Request file id and download the MP3."""
+                #Build Up provided by sjhuang26 @ https://github.com/AwesomeTTS/awesometts-anki-addon/issues/61
+                prefix = b'\xaeU\xae\xa1C\x9b,Uzd\xf8\xef'
+                speed = str(config[1][1]) if len(config) > 1 else '0'
 
-                vcode = self.net_stream(
-                    (TRANSLATE_INIT, dict(text=subtext)),
+                json = 'pitch":0,"speaker":"' + config[0][1].encode('utf-8') + '","speed": "' + speed + '","text":"' + subtext.encode('utf-8') + '"}'
+                data = base64.b64encode(prefix + json)
+
+                responseJson = self.net_stream(
+                    (TRANSLATE_INIT, dict(data=data)),
                     method='POST',
                 )
-                vcode = ''.join(char for char in vcode if char.isdigit())
+                import json
+                id = json.loads(responseJson)['id']
 
                 self.net_download(
                     output_mp3,
                     (
-                        TRANSLATE_ENDPOINT,
-                        dict(
-                            TRANSLATE_CONFIG +
-                            config +
-                            [
-                                ('text', subtext),
-                                ('vcode', vcode),
-                            ]
-                        ),
+                        TRANSLATE_ENDPOINT + "/" + id
                     ),
                     require=dict(mime='audio/mpeg', size=256),
                     custom_quoter=dict(text=_quote_all),
                 )
-
             subtexts = self.util_split(text, 250)
 
             if len(subtexts) == 1:
