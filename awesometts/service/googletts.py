@@ -173,7 +173,7 @@ class GoogleTTS(Service):
                 label="Voice",
                 values=self._voice_list,
                 transform=lambda value: value,
-                default='English, United States (en-US-Wavenet-D)',
+                default='en-US-Wavenet-D',
             ),
 
             dict(
