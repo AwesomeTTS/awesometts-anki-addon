@@ -31,6 +31,7 @@ from .espeak import ESpeak
 from .festival import Festival
 from .fluencynl import FluencyNl
 from .google import Google
+from .googletts import GoogleTTS
 from .howjsay import Howjsay
 from .imtranslator import ImTranslator
 from .ispeech import ISpeech
@@ -63,6 +64,7 @@ __all__ = [
     'Festival',
     'FluencyNl',
     'Google',
+    'GoogleTTS',
     'Howjsay',
     'ImTranslator',
     'ISpeech',
