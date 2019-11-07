@@ -240,13 +240,21 @@ class GoogleTTS(Service):
         ("vi-VN-Wavenet-D", "Vietnamese (vi-VN-Wavenet-D)"),
     ]
 
+    def _languageCode(self, name):
+        """
+        Returns a language code (en-US) from its name (en-US-Wavenet-A).
+        """
+
+        return '-'.join(name.split('-')[:2])
+
+
     def desc(self):
         """
         Returns a short, static description.
         """
 
         return "Google Cloud Text-to-Speech (%d voices)." % (
-            len(set(map(lambda x: x[0][:5], self._voice_list))))
+            len(set(map(lambda x: self._languageCode(x[0]), self._voice_list))))
 
     def extras(self):
         """The Google Cloud Text-to-Speech requires an API key."""
@@ -300,7 +308,7 @@ class GoogleTTS(Service):
               "text": text
           },
           "voice": {
-              "languageCode": options['voice'][:5],
+              "languageCode": self._languageCode(options['voice']),
               "name": options['voice'],
           }
         }
