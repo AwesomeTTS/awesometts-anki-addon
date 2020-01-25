@@ -343,7 +343,7 @@ class Reviewer(object):
                          else "Unable to play this tag:\n%s\n\n%s")
                         % (
                             tag.prettify().strip(),
-                            exception.message,
+                            exception,
                         ),
                         parent,
                     )
@@ -401,7 +401,7 @@ class Reviewer(object):
                 fail=lambda exception: (
                     isinstance(exception, self._addon.router.BusyError) or
                     not show_errors or
-                    self._play_html_legacy_bad(legacy, exception.message,
+                    self._play_html_legacy_bad(legacy, str(exception),
                                                parent)
                 ),
             ),
@@ -427,7 +427,7 @@ class Reviewer(object):
                 okay=self._addon.player.menu_click,
                 fail=lambda exception: (
                     isinstance(exception, self._addon.router.BusyError) or
-                    self._alerts(exception.message, parent)
+                    self._alerts(str(exception), parent)
                 ),
             ),
         )
@@ -443,7 +443,7 @@ class Reviewer(object):
                 okay=self._addon.player.menu_click,
                 fail=lambda exception: (
                     isinstance(exception, self._addon.router.BusyError) or
-                    self._alerts(exception.message, parent)
+                    self._alerts(str(exception), parent)
                 ),
             ),
         )

@@ -355,7 +355,7 @@ class BrowserGenerator(ServiceDialog):
 
             proc['counts']['fail'] += 1
 
-            message = exception.message if hasattr(exception, 'message') else str(exception)
+            message = str(exception)
             if isinstance(message, str):
                 message = self._RE_WHITESPACE.sub(' ', message).strip()
 
@@ -781,7 +781,7 @@ class EditorGenerator(ServiceDialog):
             ),
             fail=lambda exception: (
                 self._alerts("Cannot record the input phrase with these "
-                             "settings.\n\n%s" % exception.message, self),
+                             "settings.\n\n%s" % exception, self),
                 text_input.setFocus(),
             ),
         )

@@ -771,11 +771,7 @@ class Configurator(Dialog):
             callbacks=dict(
                 done=lambda: button.setEnabled(True),
                 fail=lambda exception: state.setText("Check failed: %s" % (
-                    (
-                        exception.message if hasattr(exception, 'message')
-                        else str(exception)
-                    ) or
-                    "Nothing further known"
+                    str(exception) or "Nothing further known"
                 )),
                 good=lambda: state.setText("No update needed at this time."),
                 need=lambda version, info: (

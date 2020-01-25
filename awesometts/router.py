@@ -675,7 +675,7 @@ class Router(object):
                 except ValueError as exception:
                     problems.append(
                         "invalid value '%s' for '%s' attribute (%s)" %
-                        (options[key], key, exception.message)
+                        (options[key], key, exception)
                     )
 
                 except StopIteration:
@@ -947,17 +947,14 @@ class _Pool(QtWidgets.QWidget):
         """
 
         if exception:
-            if not (hasattr(exception, 'message') and
-                    isinstance(exception.message, str) and
-                    exception.message):
-
-                exception.message = format(exception) or \
-                    "No additional details available"
+            message = str(exception)
+            if not message:
+                message = "No additional details available"
 
             self._logger.debug(
                 "Exception from thread [%d] (%s); executing callback\n%s",
 
-                thread_id, exception.message,
+                thread_id, message,
 
                 _prefixed(stack_trace)
                 if isinstance(stack_trace, str)
