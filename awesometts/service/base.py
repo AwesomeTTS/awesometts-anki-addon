@@ -76,7 +76,8 @@ class Service(object, metaclass=abc.ABCMeta):
     CLI_DECODINGS = ['ascii', 'utf-8', 'latin-1']
 
     # where we can find the lame transcoder
-    CLI_LAME = 'lame'
+    from anki.sound import _packagedCmd
+    CLI_LAME = _packagedCmd(['lame'])[0][0]
 
     # where we can find the mplayer binary
     CLI_MPLAYER = 'mplayer'
