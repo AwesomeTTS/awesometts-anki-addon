@@ -26,13 +26,18 @@ from io import StringIO
 from bs4 import BeautifulSoup
 import anki
 
+try:
+    from anki.template import clozeReg # Anki 2.1.20+
+except ImportError:
+    from anki.template.template import clozeReg
+
 __all__ = ['RE_CLOZE_BRACED', 'RE_CLOZE_RENDERED', 'RE_ELLIPSES',
            'RE_ELLIPSES_LEADING', 'RE_ELLIPSES_TRAILING', 'RE_FILENAMES',
            'RE_HINT_LINK', 'RE_LINEBREAK_HTML', 'RE_NEWLINEISH', 'RE_SOUNDS',
            'RE_WHITESPACE', 'STRIP_HTML', 'Sanitizer']
 
 
-RE_CLOZE_BRACED = re.compile(anki.template.template.clozeReg % r'\d+')
+RE_CLOZE_BRACED = re.compile(clozeReg % r'\d+')
 RE_CLOZE_RENDERED = re.compile(
     # see anki.template.template.clozeText; n.b. the presence of the brackets
     # in the pattern means that this will only match and replace on the
