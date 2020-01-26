@@ -174,6 +174,18 @@ config = Config(
     ],
 )
 
+try:
+    from aqt.sound import av_player
+    from anki.sound import SoundOrVideoTag
+
+    def append_file(self, filename: str) -> None:
+        self._enqueued.append(SoundOrVideoTag(filename=filename))
+        self._play_next_if_idle()
+
+    anki.sound.play = lambda filename: append_file(av_player, filename)
+except ImportError:
+    pass
+
 player = Player(
     anki=Bundle(
         mw=aqt.mw,
