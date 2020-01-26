@@ -145,7 +145,12 @@ class Player(object):
         items in it already.
         """
 
-        if self._anki.sound.mplayerQueue:
+        if self._anki.sound.mpvManager is not None:
+            playQueue = self._anki.sound.mpvManager.get_property("playlist-count")
+        else:
+            playQueue = self._anki.sound.mplayerQueue
+
+        if playQueue:
             if self._logger:
                 self._logger.debug("Ignoring %d-second delay (%s) because of "
                                    "queue: %s", seconds, reason, path)
