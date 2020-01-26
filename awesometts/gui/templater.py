@@ -195,7 +195,10 @@ class Templater(ServiceDialog):
         tag and then remembers the options.
         """
 
-        from cgi import escape
+        try:
+            from html import escape
+        except ImportError:
+            from cgi import escape
 
         now = self._get_all()
         tform = self._card_layout.tform
