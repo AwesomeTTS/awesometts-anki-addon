@@ -26,10 +26,7 @@ from io import StringIO
 from bs4 import BeautifulSoup
 import anki
 
-try:
-    from anki.template import clozeReg # Anki 2.1.20+
-except ImportError:
-    from anki.template.template import clozeReg
+clozeReg = r"(?si)\{\{(?P<tag>c)%s::(?P<content>.*?)(::(?P<hint>.*?))?\}\}"
 
 __all__ = ['RE_CLOZE_BRACED', 'RE_CLOZE_RENDERED', 'RE_ELLIPSES',
            'RE_ELLIPSES_LEADING', 'RE_ELLIPSES_TRAILING', 'RE_FILENAMES',
