@@ -322,6 +322,9 @@ class Reviewer(object):
                 )
             return
 
+        if svc_id == 'android':
+            return
+
         self._addon.router(
             svc_id=svc_id,
             text=text,
