@@ -305,7 +305,7 @@ class GoogleTTS(Service):
               "speakingRate": options['speed'],
           },
           "input": {
-              "text": text
+              "ssml": f"<speak>{text}</speak>"
           },
           "voice": {
               "languageCode": self._languageCode(options['voice']),
