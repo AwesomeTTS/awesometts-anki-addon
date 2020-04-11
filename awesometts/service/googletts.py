@@ -240,6 +240,18 @@ class GoogleTTS(Service):
         ("vi-VN-Wavenet-D", "Vietnamese (vi-VN-Wavenet-D)"),
     ]
 
+    _audio_device_profile = [
+        ("default", "Default"),
+        ("wearable-class-device", "Smart watches and other wearables, like Apple Watch, Wear OS watch"),
+        ("handset-class-device", "Smartphones, like Google Pixel, Samsung Galaxy, Apple iPhone"),
+        ("headphone-class-device", "Earbuds or headphones for audio playback, like Sennheiser headphones"),
+        ("small-bluetooth-speaker-class-device", "Small home speakers, like Google Home Mini"),
+        ("medium-bluetooth-speaker-class-device", "Smart home speakers, like Google Home"),
+        ("large-home-entertainment-class-device", "Home entertainment systems or smart TVs, like Google Home Max, LG TV"),
+        ("large-automotive-class-device", "Car speakers"),
+        ("telephony-class-application", "Interactive Voice Response (IVR) systems"),
+    ]
+
     def _languageCode(self, name):
         """
         Returns a language code (en-US) from its name (en-US-Wavenet-A).
@@ -289,6 +301,13 @@ class GoogleTTS(Service):
                 values=(-20.00, 20.00),
                 transform=float,
                 default=0.00,
+            ),
+
+            dict(
+                key='profile',
+                label="Profile",
+                values=self._audio_device_profile,
+                transform=lambda value: value,
             )
         ]
 
@@ -312,6 +331,9 @@ class GoogleTTS(Service):
               "name": options['voice'],
           }
         }
+
+        if options['profile'] != 'default':
+            payload["audioConfig"]["effectsProfileId"] = [options['profile']]
 
         r = requests.post("https://texttospeech.googleapis.com/v1/text:synthesize?key={}".format(options['key']), json=payload)
         r.raise_for_status()
