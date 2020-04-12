@@ -308,6 +308,7 @@ class GoogleTTS(Service):
                 label="Profile",
                 values=self._audio_device_profile,
                 transform=lambda value: value,
+                default='default',
             )
         ]
 

@@ -760,7 +760,7 @@ class Router(object):
                    isinstance(option['values'], list) and \
                    len(option['values']) > 1:
                     option['values'] = [
-                        item if item[0] != option['default']
+                        item if item[0] != option['default'] or item[1] == 'Default'
                         else (item[0], item[1] + " [default]")
                         for item in option['values']
                     ]
