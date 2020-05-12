@@ -281,7 +281,7 @@ class Router(object):
         except Exception as exception:  # all, pylint:disable=broad-except
             if 'done' in callbacks:
                 callbacks['done']()
-            callbacks['fail'](exception)
+            callbacks['fail'](exception, text)
             if 'then' in callbacks:
                 callbacks['then']()
 
@@ -299,7 +299,7 @@ class Router(object):
                 if isinstance(exception, self.BusyError):
                     if 'done' in callbacks:
                         callbacks['done']()
-                    callbacks['fail'](exception)
+                    callbacks['fail'](exception, text)
                     if 'then' in callbacks:
                         callbacks['then']()
                 else:
@@ -436,7 +436,7 @@ class Router(object):
         except Exception as exception:  # catch all, pylint:disable=W0703
             if 'done' in callbacks:
                 callbacks['done']()
-            callbacks['fail'](exception)
+            callbacks['fail'](exception, text)
             if 'then' in callbacks:
                 callbacks['then']()
 
@@ -525,7 +525,7 @@ class Router(object):
                    not isinstance(exception, SocketError) and \
                    not isinstance(exception, URLError):
                     self._failures[path] = time(), exception
-                callbacks['fail'](exception)
+                callbacks['fail'](exception, text)
 
             service['instance'].net_reset()
             self._busy.append(path)

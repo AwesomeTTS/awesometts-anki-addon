@@ -283,6 +283,7 @@ class BrowserGenerator(ServiceDialog):
                 'okay': 0,  # calls which resulted in a successful MP3
                 'fail': 0,  # calls which resulted in an exception
             },
+            'failednotes': [],
             'exceptions': {},
             'throttling': {
                 'calls': {},  # unthrottled download calls made per service
@@ -350,10 +351,11 @@ class BrowserGenerator(ServiceDialog):
             proc['counts']['okay'] += 1
             note.flush()
 
-        def fail(exception):
+        def fail(exception, text):
             """Count the failure and the unique message."""
 
             proc['counts']['fail'] += 1
+            proc['failednotes'].append(text)
 
             message = str(exception)
             if isinstance(message, str):
@@ -553,6 +555,8 @@ class BrowserGenerator(ServiceDialog):
                     for message, count
                     in proc['exceptions'].items()
                 ]
+            messages.append("\n\nThe following note(s) have failed:\n")
+            messages.append("".join(f"'{note}', " for note in proc['failednotes']))
 
         else:
             messages.append("there were no errors.")
