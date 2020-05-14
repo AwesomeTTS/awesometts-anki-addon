@@ -191,6 +191,7 @@ class BrowserStripper(Dialog):
         )
 
         self._browser.mw.checkpoint("AwesomeTTS Sound Removal")
+        if hasattr(self._browser.mw.progress, "disable"): self._browser.mw.progress.disable(self)
         self._browser.model.beginReset()
 
         stat = dict(
@@ -262,6 +263,7 @@ class BrowserStripper(Dialog):
                             "window.")
 
         self._browser.model.endReset()
+        if hasattr(self._browser.mw.progress, "enable"): self._browser.mw.progress.enable()
         self._addon.config['last_strip_mode'] = mode
         self.setDisabled(False)
         self._notes = None
