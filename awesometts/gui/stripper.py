@@ -191,8 +191,6 @@ class BrowserStripper(Dialog):
         )
 
         self._browser.mw.checkpoint("AwesomeTTS Sound Removal")
-        if hasattr(self._browser.mw.progress, "disable"): self._browser.mw.progress.disable(self)
-        self._browser.model.beginReset()
 
         stat = dict(
             notes=dict(proc=0, upd=0),
@@ -262,8 +260,7 @@ class BrowserStripper(Dialog):
                             'Media" from the Anki "Tools" menu in the main '
                             "window.")
 
-        self._browser.model.endReset()
-        if hasattr(self._browser.mw.progress, "enable"): self._browser.mw.progress.enable()
+        self._browser.model.reset()
         self._addon.config['last_strip_mode'] = mode
         self.setDisabled(False)
         self._notes = None

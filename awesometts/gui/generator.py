@@ -294,8 +294,6 @@ class BrowserGenerator(ServiceDialog):
 
         self._browser.mw.checkpoint("AwesomeTTS Batch Update")
         self._process['progress'].show()
-        if hasattr(self._browser.mw.progress, "disable"): self._browser.mw.progress.disable(self)
-        self._browser.model.beginReset()
 
         self._accept_next()
 
@@ -493,8 +491,7 @@ class BrowserGenerator(ServiceDialog):
         Display statistics and close out the dialog.
         """
 
-        self._browser.model.endReset()
-        if hasattr(self._browser.mw.progress, "enable"): self._browser.mw.progress.enable()
+        self._browser.model.reset()
 
         proc = self._process
         proc['progress'].accept()
