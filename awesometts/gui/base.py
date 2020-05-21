@@ -816,7 +816,7 @@ class ServiceDialog(Dialog):
         callbacks = dict(
             done=lambda: self._disable_inputs(False),
             okay=self._addon.player.preview,
-            fail=lambda exception: self._alerts(
+            fail=lambda exception, text_value: self._alerts(
                 "Cannot preview the input phrase with these settings.\n\n%s" %
                 str(exception),
                 self,

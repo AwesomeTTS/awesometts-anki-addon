@@ -283,7 +283,7 @@ class Reviewer(object):
                     presets=config['presets'],
                     callbacks=dict(
                         okay=playback,
-                        fail=lambda exception: (
+                        fail=lambda exception, text: (
                             isinstance(exception,
                                        self._addon.router.BusyError) or
                             not show_errors or
@@ -331,7 +331,7 @@ class Reviewer(object):
             options=attr,
             callbacks=dict(
                 okay=playback,
-                fail=lambda exception: (
+                fail=lambda exception, text: (
                     # we can safely ignore "service busy" errors in review
                     isinstance(exception, self._addon.router.BusyError) or
                     not show_errors or
@@ -401,7 +401,7 @@ class Reviewer(object):
             options={'voice': voice},
             callbacks=dict(
                 okay=playback,
-                fail=lambda exception: (
+                fail=lambda exception, text: (
                     isinstance(exception, self._addon.router.BusyError) or
                     not show_errors or
                     self._play_html_legacy_bad(legacy, str(exception),
@@ -428,7 +428,7 @@ class Reviewer(object):
             options=preset,
             callbacks=dict(
                 okay=self._addon.player.menu_click,
-                fail=lambda exception: (
+                fail=lambda exception, text: (
                     isinstance(exception, self._addon.router.BusyError) or
                     self._alerts(str(exception), parent)
                 ),
@@ -444,7 +444,7 @@ class Reviewer(object):
             presets=self._addon.config['presets'],
             callbacks=dict(
                 okay=self._addon.player.menu_click,
-                fail=lambda exception: (
+                fail=lambda exception, text: (
                     isinstance(exception, self._addon.router.BusyError) or
                     self._alerts(str(exception), parent)
                 ),

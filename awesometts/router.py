@@ -294,7 +294,7 @@ class Router(object):
                 if 'then' in callbacks:
                     callbacks['then']()
 
-            def on_fail(exception):
+            def on_fail(exception, text):
                 """Go to next, unless playback already queued."""
                 if isinstance(exception, self.BusyError):
                     if 'done' in callbacks:
