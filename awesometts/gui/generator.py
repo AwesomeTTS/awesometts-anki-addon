@@ -350,7 +350,7 @@ class BrowserGenerator(ServiceDialog):
             proc['counts']['okay'] += 1
             note.flush()
 
-        def fail(exception, text):
+        def fail(exception, text="Not available by _accept_next.fail"):
             """Count the failure and the unique message."""
 
             proc['counts']['fail'] += 1

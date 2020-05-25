@@ -28,7 +28,7 @@ class Success(Exception):
     pass
 
 
-def re_raise(exception):
+def re_raise(exception, text="Not available re_raise"):
     if isinstance(exception, HTTPError):
         print('Unable to test (HTTP Error)')
         raise Success()

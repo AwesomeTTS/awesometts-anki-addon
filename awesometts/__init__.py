@@ -277,6 +277,9 @@ STRIP_TEMPLATE_POSTHTML = [
     'whitespace',
 ]
 
+def bundlefail(message, text="Not available by addon.Bundle.downloader.fail"):
+    aqt.utils.showCritical(message, aqt.mw)
+
 addon = Bundle(
     config=config,
     downloader=Bundle(
@@ -290,7 +293,7 @@ addon = Bundle(
             ),
             mw=aqt.mw,
         ),
-        fail=lambda message: aqt.utils.showCritical(message, aqt.mw),
+        fail=bundlefail,
     ),
     logger=logger,
     paths=Bundle(cache=paths.CACHE,

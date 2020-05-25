@@ -766,13 +766,16 @@ class Configurator(Dialog):
         state = self.findChild(Note, 'updates_state')
         state.setText("Querying update server...")
 
+        def configuratorfail(exception, text="Not available by Configurator._on_update_request"):
+            state.setText("Check failed: %s" % (
+                str(exception) or "Nothing further known"
+            ))
+
         from .updater import Updater
         self._addon.updates.check(
             callbacks=dict(
                 done=lambda: button.setEnabled(True),
-                fail=lambda exception: state.setText("Check failed: %s" % (
-                    str(exception) or "Nothing further known"
-                )),
+                fail=configuratorfail,
                 good=lambda: state.setText("No update needed at this time."),
                 need=lambda version, info: (
                     state.setText(f"Update to {version} is available"),

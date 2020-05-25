@@ -207,8 +207,8 @@ class Updater(Dialog):
             dlb.fail(
                 f"Unable to automatically update AwesomeTTS ({msg}); "
                 f"you may want to restart Anki and then update the "
-                f"add-on manually from the Tools menu."
-
+                f"add-on manually from the Tools menu.",
+                "Not available by Updater._update"
             )
 
     def _remind_session(self):

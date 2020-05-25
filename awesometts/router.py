@@ -320,7 +320,7 @@ class Router(object):
                     callbacks['fail'](IndexError(
                         "None of the presets in this group were able to play "
                         "the input text."
-                    ))
+                    ), text)
                     if 'then' in callbacks:
                         callbacks['then']()
                 else:
@@ -506,7 +506,7 @@ class Router(object):
               time() - self._failures[path][0] < FAILURE_CACHE_SECS):
             if 'done' in callbacks:
                 callbacks['done']()
-            callbacks['fail'](self._failures[path][1])
+            callbacks['fail'](self._failures[path][1], text)
             if 'then' in callbacks:
                 callbacks['then']()
 
@@ -530,7 +530,7 @@ class Router(object):
             service['instance'].net_reset()
             self._busy.append(path)
 
-            def completion_callback(exception):
+            def completion_callback(exception, text="Not available by Router.__call__.completion_callback"):
                 """Intermediate callback handler for all service calls."""
 
                 self._busy.remove(path)
