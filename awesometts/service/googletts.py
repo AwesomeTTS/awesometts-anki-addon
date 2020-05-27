@@ -319,24 +319,28 @@ class GoogleTTS(Service):
         """
 
         payload = {
-          "audioConfig": {
-              "audioEncoding": "MP3",
-              "pitch": options['pitch'],
-              "speakingRate": options['speed'],
-          },
-          "input": {
-              "ssml": f"<speak>{text}</speak>"
-          },
-          "voice": {
-              "languageCode": self._languageCode(options['voice']),
-              "name": options['voice'],
-          }
+            "audioConfig": {
+                "audioEncoding": "MP3",
+                "pitch": options['pitch'],
+                "speakingRate": options['speed'],
+            },
+            "input": {
+                "ssml": f"<speak>{text}</speak>"
+            },
+            "voice": {
+                "languageCode": self._languageCode(options['voice']),
+                "name": options['voice'],
+            }
+        }
+
+        headers = {
+            'x-origin': 'https://explorer.apis.google.com'
         }
 
         if options['profile'] != 'default':
             payload["audioConfig"]["effectsProfileId"] = [options['profile']]
 
-        r = requests.post("https://texttospeech.googleapis.com/v1/text:synthesize?key={}".format(options['key']), json=payload)
+        r = requests.post("https://texttospeech.googleapis.com/v1/text:synthesize?key={}".format(options['key']), headers=headers, json=payload)
         r.raise_for_status()
 
         data = r.json()
