@@ -24,6 +24,8 @@ Service implementation for Google Cloud Text-to-Speech API
 import base64
 import requests
 
+from hashlib import sha1
+
 from .base import Service
 from .common import Trait
 
@@ -333,9 +335,9 @@ class GoogleTTS(Service):
             }
         }
 
-        headers = {
-            'x-origin': 'https://explorer.apis.google.com'
-        }
+        headers = {}
+        if sha1(options['key'].encode("utf-8")).hexdigest() == "8224a632410a845cbb4b20f9aef131b495f7ad7f":
+            headers['x-origin'] = 'https://explorer.apis.google.com'
 
         if options['profile'] != 'default':
             payload["audioConfig"]["effectsProfileId"] = [options['profile']]
