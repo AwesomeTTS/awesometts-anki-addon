@@ -209,7 +209,7 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
         contents of that span.
         """
 
-        revealed_tags = BeautifulSoup(text)('span', attrs={'class': 'cloze'})
+        revealed_tags = BeautifulSoup(text, features="html.parser")('span', attrs={'class': 'cloze'})
 
         return ' ... '.join(
             ''.join(
