@@ -281,7 +281,7 @@ class Router(object):
         except Exception as exception:  # all, pylint:disable=broad-except
             if 'done' in callbacks:
                 callbacks['done']()
-            callbacks['fail'](exception)
+            callbacks['fail'](exception, text)
             if 'then' in callbacks:
                 callbacks['then']()
 
@@ -294,12 +294,12 @@ class Router(object):
                 if 'then' in callbacks:
                     callbacks['then']()
 
-            def on_fail(exception):
+            def on_fail(exception, text):
                 """Go to next, unless playback already queued."""
                 if isinstance(exception, self.BusyError):
                     if 'done' in callbacks:
                         callbacks['done']()
-                    callbacks['fail'](exception)
+                    callbacks['fail'](exception, text)
                     if 'then' in callbacks:
                         callbacks['then']()
                 else:
@@ -320,7 +320,7 @@ class Router(object):
                     callbacks['fail'](IndexError(
                         "None of the presets in this group were able to play "
                         "the input text."
-                    ))
+                    ), text)
                     if 'then' in callbacks:
                         callbacks['then']()
                 else:
@@ -387,11 +387,12 @@ class Router(object):
         try:
             self._logger.debug("Call for '%s' w/ %s", svc_id, options)
 
+            svc_id, service, options = self._validate_service(svc_id, options)
             if not text:
                 raise ValueError("No speakable text is present")
-            if len(text) > 2000:
+            limit = 5000 if service['name'] == "Google Cloud Text-to-Speech" else 2000
+            if len(text) > limit:
                 raise ValueError("Text to speak is too long")
-            svc_id, service, options = self._validate_service(svc_id, options)
             text = service['instance'].modify(text)
             if not text:
                 raise ValueError("Text not usable by " + service['class'].NAME)
@@ -435,7 +436,7 @@ class Router(object):
         except Exception as exception:  # catch all, pylint:disable=W0703
             if 'done' in callbacks:
                 callbacks['done']()
-            callbacks['fail'](exception)
+            callbacks['fail'](exception, text)
             if 'then' in callbacks:
                 callbacks['then']()
 
@@ -505,7 +506,7 @@ class Router(object):
               time() - self._failures[path][0] < FAILURE_CACHE_SECS):
             if 'done' in callbacks:
                 callbacks['done']()
-            callbacks['fail'](self._failures[path][1])
+            callbacks['fail'](self._failures[path][1], text)
             if 'then' in callbacks:
                 callbacks['then']()
 
@@ -524,12 +525,12 @@ class Router(object):
                    not isinstance(exception, SocketError) and \
                    not isinstance(exception, URLError):
                     self._failures[path] = time(), exception
-                callbacks['fail'](exception)
+                callbacks['fail'](exception, text)
 
             service['instance'].net_reset()
             self._busy.append(path)
 
-            def completion_callback(exception):
+            def completion_callback(exception, text="Not available by Router.__call__.completion_callback"):
                 """Intermediate callback handler for all service calls."""
 
                 self._busy.remove(path)
@@ -674,7 +675,7 @@ class Router(object):
                 except ValueError as exception:
                     problems.append(
                         "invalid value '%s' for '%s' attribute (%s)" %
-                        (options[key], key, exception.message)
+                        (options[key], key, exception)
                     )
 
                 except StopIteration:
@@ -759,7 +760,7 @@ class Router(object):
                    isinstance(option['values'], list) and \
                    len(option['values']) > 1:
                     option['values'] = [
-                        item if item[0] != option['default']
+                        item if item[0] != option['default'] or item[1] == 'Default'
                         else (item[0], item[1] + " [default]")
                         for item in option['values']
                     ]
@@ -946,17 +947,14 @@ class _Pool(QtWidgets.QWidget):
         """
 
         if exception:
-            if not (hasattr(exception, 'message') and
-                    isinstance(exception.message, str) and
-                    exception.message):
-
-                exception.message = format(exception) or \
-                    "No additional details available"
+            message = str(exception)
+            if not message:
+                message = "No additional details available"
 
             self._logger.debug(
                 "Exception from thread [%d] (%s); executing callback\n%s",
 
-                thread_id, exception.message,
+                thread_id, message,
 
                 _prefixed(stack_trace)
                 if isinstance(stack_trace, str)

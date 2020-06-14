@@ -283,6 +283,7 @@ class BrowserGenerator(ServiceDialog):
                 'okay': 0,  # calls which resulted in a successful MP3
                 'fail': 0,  # calls which resulted in an exception
             },
+            'failednotes': [],
             'exceptions': {},
             'throttling': {
                 'calls': {},  # unthrottled download calls made per service
@@ -293,7 +294,6 @@ class BrowserGenerator(ServiceDialog):
 
         self._browser.mw.checkpoint("AwesomeTTS Batch Update")
         self._process['progress'].show()
-        self._browser.model.beginReset()
 
         self._accept_next()
 
@@ -350,12 +350,13 @@ class BrowserGenerator(ServiceDialog):
             proc['counts']['okay'] += 1
             note.flush()
 
-        def fail(exception):
+        def fail(exception, text="Not available by _accept_next.fail"):
             """Count the failure and the unique message."""
 
             proc['counts']['fail'] += 1
+            proc['failednotes'].append(text)
 
-            message = exception.message
+            message = str(exception)
             if isinstance(message, str):
                 message = self._RE_WHITESPACE.sub(' ', message).strip()
 
@@ -490,7 +491,7 @@ class BrowserGenerator(ServiceDialog):
         Display statistics and close out the dialog.
         """
 
-        self._browser.model.endReset()
+        self._browser.model.reset()
 
         proc = self._process
         proc['progress'].accept()
@@ -553,6 +554,8 @@ class BrowserGenerator(ServiceDialog):
                     for message, count
                     in proc['exceptions'].items()
                 ]
+            messages.append("\n\nThe following note(s) have failed:\n")
+            messages.append("".join(f"'{note}', " for note in proc['failednotes']))
 
         else:
             messages.append("there were no errors.")
@@ -725,6 +728,9 @@ class EditorGenerator(ServiceDialog):
 
         super(EditorGenerator, self).show(*args, **kwargs)
 
+        QtCore.QTimer.singleShot(0, self._populate_input_field)
+
+    def _populate_input_field(self):
         text = self.findChild(QtWidgets.QTextEdit, 'text')
         text.setFocus()
 
@@ -738,15 +744,27 @@ class EditorGenerator(ServiceDialog):
             """Fetch from given system clipboard."""
             return from_unknown(app.clipboard().text(subtype)[0])
 
-        for origin in [
-                lambda: from_note(web.selectedText()),
-                lambda: from_note(web.page().mainFrame().evaluateJavaScript(
+        def js_callback(val):
+            self.callback_message = val
+
+        def exec_javascript():
+            self.callback_message = None
+
+            web.page().runJavaScript(
                     # for jQuery, this needs to be html() instead of text() as
                     # $('<div>hi<br>there</div>').text() yields "hithere"
                     # whereas if we have the original HTML, we can convert the
                     # line break tag into whitespace during input sanitization
-                    '$("#f%d").html()' % editor.currentField
-                )),
+                    '$("#f%d").html()' % editor.currentField, js_callback)
+
+            while self.callback_message is None:
+                app.instance().processEvents()
+
+            return self.callback_message
+
+        for origin in [
+                lambda: from_note(web.selectedText()),
+                lambda: from_note(exec_javascript()),
                 lambda: try_clipboard('html'),
                 lambda: try_clipboard('text'),
         ]:
@@ -779,9 +797,9 @@ class EditorGenerator(ServiceDialog):
                 super(EditorGenerator, self).accept(),
                 self._editor.addMedia(path),
             ),
-            fail=lambda exception: (
+            fail=lambda exception, text_value: (
                 self._alerts("Cannot record the input phrase with these "
-                             "settings.\n\n%s" % exception.message, self),
+                             "settings.\n\n%s" % exception, self),
                 text_input.setFocus(),
             ),
         )

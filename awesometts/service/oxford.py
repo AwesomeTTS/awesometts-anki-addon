@@ -171,7 +171,7 @@ class Oxford(Service):
             self.net_download(
                 path,
                 sound_url,
-                require=dict(mime='binary/octet-stream', size=1024),
+                require=dict(mime='audio/mpeg', size=1024),
             )
         else:
             raise IOError(

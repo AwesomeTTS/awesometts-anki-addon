@@ -26,13 +26,15 @@ from io import StringIO
 from bs4 import BeautifulSoup
 import anki
 
+clozeReg = r"(?si)\{\{(?P<tag>c)%s::(?P<content>.*?)(::(?P<hint>.*?))?\}\}"
+
 __all__ = ['RE_CLOZE_BRACED', 'RE_CLOZE_RENDERED', 'RE_ELLIPSES',
            'RE_ELLIPSES_LEADING', 'RE_ELLIPSES_TRAILING', 'RE_FILENAMES',
            'RE_HINT_LINK', 'RE_LINEBREAK_HTML', 'RE_NEWLINEISH', 'RE_SOUNDS',
            'RE_WHITESPACE', 'STRIP_HTML', 'Sanitizer']
 
 
-RE_CLOZE_BRACED = re.compile(anki.template.template.clozeReg % r'\d+')
+RE_CLOZE_BRACED = re.compile(clozeReg % r'\d+')
 RE_CLOZE_RENDERED = re.compile(
     # see anki.template.template.clozeText; n.b. the presence of the brackets
     # in the pattern means that this will only match and replace on the
@@ -207,7 +209,7 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
         contents of that span.
         """
 
-        revealed_tags = BeautifulSoup(text)('span', attrs={'class': 'cloze'})
+        revealed_tags = BeautifulSoup(text, features="html.parser")('span', attrs={'class': 'cloze'})
 
         return ' ... '.join(
             ''.join(

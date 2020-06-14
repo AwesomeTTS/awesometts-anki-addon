@@ -121,6 +121,9 @@ class Updates(QtWidgets.QWidget):
         if 'done' in worker['callbacks']:
             worker['callbacks']['done']()
 
+        if key == 'fail' and key in worker['callbacks']:
+            worker['callbacks']['fail'](*args, "Not available by Updates._on_signal")
+
         if key in worker['callbacks']:
             worker['callbacks'][key](*args, **kwargs)
 

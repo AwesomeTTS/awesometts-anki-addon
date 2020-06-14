@@ -174,6 +174,18 @@ config = Config(
     ],
 )
 
+try:
+    from aqt.sound import av_player
+    from anki.sound import SoundOrVideoTag
+
+    def append_file(self, filename: str) -> None:
+        self._enqueued.append(SoundOrVideoTag(filename=filename))
+        self._play_next_if_idle()
+
+    anki.sound.play = lambda filename: append_file(av_player, filename)
+except ImportError:
+    pass
+
 player = Player(
     anki=Bundle(
         mw=aqt.mw,
@@ -197,6 +209,7 @@ router = Router(
             ('festival', service.Festival),
             ('fluencynl', service.FluencyNl),
             ('google', service.Google),
+            ('googletts', service.GoogleTTS),
             ('howjsay', service.Howjsay),
             ('imtranslator', service.ImTranslator),
             ('ispeech', service.ISpeech),
@@ -264,6 +277,9 @@ STRIP_TEMPLATE_POSTHTML = [
     'whitespace',
 ]
 
+def bundlefail(message, text="Not available by addon.Bundle.downloader.fail"):
+    aqt.utils.showCritical(message, aqt.mw)
+
 addon = Bundle(
     config=config,
     downloader=Bundle(
@@ -277,7 +293,7 @@ addon = Bundle(
             ),
             mw=aqt.mw,
         ),
-        fail=lambda message: aqt.utils.showCritical(message, aqt.mw),
+        fail=bundlefail,
     ),
     logger=logger,
     paths=Bundle(cache=paths.CACHE,

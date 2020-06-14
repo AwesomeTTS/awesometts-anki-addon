@@ -283,7 +283,7 @@ class Reviewer(object):
                     presets=config['presets'],
                     callbacks=dict(
                         okay=playback,
-                        fail=lambda exception: (
+                        fail=lambda exception, text: (
                             isinstance(exception,
                                        self._addon.router.BusyError) or
                             not show_errors or
@@ -322,13 +322,16 @@ class Reviewer(object):
                 )
             return
 
+        if svc_id == 'android':
+            return
+
         self._addon.router(
             svc_id=svc_id,
             text=text,
             options=attr,
             callbacks=dict(
                 okay=playback,
-                fail=lambda exception: (
+                fail=lambda exception, text: (
                     # we can safely ignore "service busy" errors in review
                     isinstance(exception, self._addon.router.BusyError) or
                     not show_errors or
@@ -343,7 +346,7 @@ class Reviewer(object):
                          else "Unable to play this tag:\n%s\n\n%s")
                         % (
                             tag.prettify().strip(),
-                            exception.message,
+                            exception,
                         ),
                         parent,
                     )
@@ -398,10 +401,10 @@ class Reviewer(object):
             options={'voice': voice},
             callbacks=dict(
                 okay=playback,
-                fail=lambda exception: (
+                fail=lambda exception, text: (
                     isinstance(exception, self._addon.router.BusyError) or
                     not show_errors or
-                    self._play_html_legacy_bad(legacy, exception.message,
+                    self._play_html_legacy_bad(legacy, str(exception),
                                                parent)
                 ),
             ),
@@ -425,9 +428,9 @@ class Reviewer(object):
             options=preset,
             callbacks=dict(
                 okay=self._addon.player.menu_click,
-                fail=lambda exception: (
+                fail=lambda exception, text: (
                     isinstance(exception, self._addon.router.BusyError) or
-                    self._alerts(exception.message, parent)
+                    self._alerts(str(exception), parent)
                 ),
             ),
         )
@@ -441,9 +444,9 @@ class Reviewer(object):
             presets=self._addon.config['presets'],
             callbacks=dict(
                 okay=self._addon.player.menu_click,
-                fail=lambda exception: (
+                fail=lambda exception, text: (
                     isinstance(exception, self._addon.router.BusyError) or
-                    self._alerts(exception.message, parent)
+                    self._alerts(str(exception), parent)
                 ),
             ),
         )

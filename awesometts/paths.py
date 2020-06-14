@@ -49,7 +49,9 @@ ICONS = os.path.join(ADDON, 'gui/icons')
 
 os.makedirs(CACHE, exist_ok=True)
 
-CONFIG = os.path.join(ADDON, 'config.db')
+ROOT = os.path.dirname(ADDON)
+
+CONFIG = os.path.join(ROOT, 'user_files', 'config.db')
 
 LOG = os.path.join(ADDON, 'addon.log')
 
