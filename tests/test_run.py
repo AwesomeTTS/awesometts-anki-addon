@@ -5,6 +5,7 @@ from anki_testing import anki_running
 import tools.speech_recognition
 from pytest import raises
 import magic # to verify file types
+import os
 
 
 def test_addon_initialization():
@@ -69,7 +70,6 @@ def test_services():
         from awesometts import addon
 
         def success_if_path_exists_and_plays(path):
-            import os
 
             # play (and hope that we have no errors)
             addon.player.preview(path)
@@ -125,3 +125,74 @@ def test_services():
                     callbacks=callbacks,
                     async_variable=False
                 )
+
+def test_google_cloud_tts():
+    # test google cloud text-to-speech service
+    # to run this test only:
+    # python -m pytest tests -s -k 'test_google_cloud_tts'
+    # requires an API key , which should be set on the travis CI build
+
+    GOOGLE_CLOUD_TTS_KEY_ENVVAR = 'GOOGLE_SERVICES_KEY'
+    if GOOGLE_CLOUD_TTS_KEY_ENVVAR not in os.environ:
+        return
+
+    service_key = os.environ[GOOGLE_CLOUD_TTS_KEY_ENVVAR]
+    assert len(service_key) > 0
+
+    with anki_running() as anki_app:
+
+        from awesometts import addon
+
+        def get_verify_audio_callback(expected_text, language):
+            def verify_audio_text(path):
+                # make sure file exists
+                assert os.path.exists(path)
+                # get filetype by looking at file header
+                filetype = magic.from_file(path)
+                # should be an MP3 file
+                assert 'MPEG ADTS, layer III' in filetype
+
+                print(f'got file: {path}')
+
+                # run this file through azure speech recognition
+                if tools.speech_recognition.recognition_available():
+                    print('performing speech recognition')
+                    result_text = tools.speech_recognition.recognize_speech(path, language)
+                    print(f'detected text: {result_text}')
+                    # make sure it's what we expect
+                    assert result_text == expected_text
+                    # at this point, declare success
+                    raise Success()
+                else:
+                    # we know we have an mp3 audio file, desclare success
+                    raise Success()
+            return verify_audio_text
+
+        def failure(exception, text):
+            print(f'got exception: {exception} text: {text}')
+            assert False
+
+        svc_id = 'GoogleTTS'
+
+        # get default options
+        options = get_default_options(addon, svc_id)
+
+        # add the google services API key in the config
+        config_snippet = {
+            'extras': {'googletts': {'key': service_key}}
+        }
+        addon.config.update(config_snippet)
+
+        with raises(Success):
+            addon.router(
+                svc_id=svc_id,
+                text='this is the first sentence',
+                options=options,
+                callbacks={
+                    'okay': get_verify_audio_callback('This is the first sentence.', 'en-US'),
+                    'fail': failure
+                },
+                async_variable=False
+            )
+
+    assert True

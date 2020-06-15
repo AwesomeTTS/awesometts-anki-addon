@@ -45,10 +45,10 @@ def recognize_speech(mp3_filepath, language):
         return result.text
     elif result.reason == speechsdk.ResultReason.NoMatch:
         error_message = "No speech could be recognized: {}".format(result.no_match_details)
-        raise error_message
+        raise Exception(error_message)
     elif result.reason == speechsdk.ResultReason.Canceled:
         cancellation_details = result.cancellation_details
-        error_message = "Speech Recognition canceled: {}".format(cancellation_details.reason)
-        raise error_message
+        error_message = "Speech Recognition canceled: {}".format(cancellation_details)
+        raise Exception(error_message)
 
     raise "unknown error"
