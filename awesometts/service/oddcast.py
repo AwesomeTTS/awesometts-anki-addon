@@ -256,7 +256,7 @@ class Oddcast(Service):
                     for key, (_, lang_id, _, variant, gend, name)
                     in sorted(VOICES.items(), key=voice_sorter)
                 ],
-                default='en/steven',
+                test_default='en/steven',
                 transform=transform_voice,
             ),
         ]
