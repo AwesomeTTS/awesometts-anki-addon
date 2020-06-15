@@ -2,9 +2,7 @@ from urllib.error import HTTPError
 from warnings import warn
 
 import tools.anki_testing
-from tools.anki_testing import anki_running
 import tools.speech_recognition
-import pytest
 from pytest import raises
 import magic # to verify file types
 import os
