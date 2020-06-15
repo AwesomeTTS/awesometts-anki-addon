@@ -5,7 +5,7 @@ python:
 - 3.7
 install:
 - sudo apt-get install libssl1.0.0 libasound2 ffmpeg mplayer lame
-- pip install azure-cognitiveservices-speech pydub
+- pip install azure-cognitiveservices-speech pydub python-magic
 - git clone https://github.com/krassowski/anki_testing
 - source anki_testing/setup.sh
 script:

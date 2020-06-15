@@ -4,6 +4,7 @@ from warnings import warn
 from anki_testing import anki_running
 import tools.speech_recognition
 from pytest import raises
+import magic # to verify file types
 
 
 def test_addon_initialization():
@@ -83,8 +84,12 @@ def test_services():
                     if result_text == 'Pronunciation.':
                         raise Success()
                 else:
-                    # claim success
-                    raise Success()
+                    # just check that we indeed have an mp3 file
+                    filetype = magic.from_file(path)
+                    #print(f'filetype: {filetype}')
+                    if 'MPEG ADTS, layer III' in filetype:
+                        # claim success
+                        raise Success()
 
         def failure(exception, text):
             print(f'got exception: {exception} text: {text}')
