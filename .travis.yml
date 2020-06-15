@@ -1,15 +1,15 @@
 sudo: required
 dist: bionic
 language: python
-
 python:
-  - 3.7
-
+- 3.7
 install:
-  - sudo apt-get install libssl1.0.0 libasound2 ffmpeg mplayer lame # required for azure speech recognition
-  - pip install azure-cognitiveservices-speech pydub
-  - git clone https://github.com/krassowski/anki_testing
-  - source anki_testing/setup.sh
-
+- sudo apt-get install libssl1.0.0 libasound2 ffmpeg mplayer lame
+- pip install azure-cognitiveservices-speech pydub
+- git clone https://github.com/krassowski/anki_testing
+- source anki_testing/setup.sh
 script:
-  - bash tools/test.sh
+- bash tools/test.sh
+env:
+  global:
+    secure: TIMdZQzzvq5I7/IMoDaEQjZLPh1izF5+Y9j9kBqEKkF5u39semjewUqJ7NFeouojMUeOc6fP2IR9/ybWBnp0nj9zKHFR3UYSwvffVAl0zmA3g2fvpMMf31/mbb4qILyuBenDplV2dPe8jcSNnKMl1t6dfbC7245EC2WZ6cecQIJf2ZdlBTbzIR6xEgYkaJGd7q4MUgO8dAp1bVEH7uRs7OA1/lYrCc3S7g0xT5EUFLAZ5QAvvkVYnqR0DVo9/cPTJqRfbKmkA7CuK3M2nWQUlPut+mtF3x2D2TiMa2Xokl+r7K5YC7LWIAhfXc1p4BI3WeZ6LWAdCfvZNHTgZVHINdC8nuGMYLoBTahWX1Cg3AhiFNDtCm13dZFPqwMiqYlZRjJUq3NUlxrsAjII0zIi954R0VJbIPD8IRIuBWGlu8PwR3MmYZPY30hLF6pa62Fc953QBITcAVvNatfFwuWPj4VPZKN/hXwiYlqJE5jizlWXMPJ4SbVJTKMDwTS2uaW25Y1274VbBIXQCLFhZdV4eeDfNbx5bD6BN4vatDdlUxUZKKf246gWffLeTaZMoSGPfoMWYTXa0LlB8CoC4ECufPkNvZOAyf8hC/IVZI327xJ6ediMg9dG7uVl2CaC/2tKgsjfvgFi1fDbSpL40nRqZXsyLtG4vmGyppW/e592c6w=
