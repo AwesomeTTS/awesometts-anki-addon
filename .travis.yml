@@ -6,6 +6,8 @@ python:
   - 3.7
 
 install:
+  - sudo apt-get install libssl1.0.0 libasound2 ffmpeg mplayer lame # required for azure speech recognition
+  - pip install azure-cognitiveservices-speech pydub
   - git clone https://github.com/krassowski/anki_testing
   - source anki_testing/setup.sh
 
