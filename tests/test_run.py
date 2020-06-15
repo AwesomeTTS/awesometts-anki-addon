@@ -18,6 +18,8 @@ def test_addon_initialization():
         awesometts.temp_files()        # remove temporary files upon session exit
         awesometts.update_checker()    # if enabled, runs the add-on update checker
         awesometts.window_shortcuts()  # enable/update shortcuts for add-on windows
+        # if we didn't hit any exceptions at this point, declare success
+        assert True
 
 
 def test_gui():
