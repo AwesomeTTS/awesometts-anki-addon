@@ -2,6 +2,7 @@ from urllib.error import HTTPError
 from warnings import warn
 
 from anki_testing import anki_running
+import speech_recognition
 from pytest import raises
 
 
@@ -74,8 +75,16 @@ def test_services():
 
             # and after making sure that the path exists
             if os.path.exists(path):
-                # claim success
-                raise Success()
+                
+                if speech_recognition.recognition_available():
+                    print('performing speech recognition')
+                    result_text = speech_recognition.recognize_speech(path, 'en-US')
+                    print(f'detected text: {result_text}')
+                    if result_text == 'Pronunciation.':
+                        raise Success()
+                else:
+                    # claim success
+                    raise Success()
 
         def failure(exception, text):
             print(f'got exception: {exception} text: {text}')
@@ -98,12 +107,15 @@ def test_services():
 
             print(f'Testing {name}')
 
+            # some services only support a single word. so use a single word as input as a common denominator
+            input_word = 'pronunciation'
+
             options = get_default_options(addon, svc_id)
 
             with raises(Success):
                 addon.router(
                     svc_id=svc_id,
-                    text='test',
+                    text=input_word,
                     options=options,
                     callbacks=callbacks,
                     async_variable=False
