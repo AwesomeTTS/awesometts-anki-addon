@@ -2,7 +2,7 @@ from urllib.error import HTTPError
 from warnings import warn
 
 from anki_testing import anki_running
-import speech_recognition
+import tools.speech_recognition
 from pytest import raises
 
 
@@ -76,9 +76,9 @@ def test_services():
             # and after making sure that the path exists
             if os.path.exists(path):
                 
-                if speech_recognition.recognition_available():
+                if tools.speech_recognition.recognition_available():
                     print('performing speech recognition')
-                    result_text = speech_recognition.recognize_speech(path, 'en-US')
+                    result_text = tools.speech_recognition.recognize_speech(path, 'en-US')
                     print(f'detected text: {result_text}')
                     if result_text == 'Pronunciation.':
                         raise Success()
