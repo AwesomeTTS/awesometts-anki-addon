@@ -160,7 +160,9 @@ def test_google_cloud_tts():
                     result_text = tools.speech_recognition.recognize_speech(path, language)
                     print(f'detected text: {result_text}')
                     # make sure it's what we expect
-                    assert result_text == expected_text
+                    # remove final ., 。 (for chinese) and lowercase
+                    processed_result = result_text.lower().replace('.', '').replace('。', '')
+                    assert processed_result == expected_text
                     # at this point, declare success
                     raise Success()
                 else:
@@ -176,6 +178,7 @@ def test_google_cloud_tts():
 
         # get default options
         options = get_default_options(addon, svc_id)
+        print(options)
 
         # add the google services API key in the config
         config_snippet = {
@@ -183,16 +186,25 @@ def test_google_cloud_tts():
         }
         addon.config.update(config_snippet)
 
-        with raises(Success):
-            addon.router(
-                svc_id=svc_id,
-                text='this is the first sentence',
-                options=options,
-                callbacks={
-                    'okay': get_verify_audio_callback('This is the first sentence.', 'en-US'),
-                    'fail': failure
-                },
-                async_variable=False
-            )
+        # generate audio files for all these test cases, then run them through the speech recognition API to make sure the output is correct
+        test_cases = [
+            {'voice': 'en-US-Wavenet-D', 'text_input': 'this is the first sentence', 'recognition_language':'en-US'},
+            {'voice': 'en-GB-Standard-B', 'text_input': 'i want to save my stomach for veggie dumplings', 'recognition_language':'en-GB'},
+            {'voice': 'fr-FR-Wavenet-B', 'text_input': 'ravi de vous rencontrer', 'recognition_language':'fr-FR'},
+            {'voice': 'cmn-CN-Wavenet-B', 'text_input': '我试着每天都不去吃快餐', 'recognition_language':'zh-CN'},
+        ]
 
-    assert True
+        for test_case in test_cases:
+            options['voice'] = test_case['voice']
+            text_input = test_case['text_input']
+            with raises(Success):
+                addon.router(
+                    svc_id=svc_id,
+                    text=text_input,
+                    options=options,
+                    callbacks={
+                        'okay': get_verify_audio_callback(text_input, test_case['recognition_language']),
+                        'fail': failure
+                    },
+                    async_variable=False
+                )
