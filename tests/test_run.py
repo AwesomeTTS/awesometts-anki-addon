@@ -1,7 +1,7 @@
 from urllib.error import HTTPError
 from warnings import warn
 
-from anki_testing import anki_running
+from tools.anki_testing import anki_running
 import tools.speech_recognition
 from pytest import raises
 import magic # to verify file types

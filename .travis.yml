@@ -4,10 +4,9 @@ language: python
 python:
 - 3.7
 install:
-- sudo apt-get install libssl1.0.0 libasound2 ffmpeg mplayer lame
-- pip install azure-cognitiveservices-speech pydub python-magic
-- git clone https://github.com/krassowski/anki_testing
-- source anki_testing/setup.sh
+- sudo apt-get update
+- sudo apt-get install libssl1.0.0 libasound2 ffmpeg mplayer lame portaudio19-dev xvfb libqt5x11extras5  
+- pip install azure-cognitiveservices-speech pydub python-magic pyqt5==5.14 PyQtWebEngine==5.14 anki aqt
 script:
 - bash tools/test.sh
 env:

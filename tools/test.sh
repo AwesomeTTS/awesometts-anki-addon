@@ -1,18 +1,7 @@
 #!/usr/bin/env bash
 
-sudo apt-get install mplayer lame
+# start x-server
+start-stop-daemon --start --pidfile ~/xvfb.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1024x768x24 -ac +extension GLX +render -noreset
+export DISPLAY=:99
 
-for required_program in 'git' 'mplayer' 'python3' 'lame' 'pip3'
-do
-  hash ${required_program} 2>/dev/null || {
-    echo >&2 "$required_program is required but it is not installed. Please install $required_program first."
-    exit 1
-  }
-done
-
-bash anki_testing/install_anki.sh
-
-# never versions attempt to read __init__.py on the root level which leads to multiple error
-python3 -m pip install pytest==3.7.1
-
-python3 -m pytest tests
+python -m pytest tests
