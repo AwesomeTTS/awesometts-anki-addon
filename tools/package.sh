@@ -67,6 +67,7 @@ zip -9 "$target" \
     awesometts/gui/icons/*.png \
     awesometts/service/*.py \
     awesometts/service/*.js \
+    user_files/README.txt \
     __init__.py \
     manifest.json
 
