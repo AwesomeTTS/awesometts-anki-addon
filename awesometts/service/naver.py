@@ -112,8 +112,8 @@ def _generate_data(input_str):
         padded_str = input_str + ('a' * (6 - extra))
     else:
         padded_str = input_str
-
-    base64ed = base64.standard_b64encode(padded_str)
+    
+    base64ed = base64.b64encode(padded_str.encode('utf-8')).decode('utf-8')
 
     header = 'a'
     output = header + _swap(base64ed, ord(header[0]) % (len(base64ed) - 2) + 1)
@@ -146,6 +146,7 @@ class Naver(Service):
                         for key, (description, _, _) in VOICE_CODES],
                 transform=lambda str: self.normalize(str)[0:2],
                 default='ko',
+                test_default='en'
             ),
         ]
 

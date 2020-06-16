@@ -72,7 +72,7 @@ class TestClass():
         require_key = ['iSpeech', 'Google Cloud Text-to-Speech']
         # in an attempt to get continuous integration running again, a number of services had to be disabled. 
         # we'll have to revisit this when we get a baseline of working tests
-        it_fails = ['Baidu Translate', 'Duden', 'NAVER Translate', 'abair.ie', 'Fluency.nl', 'ImTranslator', 'NeoSpeech', 'VoiceText', 'Wiktionary', 'Yandex.Translate']
+        it_fails = ['Baidu Translate', 'Duden', 'abair.ie', 'Fluency.nl', 'ImTranslator', 'NeoSpeech', 'VoiceText', 'Wiktionary', 'Yandex.Translate']
 
         def success_if_path_exists_and_plays(path):
 
@@ -131,6 +131,43 @@ class TestClass():
                     async_variable=False
                 )
 
+    def get_verify_audio_callback(self, expected_text, language):
+        """
+        Build and return a callback which compares the received audio against the expected text, in the specified language
+        """
+
+        def verify_audio_text(path):
+            # make sure file exists
+            assert os.path.exists(path)
+            # get filetype by looking at file header
+            filetype = magic.from_file(path)
+            # should be an MP3 file
+            assert 'MPEG ADTS, layer III' in filetype
+
+            print(f'got file: {path}')
+
+            # run this file through azure speech recognition
+            if tools.speech_recognition.recognition_available():
+                print('performing speech recognition')
+                result_text = tools.speech_recognition.recognize_speech(path, language)
+                print(f'detected text: {result_text}')
+                # make sure it's what we expect
+                # remove final ., 。 (for chinese) and lowercase
+                processed_result = result_text.lower().replace('.', '').replace('。', '').replace('?', '')
+                assert processed_result == expected_text
+                # at this point, declare success
+                raise Success()
+            else:
+                # we know we have an mp3 audio file, desclare success
+                raise Success()
+        return verify_audio_text
+
+    def get_failure_callback(self):
+        def failure(exception, text):
+            print(f'got exception: {exception} text: {text}')
+            assert False
+        return failure
+
     def test_google_cloud_tts(self):
         # test google cloud text-to-speech service
         # to run this test only:
@@ -143,37 +180,6 @@ class TestClass():
 
         service_key = os.environ[GOOGLE_CLOUD_TTS_KEY_ENVVAR]
         assert len(service_key) > 0
-
-        def get_verify_audio_callback(expected_text, language):
-            def verify_audio_text(path):
-                # make sure file exists
-                assert os.path.exists(path)
-                # get filetype by looking at file header
-                filetype = magic.from_file(path)
-                # should be an MP3 file
-                assert 'MPEG ADTS, layer III' in filetype
-
-                print(f'got file: {path}')
-
-                # run this file through azure speech recognition
-                if tools.speech_recognition.recognition_available():
-                    print('performing speech recognition')
-                    result_text = tools.speech_recognition.recognize_speech(path, language)
-                    print(f'detected text: {result_text}')
-                    # make sure it's what we expect
-                    # remove final ., 。 (for chinese) and lowercase
-                    processed_result = result_text.lower().replace('.', '').replace('。', '')
-                    assert processed_result == expected_text
-                    # at this point, declare success
-                    raise Success()
-                else:
-                    # we know we have an mp3 audio file, desclare success
-                    raise Success()
-            return verify_audio_text
-
-        def failure(exception, text):
-            print(f'got exception: {exception} text: {text}')
-            assert False
 
         svc_id = 'GoogleTTS'
 
@@ -204,8 +210,46 @@ class TestClass():
                     text=text_input,
                     options=options,
                     callbacks={
-                        'okay': get_verify_audio_callback(text_input, test_case['recognition_language']),
-                        'fail': failure
+                        'okay': self.get_verify_audio_callback(text_input, test_case['recognition_language']),
+                        'fail': self.get_failure_callback()
                     },
                     async_variable=False
                 )
+
+    def test_naver(self):
+        # test Naver Translate service
+        # to run this test only:
+        # python -m pytest tests -s -k 'test_naver'
+
+        def failure(exception, text):
+            print(f'got exception: {exception} text: {text}')
+            assert False
+
+        svc_id = 'Naver'
+
+        # get default options
+        options = get_default_options(self.addon, svc_id)
+        print(options)
+
+        # generate audio files for all these test cases, then run them through the speech recognition API to make sure the output is correct
+        test_cases = [
+            {'voice': 'en', 'text_input': 'this is the first sentence', 'recognition_language':'en-US'},
+            {'voice': 'ko', 'text_input': '여보세요', 'recognition_language':'ko-KR'},
+            #{'voice': 'zh', 'text_input': '你好', 'recognition_language':'zh-CN'}, #chinese voice doesn't seem to work
+            {'voice': 'ja', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
+        ]
+
+        for test_case in test_cases:
+            options['voice'] = test_case['voice']
+            text_input = test_case['text_input']
+            with raises(Success):
+                self.addon.router(
+                    svc_id=svc_id,
+                    text=text_input,
+                    options=options,
+                    callbacks={
+                        'okay': self.get_verify_audio_callback(text_input, test_case['recognition_language']),
+                        'fail': failure
+                    },
+                    async_variable=False
+            )                
