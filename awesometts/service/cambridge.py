@@ -41,17 +41,13 @@ class CambridgeLister(HTMLParser):
 
     def reset(self):
         HTMLParser.reset(self)
-        self.sounds = []
 
     def handle_starttag(self, tag, attrs):
-        if tag == 'span':
-            #print(f'*** class span, attrs: {attrs}')
-            pass
         if tag == 'span' and len(attrs) == 1 and attrs[0] == ('class', self.initial_class):
-            print(f'*** found wanted initial class span, attrs: {attrs}')
+            #print(f'*** found wanted initial class span, attrs: {attrs}')
             self.capture_sound = True
         if tag == 'source' and self.capture_sound and attrs[0] == ('type', 'audio/mpeg'):
-            print(f'found tag source: attrs: {attrs}')
+            #print(f'found tag source: attrs: {attrs}')
             (tag_key, sound_file) = attrs[1]
             self.sound_file = sound_file
             self.capture_sound = False
@@ -129,8 +125,6 @@ class Cambridge(Service):
         parser.feed(html_payload.decode('utf-8'))
         parser.close()
 
-        print(f'*** parser.sounds: {parser.sounds} ****')
-
         if parser.sound_file != None:
             sound_url = 'https://dictionary.cambridge.org' + parser.sound_file
             #print(f'sound_url: {sound_url}')
@@ -143,4 +137,4 @@ class Cambridge(Service):
             )
             parser.reset()
         else:
-            raise IOError(f"Could not extract audio from Cambridge dictionary on page {dict_url}")
+            raise IOError(f"Could not extract audio for voice {options['voice']} from Cambridge dictionary on page {dict_url}. You can try the en-US voice.")
