@@ -18,6 +18,9 @@
 
 set -e
 
+# run like this:
+# tools/package.sh ~/awesometts-releases/AwesomeTTS-v1.14.0.ankiaddon
+
 if [ -z "$1" ]
 then
     echo 'Please specify where you want to save the package.' 1>&2
@@ -30,11 +33,11 @@ fi
 target=$1
 
 case $target in
-    *.zip)
+    *.ankiaddon)
         ;;
 
     *)
-        echo 'Expected target path to end in a ".zip" extension.' 1>&2
+        echo 'Expected target path to end in a ".ankiaddon" extension.' 1>&2
         exit 1
 esac
 
@@ -64,6 +67,7 @@ zip -9 "$target" \
     awesometts/gui/icons/*.png \
     awesometts/service/*.py \
     awesometts/service/*.js \
-    __init__.py
+    __init__.py \
+    manifest.json
 
 cd "$oldPwd" || exit 1
