@@ -71,9 +71,9 @@ def get_platform_info():
 
     return "%s %s; %s" % (implementation, python_version, system_description)
 
-VERSION = '1.13.0-dev'
+VERSION = '1.14'
 
-WEB = 'https://ankiatts.appspot.com'
+WEB = 'https://github.com/AwesomeTTS/awesometts-anki-addon'
 
 AGENT = 'AwesomeTTS/%s (Anki %s; PyQt %s; %s)' % (VERSION, anki.version,
                                                   PYQT_VERSION_STR,
