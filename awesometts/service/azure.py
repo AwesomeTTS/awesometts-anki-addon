@@ -227,6 +227,5 @@ class Azure(Service):
             error_message = f"Status code: {response.status_code} reason: {response.reason} voice: [{voice_name}] language: [{language} subscription key: [{subscription_key}]]"
             raise ValueError(error_message)
 
-        time.sleep(1)
 
 
