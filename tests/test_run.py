@@ -66,13 +66,13 @@ class TestClass():
 
 
     def test_services(self):
-        """Tests all services (except iSpeech) using a single word.
+        """Tests all services (except services which require an API key) using a single word.
 
-        Retrieving, processing, and playing of word "test" will be tested,
+        Retrieving, processing, and playing of word "successful" will be tested,
         using default (or first available) options. To expose a specific
         value of an option for testing purposes only, use test_default.
         """
-        require_key = ['iSpeech', 'Google Cloud Text-to-Speech']
+        require_key = ['iSpeech', 'Google Cloud Text-to-Speech', 'Microsoft Azure']
         # in an attempt to get continuous integration running again, a number of services had to be disabled. 
         # we'll have to revisit this when we get a baseline of working tests
         it_fails = ['Baidu Translate', 'Duden', 'abair.ie', 'Fluency.nl', 'ImTranslator', 'NeoSpeech', 'VoiceText', 'Wiktionary', 'Yandex.Translate']
@@ -200,6 +200,40 @@ class TestClass():
         ]
 
         self.run_service_testcases(svc_id, test_cases)
+
+    def test_azure(self):
+        # test azure cognitive services API
+        # to run this test only:
+        # python -m pytest tests -s -k 'test_azure'
+        # requires an API key , which should be set on the travis CI build
+
+        AZURE_SERVICES_KEY_ENVVAR_NAME = 'AZURE_SERVICES_KEY'
+        if AZURE_SERVICES_KEY_ENVVAR_NAME not in os.environ:
+            return
+
+        service_key = os.environ[AZURE_SERVICES_KEY_ENVVAR_NAME]
+        assert len(service_key) > 0
+
+        svc_id = 'Azure'
+
+        # get default options
+        options = get_default_options(self.addon, svc_id)
+        print(options)
+
+        # add the google services API key in the config
+        config_snippet = {
+            'extras': {'azure': {'key': service_key}}
+        }
+        self.addon.config.update(config_snippet)
+
+        # generate audio files for all these test cases, then run them through the speech recognition API to make sure the output is correct
+        test_cases = [
+            {'voice': 'Microsoft Server Speech Text to Speech Voice (en-US, BenjaminRUS)', 'text_input': 'this is the first sentence', 'recognition_language':'en-US'},
+            {'voice': 'Microsoft Server Speech Text to Speech Voice (fr-CH, Guillaume)', 'text_input': 'ravi de vous rencontrer', 'recognition_language':'fr-FR'},
+            {'voice': 'Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)', 'text_input': '我试着每天都不去吃快餐', 'recognition_language':'zh-CN'},
+        ]
+
+        self.run_service_testcases(svc_id, test_cases)        
 
 
     def test_naver(self):
