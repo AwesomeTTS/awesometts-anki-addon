@@ -6,7 +6,10 @@ import tools.speech_recognition
 from pytest import raises
 import magic # to verify file types
 import os
+import sys
 
+import logging as logger
+logger.basicConfig(stream=sys.stdout, level=logger.DEBUG)
 
 
 class Success(Exception):
@@ -237,3 +240,12 @@ class TestClass():
             {'voice': 'en', 'text_input': 'successful', 'recognition_language':'en-US'},
         ]
         self.run_service_testcases(svc_id, test_cases)        
+
+    def test_cambridge(self):
+        # python -m pytest tests -s -k 'test_cambridge'
+        svc_id = 'Cambridge'
+        test_cases = [
+            {'voice': 'en-GB', 'text_input': 'successful', 'recognition_language':'en-GB'},
+            {'voice': 'en-US', 'text_input': 'congratulations', 'recognition_language':'en-US'},
+        ]
+        self.run_service_testcases(svc_id, test_cases)

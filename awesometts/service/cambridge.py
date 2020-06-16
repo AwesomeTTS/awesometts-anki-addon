@@ -33,19 +33,28 @@ __all__ = ['Cambridge']
 class CambridgeLister(HTMLParser):
     """Accumulate all found MP3s into `sounds` member."""
 
+    def __init__(self, initial_class):
+        self.initial_class = initial_class # should be something like 'uk dpron-i' for UK, or 'us dpron-i' for US
+        self.capture_sound = False
+        self.sound_file = None
+        super().__init__()
+
     def reset(self):
         HTMLParser.reset(self)
         self.sounds = []
 
     def handle_starttag(self, tag, attrs):
-        class_name = 'circle circle-btn sound audio_play_button'
-        if tag == "span" and ('class', class_name) in attrs:
-            source_links = [
-                value for attr, value in attrs
-                if attr == 'data-src-mp3'
-            ]
-            self.sounds.extend(source_links)
-
+        if tag == 'span':
+            #print(f'*** class span, attrs: {attrs}')
+            pass
+        if tag == 'span' and len(attrs) == 1 and attrs[0] == ('class', self.initial_class):
+            print(f'*** found wanted initial class span, attrs: {attrs}')
+            self.capture_sound = True
+        if tag == 'source' and self.capture_sound and attrs[0] == ('type', 'audio/mpeg'):
+            print(f'found tag source: attrs: {attrs}')
+            (tag_key, sound_file) = attrs[1]
+            self.sound_file = sound_file
+            self.capture_sound = False
 
 class Cambridge(Service):
     """
@@ -111,20 +120,20 @@ class Cambridge(Service):
         )
         html_payload = self.net_stream(dict_url)
 
-        parser = CambridgeLister()
+        if options['voice'] == 'en-US':
+            initial_class = 'us dpron-i '
+        else:
+            initial_class = 'uk dpron-i '
+
+        parser = CambridgeLister(initial_class)
         parser.feed(html_payload.decode('utf-8'))
         parser.close()
 
-        if options['voice'] == 'en-US':
-            pron_lang = 'us_pron'
-        else:
-            pron_lang = 'uk_pron'
+        print(f'*** parser.sounds: {parser.sounds} ****')
 
-        if len(parser.sounds) > 0:
-            for link in list(set(parser.sounds)):
-                if re.search(pron_lang, link):
-                    sound_url = 'https://dictionary.cambridge.org' + link
-                    break
+        if parser.sound_file != None:
+            sound_url = 'https://dictionary.cambridge.org' + parser.sound_file
+            #print(f'sound_url: {sound_url}')
 
             self.net_download(
                 path,
@@ -133,3 +142,5 @@ class Cambridge(Service):
                 require=dict(mime='audio/mpeg', size=1024),
             )
             parser.reset()
+        else:
+            raise IOError(f"Could not extract audio from Cambridge dictionary on page {dict_url}")
