@@ -217,7 +217,6 @@ class TestClass():
         self.run_service_testcases(svc_id, test_cases)
 
     def test_youdao(self):
-        # test Naver Translate service
         # python -m pytest tests -s -k 'test_youdao'
 
         svc_id = 'Youdao'
@@ -228,4 +227,13 @@ class TestClass():
             {'voice': 'jp', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
         ]
 
+        self.run_service_testcases(svc_id, test_cases)
+
+    def test_oxford(self):
+        # python -m pytest tests -s -k 'test_oxford'
+
+        svc_id = 'Oxford'
+        test_cases = [
+            {'voice': 'en', 'text_input': 'successful', 'recognition_language':'en-US'},
+        ]
         self.run_service_testcases(svc_id, test_cases)        
