@@ -74,37 +74,6 @@ class TestClass():
         # we'll have to revisit this when we get a baseline of working tests
         it_fails = ['Baidu Translate', 'Duden', 'abair.ie', 'Fluency.nl', 'ImTranslator', 'NeoSpeech', 'VoiceText', 'Wiktionary', 'Yandex.Translate']
 
-        def success_if_path_exists_and_plays(path):
-
-            # play (and hope that we have no errors)
-            self.addon.player.preview(path)
-
-            # and after making sure that the path exists
-            if os.path.exists(path):
-                
-                if tools.speech_recognition.recognition_available():
-                    print('performing speech recognition')
-                    result_text = tools.speech_recognition.recognize_speech(path, 'en-US')
-                    print(f'detected text: {result_text}')
-                    if result_text == 'Pronunciation.':
-                        raise Success()
-                else:
-                    # just check that we indeed have an mp3 file
-                    filetype = magic.from_file(path)
-                    #print(f'filetype: {filetype}')
-                    if 'MPEG ADTS, layer III' in filetype:
-                        # claim success
-                        raise Success()
-
-        def failure(exception, text):
-            print(f'got exception: {exception} text: {text}')
-            assert False
-
-        callbacks = {
-            'okay': success_if_path_exists_and_plays,
-            'fail': failure
-        }
-
         for svc_id, name, in self.addon.router.get_services():
 
             if name in require_key:
@@ -127,7 +96,10 @@ class TestClass():
                     svc_id=svc_id,
                     text=input_word,
                     options=options,
-                    callbacks=callbacks,
+                    callbacks={
+                        'okay': self.get_verify_audio_callback(input_word, 'en-US'),
+                        'fail': self.get_failure_callback()
+                    },
                     async_variable=False
                 )
 
