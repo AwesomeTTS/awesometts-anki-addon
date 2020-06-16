@@ -307,4 +307,17 @@ class TestClass():
             {'voice': 'en/steven', 'text_input': 'successful', 'recognition_language':'en-US'},
             {'voice': 'th/narisa', 'text_input': 'กรุงเทพฯ', 'recognition_language':'th-TH'},
         ]
-        self.run_service_testcases(svc_id, test_cases)                        
+        self.run_service_testcases(svc_id, test_cases)
+
+    def test_yandex(self):
+        # python -m pytest tests -s -k 'test_yandex'
+        svc_id = 'Yandex'
+
+        options = get_default_options(self.addon, svc_id)
+        print(options)
+
+        test_cases = [
+            {'voice': 'en_GB', 'text_input': 'successful', 'recognition_language':'en-GB'},
+            {'voice': 'es_ES', 'text_input': 'gracias', 'recognition_language':'en-ES'},
+        ]
+        self.run_service_testcases(svc_id, test_cases)                                
