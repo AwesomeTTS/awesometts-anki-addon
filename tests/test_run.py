@@ -293,4 +293,18 @@ class TestClass():
             #{'voice': 'de', 'text_input': 'entschuldigung', 'recognition_language':'de-DE'}, doesn't seem to work
             #{'voice': 'zh', 'text_input': '你好', 'recognition_language':'zh-CN'}, # doesn't seem to work
         ]
-        self.run_service_testcases(svc_id, test_cases)        
+        self.run_service_testcases(svc_id, test_cases)
+
+
+    def test_oddcast(self):
+        # python -m pytest tests -s -k 'test_oddcast'
+        svc_id = 'Oddcast'
+
+        options = get_default_options(self.addon, svc_id)
+        print(options)
+
+        test_cases = [
+            {'voice': 'en/steven', 'text_input': 'successful', 'recognition_language':'en-US'},
+            {'voice': 'th/narisa', 'text_input': 'กรุงเทพฯ', 'recognition_language':'th-TH'},
+        ]
+        self.run_service_testcases(svc_id, test_cases)                        
