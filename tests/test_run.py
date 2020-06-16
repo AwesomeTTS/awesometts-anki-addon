@@ -249,3 +249,14 @@ class TestClass():
             {'voice': 'en-US', 'text_input': 'congratulations', 'recognition_language':'en-US'},
         ]
         self.run_service_testcases(svc_id, test_cases)
+
+    def test_collins(self):
+        # python -m pytest tests -s -k 'test_collins'
+        svc_id = 'Collins'
+        test_cases = [
+            {'voice': 'en', 'text_input': 'successful', 'recognition_language':'en-GB'},
+            {'voice': 'fr', 'text_input': 'bonjour', 'recognition_language':'fr-FR'},
+            #{'voice': 'de', 'text_input': 'entschuldigung', 'recognition_language':'de-DE'}, doesn't seem to work
+            #{'voice': 'zh', 'text_input': '你好', 'recognition_language':'zh-CN'}, # doesn't seem to work
+        ]
+        self.run_service_testcases(svc_id, test_cases)        
