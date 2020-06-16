@@ -215,3 +215,17 @@ class TestClass():
         ]
 
         self.run_service_testcases(svc_id, test_cases)
+
+    def test_youdao(self):
+        # test Naver Translate service
+        # python -m pytest tests -s -k 'test_youdao'
+
+        svc_id = 'Youdao'
+
+        # generate audio files for all these test cases, then run them through the speech recognition API to make sure the output is correct
+        test_cases = [
+            {'voice': 'en', 'text_input': 'this is the first sentence', 'recognition_language':'en-US'},
+            {'voice': 'jp', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
+        ]
+
+        self.run_service_testcases(svc_id, test_cases)        
