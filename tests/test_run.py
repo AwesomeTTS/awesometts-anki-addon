@@ -140,6 +140,29 @@ class TestClass():
             assert False
         return failure
 
+    def run_service_testcases(self, svc_id, test_cases):
+        """
+        a generic way to run a number of test cases for a given service
+        """
+        # get default options
+        options = get_default_options(self.addon, svc_id)
+        print(options)
+
+        for test_case in test_cases:
+            options['voice'] = test_case['voice']
+            text_input = test_case['text_input']
+            with raises(Success):
+                self.addon.router(
+                    svc_id=svc_id,
+                    text=text_input,
+                    options=options,
+                    callbacks={
+                        'okay': self.get_verify_audio_callback(text_input, test_case['recognition_language']),
+                        'fail': self.get_failure_callback()
+                    },
+                    async_variable=False
+                )        
+
     def test_google_cloud_tts(self):
         # test google cloud text-to-speech service
         # to run this test only:
@@ -173,35 +196,15 @@ class TestClass():
             {'voice': 'cmn-CN-Wavenet-B', 'text_input': '我试着每天都不去吃快餐', 'recognition_language':'zh-CN'},
         ]
 
-        for test_case in test_cases:
-            options['voice'] = test_case['voice']
-            text_input = test_case['text_input']
-            with raises(Success):
-                self.addon.router(
-                    svc_id=svc_id,
-                    text=text_input,
-                    options=options,
-                    callbacks={
-                        'okay': self.get_verify_audio_callback(text_input, test_case['recognition_language']),
-                        'fail': self.get_failure_callback()
-                    },
-                    async_variable=False
-                )
+        self.run_service_testcases(svc_id, test_cases)
+
 
     def test_naver(self):
         # test Naver Translate service
         # to run this test only:
         # python -m pytest tests -s -k 'test_naver'
 
-        def failure(exception, text):
-            print(f'got exception: {exception} text: {text}')
-            assert False
-
         svc_id = 'Naver'
-
-        # get default options
-        options = get_default_options(self.addon, svc_id)
-        print(options)
 
         # generate audio files for all these test cases, then run them through the speech recognition API to make sure the output is correct
         test_cases = [
@@ -211,17 +214,4 @@ class TestClass():
             {'voice': 'ja', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
         ]
 
-        for test_case in test_cases:
-            options['voice'] = test_case['voice']
-            text_input = test_case['text_input']
-            with raises(Success):
-                self.addon.router(
-                    svc_id=svc_id,
-                    text=text_input,
-                    options=options,
-                    callbacks={
-                        'okay': self.get_verify_audio_callback(text_input, test_case['recognition_language']),
-                        'fail': failure
-                    },
-                    async_variable=False
-            )                
+        self.run_service_testcases(svc_id, test_cases)
