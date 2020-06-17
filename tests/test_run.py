@@ -37,6 +37,7 @@ class TestClass():
         self.anki_app = tools.anki_testing.get_anki_app()
         from awesometts import addon
         self.addon = addon
+        self.logger = addon.logger
 
     def teardown_class(self):
         tools.anki_testing.destroy_anki_app()
@@ -84,7 +85,7 @@ class TestClass():
                 warn(f'Skipping {name} - known to fail; if you can fix it, please open a PR')
                 continue
 
-            print(f'Testing {name}')
+            self.logger.info(f'Testing service {name}')
 
             # some services only support a single word. so use a single word as input as a common denominator
             input_word = 'pronunciation'
@@ -116,7 +117,7 @@ class TestClass():
             # should be an MP3 file
             assert 'MPEG ADTS, layer III' in filetype
 
-            print(f'got file: {path}')
+            self.logger.info(f'got audio file: {path}')
 
             # run this file through azure speech recognition
             if tools.speech_recognition.recognition_available():
@@ -144,9 +145,12 @@ class TestClass():
         """
         a generic way to run a number of test cases for a given service
         """
+
+        self.logger.info(f'Testing service {svc_id} with {len(test_cases)} test cases')
+
         # get default options
         options = get_default_options(self.addon, svc_id)
-        print(options)
+        self.logger.info(f'Default options for service {svc_id}: {options}')
 
         for test_case in test_cases:
             options['voice'] = test_case['voice']
@@ -178,10 +182,6 @@ class TestClass():
 
         svc_id = 'GoogleTTS'
 
-        # get default options
-        options = get_default_options(self.addon, svc_id)
-        print(options)
-
         # add the google services API key in the config
         config_snippet = {
             'extras': {'googletts': {'key': service_key}}
@@ -212,10 +212,6 @@ class TestClass():
         assert len(service_key) > 0
 
         svc_id = 'Azure'
-
-        # get default options
-        options = get_default_options(self.addon, svc_id)
-        print(options)
 
         # add the google services API key in the config
         config_snippet = {
@@ -297,9 +293,6 @@ class TestClass():
         # python -m pytest tests -s -k 'test_oddcast'
         svc_id = 'Oddcast'
 
-        options = get_default_options(self.addon, svc_id)
-        print(options)
-
         test_cases = [
             {'voice': 'en/steven', 'text_input': 'successful', 'recognition_language':'en-US'},
             {'voice': 'th/narisa', 'text_input': 'กรุงเทพฯ', 'recognition_language':'th-TH'},
@@ -309,9 +302,6 @@ class TestClass():
     def test_yandex(self):
         # python -m pytest tests -s -k 'test_yandex'
         svc_id = 'Yandex'
-
-        options = get_default_options(self.addon, svc_id)
-        print(options)
 
         test_cases = [
             {'voice': 'en_GB', 'text_input': 'successful', 'recognition_language':'en-GB'},
