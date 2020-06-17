@@ -3,6 +3,7 @@ from warnings import warn
 
 import tools.anki_testing
 import tools.speech_recognition
+import pytest
 from pytest import raises
 import magic # to verify file types
 import os
@@ -150,7 +151,7 @@ class TestClass():
         logger_prefix = self.common_logger_prefix(svc_id, voice, expected_text, language)
 
         def failure(exception, text):
-            self.logger.error(f'{logger_prefix} got exception: {exception} text: {text}')
+            self.logger.error(f'{logger_prefix} got exception: {exception} input_text: [{text}]')
             assert False
         return failure
 
@@ -323,6 +324,7 @@ class TestClass():
         ]
         self.run_service_testcases(svc_id, test_cases)                                
 
+    @pytest.mark.skip(reason="requires fixing, https://github.com/AwesomeTTS/awesometts-anki-addon/issues/99")
     def test_duden(self):
         # python -m pytest tests -s -k 'test_duden'
         svc_id = 'Duden'
