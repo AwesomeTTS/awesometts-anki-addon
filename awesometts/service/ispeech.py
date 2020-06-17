@@ -111,8 +111,7 @@ class ISpeech(Service):
         return [
             dict(key='voice',
                  label="Voice",
-                 values=[(api_name,
-                          "%s (%s %s)" % (api_name, gender, language))
+                 values=[(api_name, f"{api_name} ({gender} {language})")
                          for api_name, (language, gender)
                          in sorted(VOICES.items(),
                                    key=lambda item: (item[1][0],
@@ -150,9 +149,9 @@ class ISpeech(Service):
             )
         except ValueError as error:
             try:
-                from urlparse import parse_qs
+                from urllib.parse import parse_qs
                 error = ValueError(parse_qs(error.payload)['message'][0])
-            except StandardError:
+            except Exception:
                 pass
             raise error
 

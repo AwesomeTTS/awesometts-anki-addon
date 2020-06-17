@@ -21,10 +21,12 @@ Basic manipulation and sanitization of input text
 """
 
 import re
-from StringIO import StringIO
+from io import StringIO
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 import anki
+
+clozeReg = r"(?si)\{\{(?P<tag>c)%s::(?P<content>.*?)(::(?P<hint>.*?))?\}\}"
 
 __all__ = ['RE_CLOZE_BRACED', 'RE_CLOZE_RENDERED', 'RE_ELLIPSES',
            'RE_ELLIPSES_LEADING', 'RE_ELLIPSES_TRAILING', 'RE_FILENAMES',
@@ -32,7 +34,7 @@ __all__ = ['RE_CLOZE_BRACED', 'RE_CLOZE_RENDERED', 'RE_ELLIPSES',
            'RE_WHITESPACE', 'STRIP_HTML', 'Sanitizer']
 
 
-RE_CLOZE_BRACED = re.compile(anki.template.template.clozeReg % r'\d+')
+RE_CLOZE_BRACED = re.compile(clozeReg % r'\d+')
 RE_CLOZE_RENDERED = re.compile(
     # see anki.template.template.clozeText; n.b. the presence of the brackets
     # in the pattern means that this will only match and replace on the
@@ -81,7 +83,7 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
                 self._log(applied + ["early exit"], '')
                 return ''
 
-            if isinstance(rule, basestring):  # always run these rules
+            if isinstance(rule, str):  # always run these rules
                 applied.append(rule)
                 text = getattr(self, '_rule_' + rule)(text)
 
@@ -163,18 +165,18 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
         )
 
     _rule_clozes_braced.wrapper = lambda match: (
-        '... %s ...' % match.group(3).strip('.') if (match.group(3) and
-                                                     match.group(3).strip('.'))
+        '... %s ...' % match.group(4).strip('.') if (match.group(4) and
+                                                     match.group(4).strip('.'))
         else '...'
     )
 
     _rule_clozes_braced.deleter = lambda match: (
-        match.group(1) if match.group(1)
+        match.group(2) if match.group(2)
         else '...'
     )
 
     _rule_clozes_braced.ankier = lambda match: (
-        match.group(3) if match.group(3)
+        match.group(4) if match.group(4)
         else '...'
     )
 
@@ -207,11 +209,11 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
         contents of that span.
         """
 
-        revealed_tags = BeautifulSoup(text)('span', attrs={'class': 'cloze'})
+        revealed_tags = BeautifulSoup(text, features="html.parser")('span', attrs={'class': 'cloze'})
 
         return ' ... '.join(
             ''.join(
-                unicode(content)
+                str(content)
                 for content in tag.contents
             )
             for tag in revealed_tags
@@ -285,7 +287,7 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
         while hints:
             hints.pop().extract()
 
-        return unicode(soup)
+        return str(soup)
 
     def _rule_hint_links(self, text):
         """

@@ -21,7 +21,7 @@ Service implementation for Oxford Dictionary
 """
 
 import re
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 
 from .base import Service
 from .common import Trait
@@ -71,11 +71,11 @@ class Oxford(Service):
         """
 
         return "Oxford Dictionary (British and American English); " \
-            "dictionary words only with fuzzy matching"
+            "dictionary words only, with (optional) fuzzy matching"
 
     def options(self):
         """
-        Provides access to voice only.
+        Provides access to voice and fuzzy matching switch.
         """
 
         voice_lookup = dict([
@@ -106,6 +106,13 @@ class Oxford(Service):
                 default='en-GB',
                 transform=transform_voice,
             ),
+            dict(
+                key='fuzzy',
+                label="Fuzzy matching",
+                values=[(True, 'Enabled'), (False, 'Disabled')],
+                default=True,
+                transform=bool
+            )
         ]
 
     def modify(self, text):
@@ -120,21 +127,21 @@ class Oxford(Service):
 
     def run(self, text, options, path):
         """
-        Download wep page for given word
+        Download web page for given word
         Then extract mp3 path and download it
         """
 
         if len(text) > 100:
             raise IOError("Input text is too long for the Oxford Dictionary")
 
-        from urllib2 import quote
+        from urllib.parse import quote
         dict_url = 'https://en.oxforddictionaries.com/definition/%s%s' % (
             'us/' if options['voice'] == 'en-US' else '',
             quote(text.encode('utf-8'))
         )
 
         try:
-            html_payload = self.net_stream(dict_url)
+            html_payload = self.net_stream(dict_url, allow_redirects=options['fuzzy'])
         except IOError as io_error:
             if getattr(io_error, 'code', None) == 404:
                 raise IOError(
@@ -146,6 +153,13 @@ class Oxford(Service):
                 )
             else:
                 raise
+        except ValueError as error:
+            if str(error) == "Request has been redirected":
+                raise IOError(
+                    "The Oxford Dictionary has no exact match for your input. "
+                    "You can enable fuzzy-matching in options."
+                )
+            raise error
 
         parser = OxfordLister()
         parser.feed(html_payload.decode('utf-8'))
@@ -157,7 +171,7 @@ class Oxford(Service):
             self.net_download(
                 path,
                 sound_url,
-                require=dict(mime='binary/octet-stream', size=1024),
+                require=dict(mime='audio/mpeg', size=1024),
             )
         else:
             raise IOError(

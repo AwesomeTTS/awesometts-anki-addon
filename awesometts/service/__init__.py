@@ -23,7 +23,9 @@ Service classes for AwesomeTTS
 from .common import Trait
 
 from .abair import Abair
+from .azure import Azure
 from .baidu import Baidu
+from .cambridge import Cambridge
 from .collins import Collins
 from .duden import Duden
 from .ekho import Ekho
@@ -31,6 +33,7 @@ from .espeak import ESpeak
 from .festival import Festival
 from .fluencynl import FluencyNl
 from .google import Google
+from .googletts import GoogleTTS
 from .howjsay import Howjsay
 from .imtranslator import ImTranslator
 from .ispeech import ISpeech
@@ -56,6 +59,7 @@ __all__ = [
 
     # services
     'Abair',
+    'Azure',
     'Baidu',
     'Collins',
     'Duden',
@@ -64,6 +68,7 @@ __all__ = [
     'Festival',
     'FluencyNl',
     'Google',
+    'GoogleTTS',
     'Howjsay',
     'ImTranslator',
     'ISpeech',

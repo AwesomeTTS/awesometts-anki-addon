@@ -21,6 +21,9 @@
 from .base import Service
 from .common import Trait
 
+import base64
+import json
+
 __all__ = ['Naver']
 
 
@@ -34,13 +37,8 @@ CNDIC_CONFIG = [
     ('wrapper', 0),
 ]
 
-TRANSLATE_INIT = 'http://translate.naver.com/getVcode.dic'
-TRANSLATE_ENDPOINT = 'http://translate.naver.com/tts'
-TRANSLATE_CONFIG = [
-    ('from', 'translate'),
-    ('service', 'translate'),
-    ('speech_fmt', 'mp3'),
-]
+TRANSLATE_ENDPOINT = 'https://papago.naver.com/apis/tts/'
+TRANSLATE_MKID = TRANSLATE_ENDPOINT + 'makeID'
 
 VOICE_CODES = [
     ('ko', (
@@ -63,6 +61,8 @@ VOICE_CODES = [
         "Japanese",
         False,
         [
+            ('alpha', 0),
+            ('pitch', 0),
             ('speaker', 'yuri'),
             ('speed', 2),
         ],
@@ -84,6 +84,41 @@ def _quote_all(input_string,
                *args, **kwargs):  # pylint:disable=unused-argument
     """NAVER Translate needs every character quoted."""
     return ''.join('%%%x' % ord(char) for char in input_string)
+
+
+# These functions implement the obfuscation functions found at
+# https://papago.naver.com/main.7909bf415016e805e81b.chunk.js under
+# "obfuscate.ts".
+
+def _swap(input_str, index):
+    return input_str[index:] + input_str[0:index]
+
+def _scramble(input_str):
+    output_str = ''
+    for c in input_str:
+        ci = c.lower()
+        if ci >= 'a' and ci <= 'm':
+            output_str += chr(ord(c) + 13)
+        elif ci >= 'n' and ci <= 'z':
+            output_str += chr(ord(c) - 13)
+        else:
+            output_str += c
+    return output_str
+
+def _generate_data(input_str):
+    extra = len(input_str) % 6
+
+    if extra > 0:
+        padded_str = input_str + ('a' * (6 - extra))
+    else:
+        padded_str = input_str
+    
+    base64ed = base64.b64encode(padded_str.encode('utf-8')).decode('utf-8')
+
+    header = 'a'
+    output = header + _swap(base64ed, ord(header[0]) % (len(base64ed) - 2) + 1)
+
+    return _scramble(output)
 
 
 class Naver(Service):
@@ -111,6 +146,7 @@ class Naver(Service):
                         for key, (description, _, _) in VOICE_CODES],
                 transform=lambda str: self.normalize(str)[0:2],
                 default='ko',
+                test_default='en'
             ),
         ]
 
@@ -141,26 +177,29 @@ class Naver(Service):
 
         else:
             def process_subtext(output_mp3, subtext):
-                """Request a vcode and download the MP3."""
-
-                vcode = self.net_stream(
-                    (TRANSLATE_INIT, dict(text=subtext)),
+                param_str = json.dumps(dict(
+                    config +
+                    [
+                        ('text', subtext),
+                    ]
+                ))
+                resp = self.net_stream(
+                    (
+                        TRANSLATE_MKID,
+                        {
+                            'data': _generate_data(param_str)
+                        }
+                    ),
                     method='POST',
                 )
-                vcode = ''.join(char for char in vcode if char.isdigit())
+
+                sound_id = json.loads(resp)['id']
 
                 self.net_download(
                     output_mp3,
                     (
-                        TRANSLATE_ENDPOINT,
-                        dict(
-                            TRANSLATE_CONFIG +
-                            config +
-                            [
-                                ('text', subtext),
-                                ('vcode', vcode),
-                            ]
-                        ),
+                        TRANSLATE_ENDPOINT + sound_id,
+                        dict()
                     ),
                     require=dict(mime='audio/mpeg', size=256),
                     custom_quoter=dict(text=_quote_all),

@@ -240,7 +240,7 @@ class Oddcast(Service):
             """Returns a tuple of language, country, gender, name."""
             _, voice_def = voice_item
             _, lang_id, _, country, gender, name = voice_def
-            return LANGUAGES[lang_id], country, gender, name
+            return LANGUAGES[lang_id], country or '', gender, name
 
         return [
             dict(
@@ -256,6 +256,7 @@ class Oddcast(Service):
                     for key, (_, lang_id, _, variant, gend, name)
                     in sorted(VOICES.items(), key=voice_sorter)
                 ],
+                test_default='en/steven',
                 transform=transform_voice,
             ),
         ]
@@ -271,9 +272,10 @@ class Oddcast(Service):
             """Generates the filename."""
 
             return md5(
-                '<engineID>%d</engineID><voiceID>%d</voiceID>'
-                '<langID>%d</langID><ext>mp3</ext>%s' %
-                (eng_id, vo_id, lang_id, subtext.encode('utf-8'))
+                (
+                    f'<engineID>{eng_id}</engineID><voiceID>{vo_id}</voiceID>'
+                    f'<langID>{lang_id}</langID><ext>mp3</ext>{subtext}'
+                ).encode()
             ).hexdigest()
 
         self.net_download(

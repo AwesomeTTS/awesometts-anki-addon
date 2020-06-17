@@ -23,7 +23,7 @@ Helpful type conversions
 import json
 import re
 
-from PyQt4.QtCore import Qt
+from PyQt5.QtCore import Qt
 
 __all__ = ['compact_json', 'deserialized_dict', 'lax_bool',
            'normalized_ascii', 'nullable_key', 'nullable_int',
@@ -49,7 +49,7 @@ def deserialized_dict(json_str):
 
     try:
         obj = json.loads(json_str)
-    except StandardError:
+    except Exception:
         return {}
 
     return obj if isinstance(obj, dict) else {}
@@ -61,7 +61,7 @@ def lax_bool(value):
     similar strings.
     """
 
-    if isinstance(value, basestring):
+    if isinstance(value, str):
         value = value.strip().strip('-0').lower()
         return value not in lax_bool.FALSE_STRINGS
 
@@ -72,15 +72,12 @@ lax_bool.FALSE_STRINGS = ['', 'false', 'no', 'off', 'unset']
 
 def normalized_ascii(value):
     """
-    Returns a plain ASCII string containing only alphanumeric characters
-    from the given value.
+    Returns a plain ASCII string containing only lowercase
+    alphanumeric characters from the given value.
     """
+    value = value.encode('ascii', 'ignore').decode()
 
-    if isinstance(value, unicode):
-        value = value.encode('ascii', 'ignore')
-    elif not isinstance(value, basestring):
-        value = str(value)
-
+    # TODO: .isalnum() could be used here, but it is not equivalent
     return ''.join(char.lower()
                    for char in value
                    if char.isalpha() or char.isdigit())
@@ -88,7 +85,7 @@ def normalized_ascii(value):
 
 def nullable_key(value):
     """
-    Returns an instance of PyQt4.QtCore.Qt.Key for the given value, if
+    Returns an instance of PyQt5.QtCore.Qt.Key for the given value, if
     possible. If the incoming value cannot be represented as a key,
     returns None.
     """
@@ -108,7 +105,7 @@ def nullable_int(value):
 
     try:
         return int(value)
-    except StandardError:
+    except Exception:
         return None
 
 
@@ -142,10 +139,12 @@ def substitution_json(rules):
 
     return (
         compact_json([
-            dict((key, value)
-                 for key, value
-                 in item.items()
-                 if key != 'compiled')
+            {
+                key: value
+                for key, value
+                in item.items()
+                if key != 'compiled'
+            }
             for item in rules
         ])
         if rules and isinstance(rules, list)
@@ -164,14 +163,14 @@ def substitution_list(json_str):
         if not isinstance(candidates, list):
             raise ValueError
 
-    except StandardError:
+    except Exception:
         return []
 
     rules = []
 
     for candidate in candidates:
         if not ('replace' in candidate and
-                isinstance(candidate['replace'], basestring)):
+                isinstance(candidate['replace'], str)):
             continue
 
         for key, default in substitution_list.DEFAULTS:

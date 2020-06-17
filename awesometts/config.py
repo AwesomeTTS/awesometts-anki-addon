@@ -130,7 +130,7 @@ class Config(object):
         containing one column.
         """
 
-        if isinstance(triggers, basestring):
+        if isinstance(triggers, str):
             triggers = [triggers]
 
         for trigger in triggers:
@@ -209,7 +209,7 @@ class Config(object):
                     self._cache[name] = col[2]
 
         else:
-            all_cols = self._cols.values()
+            all_cols = list(self._cols.values())
 
             self._logger.info("Creating new configuration table")
 
@@ -241,7 +241,7 @@ class Config(object):
 
         # since this is the initial load, notify all registered event handlers
         unique_callbacks = set()
-        for callbacks in self._events.values():
+        for callbacks in list(self._events.values()):
             unique_callbacks.update(callbacks)
         for callback in unique_callbacks:
             callback(self)
