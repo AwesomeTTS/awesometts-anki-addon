@@ -92,52 +92,65 @@ class TestClass():
 
             options = get_default_options(self.addon, svc_id)
 
+            expected_language = 'en-US'
+
             with raises(Success):
                 self.addon.router(
                     svc_id=svc_id,
                     text=input_word,
                     options=options,
                     callbacks={
-                        'okay': self.get_verify_audio_callback(input_word, 'en-US'),
-                        'fail': self.get_failure_callback()
+                        'okay': self.get_verify_audio_callback(svc_id, options['voice'], input_word, expected_language),
+                        'fail': self.get_failure_callback(svc_id, options['voice'], input_word, expected_language)
                     },
                     async_variable=False
                 )
 
-    def get_verify_audio_callback(self, expected_text, language):
+    def common_logger_prefix(self, svc_id, voice, expected_text, language):
+        return f'Service {svc_id} voice=[{voice}] text_input=[{expected_text}] language=[{language}]'
+
+    def get_verify_audio_callback(self, svc_id, voice, expected_text, language):
         """
         Build and return a callback which compares the received audio against the expected text, in the specified language
         """
 
         def verify_audio_text(path):
+            logger_prefix = self.common_logger_prefix(svc_id, voice, expected_text, language)
             # make sure file exists
+            self.logger.debug(f'{logger_prefix} retrieved audio file {path}, verifying that it exists')
             assert os.path.exists(path)
             # get filetype by looking at file header
             filetype = magic.from_file(path)
             # should be an MP3 file
-            assert 'MPEG ADTS, layer III' in filetype
+            expected_filetype = 'MPEG ADTS, layer III'
+            self.logger.debug(f'{logger_prefix} verifying that filetype contains [{expected_filetype}]')
+            assert expected_filetype in filetype
 
-            self.logger.info(f'got audio file: {path}')
+            self.logger.debug(f'{logger_prefix} audio file {path} passed initial checks')
 
             # run this file through azure speech recognition
             if tools.speech_recognition.recognition_available():
-                print('performing speech recognition')
+                self.logger.debug(f'{logger_prefix} speech recognition available')
                 result_text = tools.speech_recognition.recognize_speech(path, language)
-                print(f'detected text: {result_text}')
+                self.logger.debug(f'{logger_prefix} detected text [{result_text}]')
                 # make sure it's what we expect
                 # remove final ., 。 (for chinese) and lowercase
                 processed_result = result_text.lower().replace('.', '').replace('。', '').replace('?', '')
                 assert processed_result == expected_text
                 # at this point, declare success
+                self.logger.debug(f'{logger_prefix} test success')
                 raise Success()
             else:
                 # we know we have an mp3 audio file, desclare success
+                self.logger.debug(f'{logger_prefix} speech recognition not available, declare test successful')
                 raise Success()
         return verify_audio_text
 
-    def get_failure_callback(self):
+    def get_failure_callback(self, svc_id, voice, expected_text, language):
+        logger_prefix = self.common_logger_prefix(svc_id, voice, expected_text, language)
+
         def failure(exception, text):
-            print(f'got exception: {exception} text: {text}')
+            self.logger.error(f'{logger_prefix} got exception: {exception} text: {text}')
             assert False
         return failure
 
@@ -155,14 +168,15 @@ class TestClass():
         for test_case in test_cases:
             options['voice'] = test_case['voice']
             text_input = test_case['text_input']
+            self.logger.info(f"Testing service {svc_id} with voice={options['voice']} and text_input={text_input}")
             with raises(Success):
                 self.addon.router(
                     svc_id=svc_id,
                     text=text_input,
                     options=options,
                     callbacks={
-                        'okay': self.get_verify_audio_callback(text_input, test_case['recognition_language']),
-                        'fail': self.get_failure_callback()
+                        'okay': self.get_verify_audio_callback(svc_id, options['voice'], text_input, test_case['recognition_language']),
+                        'fail': self.get_failure_callback(svc_id, options['voice'], text_input, test_case['recognition_language'])
                     },
                     async_variable=False
                 )        
@@ -170,7 +184,7 @@ class TestClass():
     def test_google_cloud_tts(self):
         # test google cloud text-to-speech service
         # to run this test only:
-        # python -m pytest tests -s -k 'test_google_cloud_tts'
+        # python -m pytest tests -k 'test_google_cloud_tts'
         # requires an API key , which should be set on the travis CI build
 
         GOOGLE_CLOUD_TTS_KEY_ENVVAR = 'GOOGLE_SERVICES_KEY'
