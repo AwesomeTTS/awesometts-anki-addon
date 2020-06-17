@@ -72,7 +72,7 @@ def get_platform_info():
 
     return "%s %s; %s" % (implementation, python_version, system_description)
 
-VERSION = '1.15.0'
+VERSION = '1.16.0'
 
 WEB = 'https://github.com/AwesomeTTS/awesometts-anki-addon'
 
