@@ -331,4 +331,12 @@ class TestClass():
         test_cases = [
             {'voice': 'de', 'text_input': 'hund', 'recognition_language':'de-DE'},
         ]
-        self.run_service_testcases(svc_id, test_cases)                                        
+        self.run_service_testcases(svc_id, test_cases)
+
+    def test_forvo(self):
+        # python -m pytest tests -k 'test_forvo'
+        svc_id = 'Forvo'
+        test_cases = [
+            {'voice': 'en', 'text_input': 'successful', 'recognition_language':'en-US'},
+        ]
+        self.run_service_testcases(svc_id, test_cases)        
