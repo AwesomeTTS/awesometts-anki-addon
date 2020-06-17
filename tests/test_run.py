@@ -8,10 +8,6 @@ import magic # to verify file types
 import os
 import sys
 
-import logging as logger
-logger.basicConfig(stream=sys.stdout, level=logger.DEBUG)
-
-
 class Success(Exception):
     pass
 
@@ -37,6 +33,7 @@ def get_default_options(addon, svc_id):
 
 class TestClass():
     def setup_class(self):
+        os.environ['AWESOMETTS_DEBUG_LOGGING'] = 'enable'
         self.anki_app = tools.anki_testing.get_anki_app()
         from awesometts import addon
         self.addon = addon
@@ -321,3 +318,11 @@ class TestClass():
             #{'voice': 'es_ES', 'text_input': 'gracias', 'recognition_language':'en-ES'}, # spanish is broken
         ]
         self.run_service_testcases(svc_id, test_cases)                                
+
+    def test_duden(self):
+        # python -m pytest tests -s -k 'test_duden'
+        svc_id = 'Duden'
+        test_cases = [
+            {'voice': 'de', 'text_input': 'hund', 'recognition_language':'de-DE'},
+        ]
+        self.run_service_testcases(svc_id, test_cases)                                        

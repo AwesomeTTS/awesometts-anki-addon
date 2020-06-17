@@ -21,6 +21,7 @@ Add-on package initialization
 """
 
 from os.path import join
+import os
 import sys
 from time import time
 
@@ -82,11 +83,14 @@ AGENT = 'AwesomeTTS/%s (Anki %s; PyQt %s; %s)' % (VERSION, anki.version,
 
 # Begin core class initialization and dependency setup, pylint:disable=C0103
 
-logger = Bundle(debug=lambda *a, **k: None, error=lambda *a, **k: None,
-                info=lambda *a, **k: None, warn=lambda *a, **k: None)
-# for logging output, replace `logger` with a real one, e.g.:
-# import logging as logger
-# logger.basicConfig(stream=sys.stdout, level=logger.DEBUG)
+if 'AWESOMETTS_DEBUG_LOGGING' in os.environ and os.environ['AWESOMETTS_DEBUG_LOGGING'] == 'enable':
+    import logging 
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger('awesometts')
+    logger.setLevel(logging.DEBUG)
+else:
+    logger = Bundle(debug=lambda *a, **k: None, error=lambda *a, **k: None,
+                    info=lambda *a, **k: None, warn=lambda *a, **k: None)
 
 sequences = {key: QKeySequence()
              for key in ['browser_generator', 'browser_stripper',
