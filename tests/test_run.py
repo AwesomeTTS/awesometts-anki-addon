@@ -356,7 +356,8 @@ class TestClass():
 
         test_cases = [
             {'voice': 'en', 'text_input': 'successful', 'recognition_language':'en-US'}, # no country set
-            {'voice': 'en', 'sex': 'f', 'text_input': 'greetings', 'recognition_language':'en-US'}, # set sex
+            {'voice': 'en', 'sex': 'f', 'text_input': 'greetings', 'recognition_language':'en-US'}, # set sex=female
             {'voice': 'en', 'text_input': 'greetings', 'recognition_language':'en-US'}, # set country=USA
+            {'voice': 'zh', 'sex': 'f', 'text_input': '你好', 'recognition_language':'zh-CN'}, # chinese, female
         ]
         self.run_service_testcases(svc_id, test_cases, ['country', 'sex'])
