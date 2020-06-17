@@ -34,6 +34,8 @@ __all__ = ['Duden']
 
 INPUT_MAXIMUM = 100
 
+IGNORE_ARTICLES = ['der', 'das', 'die']
+
 
 class Duden(Service):
     """
@@ -70,6 +72,17 @@ class Duden(Service):
                 default='de',
             ),
         ]
+
+    def modify(self, text):
+        components = text.split(' ')
+        if len(components) > 1:
+            components_filtered = [x for x in components if x.lower() not in IGNORE_ARTICLES]
+            components = components_filtered
+        result = ' '.join(components)
+        # is there a final comma ?
+        if result[-1] == ',':
+            result = result[0:-1]
+        return result
 
     def run(self, text, options, path):
         """
@@ -109,14 +122,13 @@ class Duden(Service):
 
         def process_candidate_definition(input):
             input = input.replace('\u00AD', '')
-            input = input.lower()
             return input
 
         self._logger.debug(f'found candidates: {definition_candidates}')
         # self._logger.debug(f"first entry: {definition_candidates[0]}  matches: {definition_candidates[0]['word'] == text} text={text}")
 
         # simple strategy, lower-cased words should match.
-        correct_candidates = [x for x in definition_candidates if process_candidate_definition(x['word']) == text.lower()]
+        correct_candidates = [x for x in definition_candidates if process_candidate_definition(x['word']) == text]
         if len(correct_candidates) == 0:
             error_message = f"Couldn't find definition for {text} on page {search_url}"
             raise IOError(error_message)
@@ -139,7 +151,11 @@ class Duden(Service):
         # ========================================
 
         sound_element = soup.find('a', {'class':'pronunciation-guide__sound'})
-        self._logger.debug(f'sound_element: {sound_element}')        
+        if sound_element == None:
+            error_message = f"Couldn't find pronunciation for word [{text}] on page {definition_url}"
+            raise IOError(error_message)
+
+        self._logger.debug(f'sound_element: {sound_element}')
         mp3_url = sound_element['href']
 
         self.net_download(path, mp3_url,

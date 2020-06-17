@@ -101,7 +101,7 @@ class TestClass():
                     text=input_word,
                     options=options,
                     callbacks={
-                        'okay': self.get_verify_audio_callback(svc_id, options['voice'], input_word, expected_language),
+                        'okay': self.get_verify_audio_callback(svc_id, options['voice'], input_word, expected_language, True),
                         'fail': self.get_failure_callback(svc_id, options['voice'], input_word, expected_language)
                     },
                     async_variable=False
@@ -110,7 +110,7 @@ class TestClass():
     def common_logger_prefix(self, svc_id, voice, expected_text, language):
         return f'Service {svc_id} voice=[{voice}] text_input=[{expected_text}] language=[{language}]'
 
-    def get_verify_audio_callback(self, svc_id, voice, expected_text, language):
+    def get_verify_audio_callback(self, svc_id, voice, expected_text, language, lowercase):
         """
         Build and return a callback which compares the received audio against the expected text, in the specified language
         """
@@ -134,10 +134,15 @@ class TestClass():
                 self.logger.debug(f'{logger_prefix} speech recognition available')
                 result_text = tools.speech_recognition.recognize_speech(path, language)
                 self.logger.debug(f'{logger_prefix} detected text [{result_text}]')
+                
                 # make sure it's what we expect
+                # need to lowercase ?
+                if lowercase:
+                    result_text = result_text.lower()
+
                 # remove final ., 。 (for chinese) and lowercase
-                processed_result = result_text.lower().replace('.', '').replace('。', '').replace('?', '')
-                assert processed_result == expected_text
+                result_text = result_text.replace('.', '').replace('。', '').replace('?', '')
+                assert result_text == expected_text
                 # at this point, declare success
                 self.logger.debug(f'{logger_prefix} test success')
                 raise Success()
@@ -155,7 +160,7 @@ class TestClass():
             assert False
         return failure
 
-    def run_service_testcases(self, svc_id, test_cases, extra_option_keys=[]):
+    def run_service_testcases(self, svc_id, test_cases, extra_option_keys=[], lowercase=True):
         """
         a generic way to run a number of test cases for a given service
         """
@@ -173,6 +178,9 @@ class TestClass():
                 if extra_option_key in test_case:
                     options[extra_option_key] = test_case[extra_option_key]
             text_input = test_case['text_input']
+            expected_output = text_input
+            if 'expected_output' in test_case:
+                expected_output = test_case['expected_output']
             self.logger.info(f"Testing service {svc_id} with voice={options['voice']} and text_input={text_input}")
             with raises(Success):
                 self.addon.router(
@@ -180,7 +188,7 @@ class TestClass():
                     text=text_input,
                     options=options,
                     callbacks={
-                        'okay': self.get_verify_audio_callback(svc_id, options['voice'], text_input, test_case['recognition_language']),
+                        'okay': self.get_verify_audio_callback(svc_id, options['voice'], expected_output, test_case['recognition_language'], lowercase),
                         'fail': self.get_failure_callback(svc_id, options['voice'], text_input, test_case['recognition_language'])
                     },
                     async_variable=False
@@ -332,12 +340,17 @@ class TestClass():
         # python -m pytest tests -rPP -k 'test_duden'
         svc_id = 'Duden'
         test_cases = [
-            {'voice': 'de', 'text_input': 'hund', 'recognition_language':'de-DE'},
-            {'voice': 'de', 'text_input': 'danke', 'recognition_language':'de-DE'},
-            {'voice': 'de', 'text_input': 'größe', 'recognition_language':'de-DE'},
-            {'voice': 'de', 'text_input': 'glück', 'recognition_language':'de-DE'},
+            {'voice': 'de', 'text_input': 'Hund', 'recognition_language':'de-DE'},
+            {'voice': 'de', 'text_input': 'der Hund', 'expected_output':'Hund', 'recognition_language':'de-DE'},
+            {'voice': 'de', 'text_input': 'die Straße', 'expected_output':'Straße', 'recognition_language':'de-DE'},
+            {'voice': 'de', 'text_input': 'das Kind', 'expected_output':'Kind', 'recognition_language':'de-DE'},
+            {'voice': 'de', 'text_input': 'das Können', 'expected_output':'Können', 'recognition_language':'de-DE'},
+            {'voice': 'de', 'text_input': 'Können, das', 'expected_output':'Können', 'recognition_language':'de-DE'},
+            {'voice': 'de', 'text_input': 'Können, Das', 'expected_output':'Können', 'recognition_language':'de-DE'},
+            {'voice': 'de', 'text_input': 'Größe', 'recognition_language':'de-DE'},
+            {'voice': 'de', 'text_input': 'Glück', 'recognition_language':'de-DE'},
         ]
-        self.run_service_testcases(svc_id, test_cases)
+        self.run_service_testcases(svc_id, test_cases, [], False)
 
     def test_forvo(self):
         # python -m pytest tests -rPP -k 'test_forvo'
