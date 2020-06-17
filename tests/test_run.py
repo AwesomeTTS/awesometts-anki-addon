@@ -184,7 +184,7 @@ class TestClass():
                         'fail': self.get_failure_callback(svc_id, options['voice'], text_input, test_case['recognition_language'])
                     },
                     async_variable=False
-                )        
+                )
 
     def test_google_cloud_tts(self):
         # test google cloud text-to-speech service
@@ -354,6 +354,9 @@ class TestClass():
         }
         self.addon.config.update(config_snippet)
 
+        # run successful test cases
+        # =========================
+
         test_cases = [
             {'voice': 'en', 'text_input': 'successful', 'recognition_language':'en-US'}, # no country set
             {'voice': 'en', 'sex': 'f', 'text_input': 'greetings', 'recognition_language':'en-US'}, # set sex=female
@@ -363,3 +366,33 @@ class TestClass():
             {'voice': 'pt', 'sex': 'm', 'country':'BRA', 'text_input': 'obrigado', 'recognition_language':'pt-BR'}, # portuguese, brazil, male
         ]
         self.run_service_testcases(svc_id, test_cases, ['country', 'sex'])
+
+        # run a few failure cases
+        # =======================
+
+        if False: # this seems to fail, do_spawn not defined in a failure case when async_variable=False
+            # get default options
+            options = get_default_options(self.addon, svc_id)
+            self.logger.info(f'Default options for service {svc_id}: {options}')
+
+            def error_case_success_callback(path):
+                # shouldn't happen
+                assert False
+
+            def error_case_failure_callback(exception, text):
+                self.logger.info(f'got failure {exception} for text={text}')
+                if exception == 'Pronunciation not found in Forvo for word [unfortunately], language=fr sex=m, country=ANY':
+                    raise Success()
+
+            options['voice'] = 'fr'
+            with raises(Success):
+                self.addon.router(
+                    svc_id=svc_id,
+                    text='unfortunately', # this word shouldn't exist in french
+                    options=options,
+                    callbacks={
+                        'okay': error_case_success_callback,
+                        'fail': error_case_failure_callback
+                    },
+                    async_variable=False
+                )

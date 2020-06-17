@@ -731,13 +731,12 @@ class Forvo(Service):
         except ValueError:
             raise ValueError("Unable to interpret the response from Forvo API.")
             
-        try:
-            self._logger.debug(f'received data: {data}')
-            audio_url = data['items'][0]['pathmp3']
-        except KeyError:
-            raise KeyError("Cannot find the audio URL in the response from the Forvo API.")
-        except IndexError:
-            raise IOError("Forvo doesn't have any audio for this input.")
+        self._logger.debug(f'received data: {data}')
+        items = data['items']
+        if len(items) == 0:
+            message = f"Pronunciation not found in Forvo for word [{text}], language={options['voice']}, sex={sex}, country={options['country']}"
+            raise IOError(message)
+        audio_url = items[0]['pathmp3']
     
         self.net_download(
             path,
