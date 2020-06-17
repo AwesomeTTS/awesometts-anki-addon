@@ -638,6 +638,9 @@ GENDERS = [
     ('f', 'Female')
 ]
 
+URL_API_CORPORATE = ('apicorporate', 'https://apicorporate.forvo.com/api2/v1.1/')
+URL_API_FREE = ('apifree', 'https://apifree.forvo.com/')
+
 class Forvo(Service):
     """
     Provides a Service-compliant implementation for Forvo.
@@ -674,6 +677,13 @@ class Forvo(Service):
         else:
             return input
 
+    def normalize_apiurl(self, input):
+        if isinstance(input, tuple):
+            (code, description) = input
+            return code
+        else:
+            return input            
+
     def options(self):
         """Provides access to voice only."""
 
@@ -698,7 +708,14 @@ class Forvo(Service):
                 values=COUNTRIES,
                 default=('ANY', 'Any (pick best rated pronunciation)'),
                 transform=self.normalize_country
-            ),            
+            ),
+            dict(
+                key='apiurl',
+                label='API URL',
+                values=[URL_API_FREE, URL_API_CORPORATE],
+                default=URL_API_FREE,
+                transform=self.normalize_apiurl
+            )
         ]
 
     def run(self, text, options, path):
@@ -720,8 +737,13 @@ class Forvo(Service):
             # user selected a particular country
             country_code = f"/country/{options['country']}"
 
-        #url = f"https://apicorporate.forvo.com/api2/v1.1/d6a0d68b18fbcf26bcbb66ec20739492/word-pronunciations/word/{encoded_text}/language/{encoded_language}/order/rate-desc"
         url = f'https://apifree.forvo.com/key/{api_key}/format/json/action/word-pronunciations/word/{encoded_text}/language/{encoded_language}/sex/{sex}/order/rate-desc/limit/1{country_code}'
+
+        corporate_url = False
+        if options['apiurl'] == URL_API_CORPORATE[0]:
+            corporate_url = True
+            url = f'https://apicorporate.forvo.com/api2/v1.1/{api_key}/word-pronunciations/word/{encoded_text}/language/{encoded_language}/sex/{sex}/order/rate-desc/limit/1{country_code}'
+
         self._logger.debug(f'constructed URL: {url}')
         
         payload = self.net_stream(url)
@@ -732,7 +754,10 @@ class Forvo(Service):
             raise ValueError("Unable to interpret the response from Forvo API.")
             
         self._logger.debug(f'received data: {data}')
-        items = data['items']
+        if corporate_url:
+            items = data['data']['items']
+        else:
+            items = data['items']
         if len(items) == 0:
             message = f"Pronunciation not found in Forvo for word [{text}], language={options['voice']}, sex={sex}, country={options['country']}"
             raise IOError(message)
