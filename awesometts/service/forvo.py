@@ -386,11 +386,6 @@ GENDERS = [
     ('f', 'Female')
 ]
 
-sex_mapping = {
-    'Male': 'm',
-    'Female': 'f'
-}
-
 class Forvo(Service):
     """
     Provides a Service-compliant implementation for Forvo.
@@ -414,8 +409,11 @@ class Forvo(Service):
 
     def normalize_sex(self, input):
         self._logger.debug(f'normalize_sex called with {input}')
-        (sex_code, description) = input
-        return sex_code
+        if isinstance(input, tuple):
+            (sex_code, description) = input
+            return sex_code
+        else:
+            return input
 
     def options(self):
         """Provides access to voice only."""
@@ -425,7 +423,7 @@ class Forvo(Service):
                 key='voice',
                 label="Voice",
                 values=VOICES,
-                default=('en', 'English'),
+                default='en',
                 transform=self.normalize,
             ),
             dict(
@@ -433,7 +431,7 @@ class Forvo(Service):
                 label="Sex",
                 values=GENDERS,
                 default=('m', 'Male'),
-                transform=self.normalize_sex,
+                transform=self.normalize_sex
             )
         ]
 

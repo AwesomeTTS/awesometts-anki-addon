@@ -71,7 +71,7 @@ class TestClass():
         using default (or first available) options. To expose a specific
         value of an option for testing purposes only, use test_default.
         """
-        require_key = ['iSpeech', 'Google Cloud Text-to-Speech', 'Microsoft Azure']
+        require_key = ['iSpeech', 'Google Cloud Text-to-Speech', 'Microsoft Azure', 'Forvo']
         # in an attempt to get continuous integration running again, a number of services had to be disabled. 
         # we'll have to revisit this when we get a baseline of working tests
         it_fails = ['Baidu Translate', 'Duden', 'abair.ie', 'Fluency.nl', 'ImTranslator', 'NeoSpeech', 'VoiceText', 'Wiktionary', 'Yandex.Translate']
