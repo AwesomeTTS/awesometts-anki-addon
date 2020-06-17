@@ -155,7 +155,7 @@ class TestClass():
             assert False
         return failure
 
-    def run_service_testcases(self, svc_id, test_cases):
+    def run_service_testcases(self, svc_id, test_cases, extra_option_keys=[]):
         """
         a generic way to run a number of test cases for a given service
         """
@@ -168,6 +168,10 @@ class TestClass():
 
         for test_case in test_cases:
             options['voice'] = test_case['voice']
+            # set extra option keys
+            for extra_option_key in extra_option_keys:
+                if extra_option_key in test_case:
+                    options[extra_option_key] = test_case[extra_option_key]
             text_input = test_case['text_input']
             self.logger.info(f"Testing service {svc_id} with voice={options['voice']} and text_input={text_input}")
             with raises(Success):
@@ -334,7 +338,7 @@ class TestClass():
         self.run_service_testcases(svc_id, test_cases)
 
     def test_forvo(self):
-        # python -m pytest tests -k 'test_forvo'
+        # python -m pytest tests -rPP -k 'test_forvo'
         svc_id = 'Forvo'
 
         FORVO_SERVICES_KEY_ENVVAR_NAME = 'FORVO_SERVICES_KEY'
@@ -351,6 +355,8 @@ class TestClass():
         self.addon.config.update(config_snippet)
 
         test_cases = [
-            {'voice': 'en', 'text_input': 'successful', 'recognition_language':'en-US'},
+            {'voice': 'en', 'text_input': 'successful', 'recognition_language':'en-US'}, # no country set
+            {'voice': 'en', 'sex': 'f', 'text_input': 'greetings', 'recognition_language':'en-US'}, # set sex
+            {'voice': 'en', 'text_input': 'greetings', 'recognition_language':'en-US'}, # set country=USA
         ]
-        self.run_service_testcases(svc_id, test_cases)
+        self.run_service_testcases(svc_id, test_cases, ['country', 'sex'])
