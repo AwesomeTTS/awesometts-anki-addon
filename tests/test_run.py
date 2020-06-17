@@ -336,7 +336,21 @@ class TestClass():
     def test_forvo(self):
         # python -m pytest tests -k 'test_forvo'
         svc_id = 'Forvo'
+
+        FORVO_SERVICES_KEY_ENVVAR_NAME = 'FORVO_SERVICES_KEY'
+        if FORVO_SERVICES_KEY_ENVVAR_NAME not in os.environ:
+            return
+
+        service_key = os.environ[FORVO_SERVICES_KEY_ENVVAR_NAME]
+        assert len(service_key) > 0
+
+        # add the the API key in the config
+        config_snippet = {
+            'extras': {'forvo': {'key': service_key}}
+        }
+        self.addon.config.update(config_snippet)
+
         test_cases = [
             {'voice': 'en', 'text_input': 'successful', 'recognition_language':'en-US'},
         ]
-        self.run_service_testcases(svc_id, test_cases)        
+        self.run_service_testcases(svc_id, test_cases)
