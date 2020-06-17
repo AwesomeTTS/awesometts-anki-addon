@@ -328,12 +328,14 @@ class TestClass():
         ]
         self.run_service_testcases(svc_id, test_cases)                                
 
-    @pytest.mark.skip(reason="requires fixing, https://github.com/AwesomeTTS/awesometts-anki-addon/issues/99")
     def test_duden(self):
-        # python -m pytest tests -s -k 'test_duden'
+        # python -m pytest tests -rPP -k 'test_duden'
         svc_id = 'Duden'
         test_cases = [
             {'voice': 'de', 'text_input': 'hund', 'recognition_language':'de-DE'},
+            {'voice': 'de', 'text_input': 'danke', 'recognition_language':'de-DE'},
+            {'voice': 'de', 'text_input': 'größe', 'recognition_language':'de-DE'},
+            {'voice': 'de', 'text_input': 'glück', 'recognition_language':'de-DE'},
         ]
         self.run_service_testcases(svc_id, test_cases)
 

@@ -24,6 +24,7 @@ from bs4 import BeautifulSoup
 from html.parser import HTMLParser
 from re import compile as re
 from unicodedata import normalize as unicode_normalize
+import urllib
 
 from .base import Service
 from .common import Trait
@@ -32,16 +33,6 @@ __all__ = ['Duden']
 
 
 INPUT_MAXIMUM = 100
-IGNORE_ARTICLES = ['der', 'das', 'die']
-CASE_MATTERS = ['Weg']
-
-SEARCH_FORM = 'http://www.duden.de/suchen/dudenonline'
-RE_DETAIL = re(r'href="(https?://www\.duden\.de/rechtschreibung/(.+?))"')
-RE_MP3 = re(r'(Betonung:|Bei der Schreibung) .*?'
-            r'(<em>|&raquo;)(.+?)(</em>|&laquo;).+?'
-            r'<a .*? href="(https?://www\.duden\.de/_media_/audio/.+?\.mp3)"')
-
-HTML_PARSER = HTMLParser()
 
 
 class Duden(Service):
@@ -80,60 +71,6 @@ class Duden(Service):
             ),
         ]
 
-    def modify(self, text):
-        """
-        Modifies the input text as follows:
-
-        1. drops characters that are not alphabetic, spaces, or dashes
-        2. ASCIIizes any eszett (i.e. to "sz") and any vowel with
-           umlauts (e.g. a-umlaut to "ae")
-        3. extra whitespace around each word is dropped
-        4. for each word, strip any leading or trailing dash (e.g.
-           "ueber-" becomes just "ueber")
-        5. any word that is entirely dashes is dropped
-        6. for each word, unless it is an uppercase word where being
-           uppercase matters (e.g. "Weg" instead of "weg", see
-           `CASE_MATTERS`), lowercase it
-        7. if the input is at least two words long and the first word
-           is one of the articles that a user might use on a note to
-           indicate gender (i.e. nominative definite articles, see
-           `IGNORE_ARTICLES`), remove it
-        """
-
-        text = ''.join('Ae' if char == '\u00c4'
-                       else 'Oe' if char == '\u00d6'
-                       else 'Ue' if char == '\u00dc'
-                       else 'sz' if char == '\u00df'
-                       else 'ae' if char == '\u00e4'
-                       else 'oe' if char == '\u00f6'
-                       else 'ue' if char == '\u00fc'
-                       else char
-                       for char in text
-                       if char.isalpha() or char == ' ' or char == '-')
-
-        words = text.split()
-        words = [word.strip('-') for word in words]
-        words = [word if word in CASE_MATTERS else word.lower()
-                 for word in words if word]
-
-        if not words:
-            return ''
-
-        if len(words) > 1 and words[0] in IGNORE_ARTICLES:
-            words.pop(0)
-
-            # special case: if because the first word was an article, we know
-            # that the next word *should* be a noun, and if by capitalizing it
-            # we realize it is a case-matters noun, make it capitalized (this
-            # makes, e.g., an input of "der weg" become "Weg")
-            first_word_capitalized = words[0].capitalize()
-            if first_word_capitalized in CASE_MATTERS:
-                words[0] = first_word_capitalized
-
-        text = ' '.join(words)
-
-        return text
-
     def run(self, text, options, path):
         """
         Search the dictionary, walk the returned articles, then download
@@ -146,99 +83,66 @@ class Duden(Service):
         if len(text) > INPUT_MAXIMUM:
             raise IOError("Your input text is too long for Duden.")
 
-        try:
-            text.encode('us-ascii')
-        except UnicodeEncodeError:
-            raise IOError("Your input text uses characters that cannot be "
-                          "accurately searched for in the Duden.")
+        # step 1: do a search , which will lead to multiple results
+        # =========================================================
 
-        text_search = text.replace('sz', '\u00df')
-        self._logger.debug('Duden: Searching on "%s"', text_search)
-        try:
-            search_html = self.net_stream((SEARCH_FORM, dict(s=text_search)),
-                                          require=dict(mime='text/html')).decode()
-        except IOError as io_error:
-            if getattr(io_error, 'code', None) == 404:
-                raise IOError("Duden does not recognize this input.")
-            else:
-                raise
+        encoded_text = encoded_text = urllib.parse.quote(text)
+        search_url = f'https://www.duden.de/suchen/dudenonline/{encoded_text}'
 
-        text_lower = text.lower()
-        text_lower_underscored_trailing = text_lower. \
-            replace(' ', '_').replace('-', '_') + '_'
-        text_compressed = text.replace(' ', '').replace('-', '')
-        text_lower_compressed = text_compressed.lower()
-        text_deumlauted_compressed = text_compressed.replace('ae', 'a'). \
-            replace('oe', 'o').replace('ue', 'u')
-        self._logger.debug('Got a search response; will follow links whose '
-                           'lowercased+compressed article segment equals "%s" '
-                           'or whose lowercased-but-still-underscored article '
-                           'segment begins with "%s"; looking for MP3s whose '
-                           'compressed guide says "%s" or "%s"',
-                           text_lower_compressed,
-                           text_lower_underscored_trailing,
-                           text_compressed,
-                           text_deumlauted_compressed)
+        self._logger.debug(f'opening search url {search_url}')
 
-        seen_article_urls = {}
+        payload = self.net_stream(search_url)
+        soup = BeautifulSoup(payload, 'html.parser')
 
-        for article_match in RE_DETAIL.finditer(search_html):
-            article_url = article_match.group(1)
+        # collect all the candidates, which look like this:
+        # <a class="vignette__label" href="/rechtschreibung/Groesze"> <strong>Grö­ße</strong> </a>
+        definition_entries = soup.find_all('a', {"class":'vignette__label'})
+        definition_candidates = []
+        for entry in definition_entries:
+            definition_url = entry['href']
+            definition_word = entry.find('strong').string
+            definition_candidates.append({'url': definition_url, 'word': definition_word})
+            self._logger.debug(f'found {entry}, definition_url: {definition_url} definition_word: {definition_word}')
 
-            if article_url in seen_article_urls:
-                continue
-            seen_article_urls[article_url] = True
+        # step 2: identify the correct candidate
+        # ======================================
 
-            segment = article_match.group(2)
-            segment_lower = segment.lower()
-            segment_lower_compressed = segment_lower.replace('_', '')
+        def process_candidate_definition(input):
+            input = input.replace('\u00AD', '')
+            input = input.lower()
+            return input
 
-            if segment_lower_compressed == text_lower_compressed:
-                self._logger.debug('Duden: lowered+compressed article segment '
-                                   'for %s are same ("%s")',
-                                   article_url, segment_lower_compressed)
+        self._logger.debug(f'found candidates: {definition_candidates}')
+        # self._logger.debug(f"first entry: {definition_candidates[0]}  matches: {definition_candidates[0]['word'] == text} text={text}")
 
-            elif segment_lower.startswith(text_lower_underscored_trailing):
-                self._logger.debug('Duden: lowered segment "%s" for %s begins '
-                                   'with "%s"',
-                                   segment_lower, article_url,
-                                   text_lower_underscored_trailing)
+        # simple strategy, lower-cased words should match.
+        correct_candidates = [x for x in definition_candidates if process_candidate_definition(x['word']) == text.lower()]
+        if len(correct_candidates) == 0:
+            error_message = f"Couldn't find definition for {text} on page {search_url}"
+            raise IOError(error_message)
 
-            else:
-                self._logger.debug('Duden: article segment for %s does not '
-                                   'match; skipping', article_url)
-                continue
+        # pick the first one
+        candidate = correct_candidates[0]
 
-            article_html = self.net_stream(article_url).decode()
+        # step 3: open definition url
+        # ===========================
 
-            for mp3_match in RE_MP3.finditer(article_html):
-                guide = mp3_match.group(3)
-                guide = ''.join(HTML_PARSER.unescape(node)
-                                for node
-                                in BeautifulSoup(guide, 'html.parser').findAll(text=True))
-                guide_normalized = unicode_normalize(
-                    'NFKD',
-                    self.modify(guide).replace('-', '').replace(' ', ''),
-                ).encode('ASCII', 'ignore').decode()
+        # build the final URL
+        definition_url = 'https://www.duden.de' + candidate['url']
+        self._logger.debug(f'opening definition_url: {definition_url}')
 
-                mp3_url = mp3_match.group(5)
+        payload = self.net_stream(definition_url)
+        soup = BeautifulSoup(payload, 'html.parser')
+        #print(payload)
 
-                if guide_normalized == text_compressed or \
-                        guide_normalized == text_deumlauted_compressed:
+        # step 4: download pronounciation mp3 file
+        # ========================================
 
-                    self._logger.debug('Duden: found MATCHING MP3 at %s for '
-                                       '"%s", which normalized to "%s" and '
-                                       'matches our input',
-                                       mp3_url, guide, guide_normalized)
+        sound_element = soup.find('a', {'class':'pronunciation-guide__sound'})
+        self._logger.debug(f'sound_element: {sound_element}')        
+        mp3_url = sound_element['href']
 
-                    self.net_download(path, mp3_url,
-                                      require=dict(mime='audio/mpeg'))
-                    return
+        self.net_download(path, mp3_url,
+                        require=dict(mime='audio/mpeg'))
+        return
 
-                else:
-                    self._logger.debug('Duden: found non-matching MP3 at %s '
-                                       'for "%s", which normalized to "%s" '
-                                       'and does not match our input',
-                                       mp3_url, guide, guide_normalized)
-
-        raise IOError("Duden does not have recorded audio for this word.")
