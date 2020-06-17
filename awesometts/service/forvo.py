@@ -432,7 +432,7 @@ class Forvo(Service):
                 values=GENDERS,
                 default=('m', 'Male'),
                 transform=self.normalize_sex
-            )
+            ),
         ]
 
     def run(self, text, options, path):
