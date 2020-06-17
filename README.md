@@ -8,6 +8,9 @@ speech to their personal [Anki](https://apps.ankiweb.net) card decks.
 * Install from AnkiWeb: https://ankiweb.net/shared/info/1436550454
 * or install from local file, by downloading the latest .ankiaddon file from releases https://github.com/AwesomeTTS/awesometts-anki-addon/releases
 
+## Services Supported
+https://github.com/AwesomeTTS/awesometts-anki-addon/wiki/Current-Status-of-Services-and-Voices
+
 ## Development
 
 [![Build Status](https://travis-ci.org/AwesomeTTS/awesometts-anki-addon.svg?branch=master)](https://travis-ci.org/AwesomeTTS/awesometts-anki-addon)
