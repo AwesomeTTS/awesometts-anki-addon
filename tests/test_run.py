@@ -32,16 +32,29 @@ def get_default_options(addon, svc_id):
 
     return options
 
+def clear_cache(cache_path):
+    for filename in os.listdir(cache_path):
+        file_path = os.path.join(cache_path, filename)
+        os.unlink(file_path)
+
 class TestClass():
+
     def setup_class(self):
         os.environ['AWESOMETTS_DEBUG_LOGGING'] = 'enable'
         self.anki_app = tools.anki_testing.get_anki_app()
         from awesometts import addon
         self.addon = addon
         self.logger = addon.logger
+        # clear cache
+        self.logger.debug(f'clearing cache: {self.addon.paths.cache}')        
+        clear_cache(self.addon.paths.cache)
 
     def teardown_class(self):
         tools.anki_testing.destroy_anki_app()
+        # clear cache
+        self.logger.debug(f'clearing cache: {self.addon.paths.cache}')        
+        clear_cache(self.addon.paths.cache)
+
 
 
     def test_addon_initialization(self):
@@ -228,7 +241,7 @@ class TestClass():
     def test_azure(self):
         # test azure cognitive services API
         # to run this test only:
-        # python -m pytest tests -s -k 'test_azure'
+        # python -m pytest tests -rPP -k 'test_azure'
         # requires an API key , which should be set on the travis CI build
 
         AZURE_SERVICES_KEY_ENVVAR_NAME = 'AZURE_SERVICES_KEY'
