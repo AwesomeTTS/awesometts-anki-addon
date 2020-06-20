@@ -1,5 +1,7 @@
 # AwesomeTTS Anki add-on
 
+<a href="https://github.com/AwesomeTTS/awesometts-anki-addon/releases" rel="nofollow"><img src="https://img.shields.io/github/v/release/AwesomeTTS/awesometts-anki-addon"></a> <img src="https://img.shields.io/github/license/AwesomeTTS/awesometts-anki-addon"> <a href="https://github.com/AwesomeTTS/awesometts-anki-addon" rel="nofollow"><img src="https://img.shields.io/travis/AwesomeTTS/awesometts-anki-addon"></a> <a href="https://github.com/AwesomeTTS/awesometts-anki-addon/issues" rel="nofollow"><img src="https://img.shields.io/github/issues/AwesomeTTS/awesometts-anki-addon"></a> <a href="https://github.com/AwesomeTTS/awesometts-anki-addon/pulls" rel="nofollow"><img src="https://img.shields.io/github/issues-pr/AwesomeTTS/awesometts-anki-addon"></a>
+
 AwesomeTTS makes it easy for language-learners and other students to add
 speech to their personal [Anki](https://apps.ankiweb.net) card decks.
 
