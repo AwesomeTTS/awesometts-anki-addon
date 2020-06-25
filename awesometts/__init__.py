@@ -37,10 +37,9 @@ from .config import Config
 from .player import Player
 from .router import Router
 from .text import Sanitizer
-from .updates import Updates
 
 __all__ = ['browser_menus', 'cards_button', 'config_menu', 'editor_button',
-           'reviewer_hooks', 'sound_tag_delays', 'update_checker',
+           'reviewer_hooks', 'sound_tag_delays', 
            'window_shortcuts']
 
 
@@ -169,9 +168,6 @@ config = Config(
         ('throttle_threshold', 'integer', 10, int, int),
         ('TTS_KEY_A', 'integer', Qt.Key_F4, to.nullable_key, to.nullable_int),
         ('TTS_KEY_Q', 'integer', Qt.Key_F3, to.nullable_key, to.nullable_int),
-        ('updates_enabled', 'integer', True, to.lax_bool, int),
-        ('updates_ignore', 'text', '', str, str),
-        ('updates_postpone', 'integer', 0, int, lambda i: int(round(i))),
     ],
     logger=logger,
     events=[
@@ -262,12 +258,6 @@ router = Router(
     config=config,
 )
 
-updates = Updates(
-    agent=AGENT,
-    endpoint='%s/api/update/%s-%s-%s' % (WEB, anki.version, sys.platform,
-                                         VERSION),
-    logger=logger,
-)
 
 STRIP_TEMPLATE_POSTHTML = [
     'whitespace',
@@ -401,7 +391,6 @@ addon = Bundle(
             univ=Sanitizer(rules=['sounds_univ', 'filenames'], logger=logger),
         ),
     ),
-    updates=updates,
     version=VERSION,
     web=WEB,
 )
@@ -852,39 +841,6 @@ def temp_files():
                     pass
 
     anki.hooks.addHook('unloadProfile', on_unload_profile)
-
-
-def update_checker():
-    """
-    Automatic check for new version, if neither postponed nor ignored.
-
-    With the profilesLoaded hook, we do not run the check until the user
-    is actually in a profile, which guarantees the main window has been
-    loaded. Without it, update components (e.g. aqt.downloader.download,
-    aqt.addons.GetAddons) that expect it might fail unexpectedly.
-    """
-
-    if not config['updates_enabled'] or \
-       config['updates_postpone'] and config['updates_postpone'] > time():
-        return
-
-    def on_need(version, info):
-        """If not an ignored version, pop open the updater dialog."""
-
-        if config['updates_ignore'] == version:
-            return
-
-        gui.Updater(
-            version=version,
-            info=info,
-            addon=addon,
-            parent=aqt.mw,
-        ).show()
-
-    anki.hooks.addHook(
-        'profileLoaded',
-        lambda: updates.used() or updates.check(callbacks=dict(need=on_need)),
-    )
 
 
 def window_shortcuts():

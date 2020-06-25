@@ -57,7 +57,7 @@ class Configurator(Dialog):
         'strip_note_brackets', 'strip_note_parens', 'strip_template_braces',
         'strip_template_brackets', 'strip_template_parens', 'sub_note_cloze',
         'sub_template_cloze', 'sul_note', 'sul_template', 'throttle_sleep',
-        'throttle_threshold', 'tts_key_a', 'tts_key_q', 'updates_enabled',
+        'throttle_threshold', 'tts_key_a', 'tts_key_q',
     ]
 
     _PROPERTY_WIDGETS = (Checkbox, QtWidgets.QComboBox, QtWidgets.QLineEdit,
@@ -486,7 +486,6 @@ class Configurator(Dialog):
 
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self._ui_tabs_advanced_presets())
-        layout.addWidget(self._ui_tabs_advanced_update())
         layout.addWidget(self._ui_tabs_advanced_cache())
         layout.addStretch()
 
@@ -514,30 +513,6 @@ class Configurator(Dialog):
         vert.addLayout(hor)
 
         group = QtWidgets.QGroupBox("Service Presets and Groups")
-        group.setLayout(vert)
-        return group
-
-    def _ui_tabs_advanced_update(self):
-        """Returns the "Updates" input group."""
-
-        button = QtWidgets.QPushButton(QtGui.QIcon(f'{ICONS}/find.png'), "Check Now")
-        button.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        button.setObjectName('updates_button')
-        button.clicked.connect(self._on_update_request)
-
-        state = Note()
-        state.setObjectName('updates_state')
-
-        hor = QtWidgets.QHBoxLayout()
-        hor.addWidget(button)
-        hor.addWidget(state)
-
-        vert = QtWidgets.QVBoxLayout()
-        vert.addWidget(Checkbox("automatically check for AwesomeTTS updates "
-                                "at start-up", 'updates_enabled'))
-        vert.addLayout(hor)
-
-        group = QtWidgets.QGroupBox("Updates")
         group.setLayout(vert)
         return group
 
@@ -757,40 +732,6 @@ class Configurator(Dialog):
                                         parent=self)
 
         self._group_editor.show()
-
-    def _on_update_request(self):
-        """Attempts update request w/ add-on updates interface."""
-
-        button = self.findChild(QtWidgets.QPushButton, 'updates_button')
-        button.setEnabled(False)
-        state = self.findChild(Note, 'updates_state')
-        state.setText("Querying update server...")
-
-        def configuratorfail(exception, text="Not available by Configurator._on_update_request"):
-            state.setText("Check failed: %s" % (
-                str(exception) or "Nothing further known"
-            ))
-
-        from .updater import Updater
-        self._addon.updates.check(
-            callbacks=dict(
-                done=lambda: button.setEnabled(True),
-                fail=configuratorfail,
-                good=lambda: state.setText("No update needed at this time."),
-                need=lambda version, info: (
-                    state.setText(f"Update to {version} is available"),
-                    [updater.show()
-                     for updater in [Updater(
-                         version=version,
-                         info=info,
-                         is_manual=True,
-                         addon=self._addon,
-                         parent=(self if self.isVisible()
-                                 else self.parentWidget()),
-                     )]],
-                ),
-            ),
-        )
 
     def _on_cache_clear(self, button):
         """Attempts clear known files from cache."""
