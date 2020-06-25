@@ -135,6 +135,30 @@ VOICE_LIST = [
 ]
 
 
+REGIONS = [
+('centralus', 'Americas, Central US'),
+('eastus', 'Americas, East US'),
+('eastus2', 'Americas, East US 2'),
+('northcentralus', 'Americas, North Central US'),
+('southcentralus', 'Americas, South Central US'),
+('westcentralus', 'Americas, West Central US'),
+('westus', 'Americas, West US'),
+('westus2', 'Americas, West US 2'),
+('canadacentral', 'Americas, Canada Central'),
+('brazilsouth', 'Americas, Brazil South'),
+('eastasia', 'Asia Pacific, East Asia'),
+('southeastasia', 'Asia Pacific, Southeast Asia'),
+('australiaeast', 'Asia Pacific, Australia East'),
+('centralindia', 'Asia Pacific, Central India'),
+('japaneast', 'Asia Pacific, Japan East'),
+('japanwest', 'Asia Pacific, Japan West'),
+('koreacentral', 'Asia Pacific, Korea Central'),
+('northeurope', 'Europe, North Europe'),
+('westeurope', 'Europe, West Europe'),
+('francecentral', 'Europe, France Central'),
+('uksouth', 'Europe, UK South'),
+]
+
 class Azure(Service):
     """
     Provides a Service-compliant implementation for Microsoft Azure Text To Speech.
@@ -193,14 +217,19 @@ class Azure(Service):
             dict(key='voice',
                  label="Voice",
                  values=self.get_voice_list(),
+                 transform=lambda value: value),
+            dict(key='region',
+                 label='Region',
+                 values=REGIONS,
+                 default='eastus',
                  transform=lambda value: value)
         ]
 
-    def get_token(self, subscription_key):
+    def get_token(self, subscription_key, region):
         if len(subscription_key) == 0:
             raise ValueError("subscription key required")
 
-        fetch_token_url = "https://eastus.api.cognitive.microsoft.com/sts/v1.0/issueToken"
+        fetch_token_url = f"https://{region}.api.cognitive.microsoft.com/sts/v1.0/issueToken"
         headers = {
             'Ocp-Apim-Subscription-Key': subscription_key
         }
@@ -210,15 +239,16 @@ class Azure(Service):
     def run(self, text, options, path):
         """Downloads from Azure API directly to an MP3."""
 
+        region = options['region']
         subscription_key = options['key']
         if self.access_token == None:
-            self.get_token(subscription_key)
+            self.get_token(subscription_key, region)
 
         voice = options['voice']
         voice_name = voice
         language = self.get_language_for_voice(voice)
 
-        base_url = 'https://eastus.tts.speech.microsoft.com/'
+        base_url = f'https://{region}.tts.speech.microsoft.com/'
         url_path = 'cognitiveservices/v1'
         constructed_url = base_url + url_path
         headers = {
