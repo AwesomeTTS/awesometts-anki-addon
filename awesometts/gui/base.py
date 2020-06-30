@@ -548,6 +548,9 @@ class ServiceDialog(Dialog):
 
             else:  # list of tuples
                 vinput = QtWidgets.QComboBox()
+                # reduce the maximum number of items displayed, in the hopes this fixes a bug on MacOSx catalina with a large number of voices
+                vinput.setMaxVisibleItems(15)
+                vinput.setStyleSheet("combobox-popup: 0;")
                 for value, text in option['values']:
                     vinput.addItem(text, value)
 
