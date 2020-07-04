@@ -266,6 +266,7 @@ class Google(Service):
 
             return value
 
+        DEFAULT_SPEED = 1.0
         return [
             dict(
                 key='voice',
@@ -273,6 +274,13 @@ class Google(Service):
                 values=[(code, "%s (%s)" % (name, code))
                         for code, name in sorted(self._VOICE_CODES.items())],
                 transform=transform_voice,
+            ),
+            dict(
+                key='speed',
+                label="Speed",
+                values=[(item, f"{item}") for item in (0.1, 0.3, 0.6, DEFAULT_SPEED, 1.3, 1.6, 2.0)],
+                transform=float,
+                default=DEFAULT_SPEED,
             ),
         ]
 
@@ -305,6 +313,7 @@ class Google(Service):
                         tl=options['voice'],
                         total=len(subtexts),
                         idx=idx,
+                        ttsspeed=options.get('speed', 1.0),
                         textlen=len(subtext),
                         client='tw-ob',
                     ))
