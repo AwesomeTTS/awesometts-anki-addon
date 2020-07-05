@@ -8,6 +8,7 @@ from pytest import raises
 import magic # to verify file types
 import os
 import sys
+import time
 
 class Success(Exception):
     pass
@@ -184,6 +185,7 @@ class TestClass():
         self.logger.info(f'Default options for service {svc_id}: {options}')
 
         for test_case in test_cases:
+            # time.sleep(3) # used this to test azure token refresh code
             options['voice'] = test_case['voice']
             # set extra option keys
             for extra_option_key in extra_option_keys:

@@ -22,6 +22,7 @@ https://azure.microsoft.com/en-us/services/cognitive-services/text-to-speech/
 """
 
 import time
+import datetime
 import requests
 from xml.etree import ElementTree
 from .base import Service
@@ -165,7 +166,8 @@ class Azure(Service):
     """
 
     __slots__ = [
-        'access_token'
+        'access_token',
+        'access_token_timestamp'
     ]
 
     NAME = "Microsoft Azure"
@@ -235,13 +237,25 @@ class Azure(Service):
         }
         response = requests.post(fetch_token_url, headers=headers)
         self.access_token = str(response.text)
+        self.access_token_timestamp = datetime.datetime.now()
+        self._logger.debug(f'requested access_token')
+
+    def token_refresh_required(self):
+        if self.access_token == None:
+            self._logger.debug(f'no token, must request')
+            return True
+        time_diff = datetime.datetime.now() - self.access_token_timestamp
+        if time_diff.total_seconds() > 300:
+            self._logger.debug(f'time_diff: {time_diff}, requesting token')
+            return True
+        return False
 
     def run(self, text, options, path):
         """Downloads from Azure API directly to an MP3."""
 
         region = options['region']
         subscription_key = options['key']
-        if self.access_token == None:
+        if self.token_refresh_required():
             self.get_token(subscription_key, region)
 
         voice = options['voice']
