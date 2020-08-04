@@ -95,7 +95,6 @@ def get_voices(access_token):
             #print(voice)
             language = LOCALE_TO_LANGUAGE[voice['Locale']]
             voice['Language'] = language
-            voice['ShortNameFriendly'] = get_voice_short_name(voice['Name'])
             print(str(voice) + ',')
             #output = "'" + voice['Name'] + "': ('" + voice['Locale'] + "', '" + voice['Gender'] + "'),"
             #print(output)
