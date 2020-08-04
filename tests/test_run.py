@@ -114,7 +114,7 @@ class TestClass():
                     text=input_word,
                     options=options,
                     callbacks={
-                        'okay': self.get_verify_audio_callback(svc_id, options['voice'], input_word, expected_language, True),
+                        'okay': self.get_verify_audio_callback(svc_id, options['voice'], input_word, expected_language, True, False),
                         'fail': self.get_failure_callback(svc_id, options['voice'], input_word, expected_language)
                     },
                     async_variable=False
