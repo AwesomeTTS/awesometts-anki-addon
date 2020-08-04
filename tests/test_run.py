@@ -87,7 +87,7 @@ class TestClass():
         require_key = ['iSpeech', 'Google Cloud Text-to-Speech', 'Microsoft Azure', 'Forvo', 'FptAi Vietnamese']
         # in an attempt to get continuous integration running again, a number of services had to be disabled. 
         # we'll have to revisit this when we get a baseline of working tests
-        it_fails = ['Baidu Translate', 'Duden', 'abair.ie', 'Fluency.nl', 'ImTranslator', 'NeoSpeech', 'VoiceText', 'Wiktionary', 'Yandex.Translate']
+        it_fails = ['Baidu Translate', 'Duden', 'abair.ie', 'Fluency.nl', 'ImTranslator', 'NeoSpeech', 'VoiceText', 'Wiktionary', 'Yandex.Translate', 'NAVER Translate']
 
         for svc_id, name, in self.addon.router.get_services():
 
@@ -270,6 +270,7 @@ class TestClass():
         self.run_service_testcases(svc_id, test_cases)        
 
 
+    @pytest.mark.skip(reason="2020/08/04 Naver is broken https://github.com/AwesomeTTS/awesometts-anki-addon/issues/117")
     def test_naver(self):
         # test Naver Translate service
         # to run this test only:
