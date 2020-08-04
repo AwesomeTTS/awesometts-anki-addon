@@ -210,6 +210,7 @@ router = Router(
             ('espeak', service.ESpeak),
             ('festival', service.Festival),
             ('fluencynl', service.FluencyNl),
+            ('fptai', service.FptAi),
             ('google', service.Google),
             ('googletts', service.GoogleTTS),
             ('howjsay', service.Howjsay),

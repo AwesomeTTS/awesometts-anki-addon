@@ -123,7 +123,7 @@ class TestClass():
     def common_logger_prefix(self, svc_id, voice, expected_text, language):
         return f'Service {svc_id} voice=[{voice}] text_input=[{expected_text}] language=[{language}]'
 
-    def get_verify_audio_callback(self, svc_id, voice, expected_text, language, lowercase):
+    def get_verify_audio_callback(self, svc_id, voice, expected_text, language, lowercase, disable_recognition):
         """
         Build and return a callback which compares the received audio against the expected text, in the specified language
         """
@@ -143,7 +143,7 @@ class TestClass():
             self.logger.debug(f'{logger_prefix} audio file {path} passed initial checks')
 
             # run this file through azure speech recognition
-            if tools.speech_recognition.recognition_available():
+            if tools.speech_recognition.recognition_available() and not disable_recognition:
                 self.logger.debug(f'{logger_prefix} speech recognition available')
                 result_text = tools.speech_recognition.recognize_speech(path, language)
                 self.logger.debug(f'{logger_prefix} detected text [{result_text}]')
@@ -173,7 +173,7 @@ class TestClass():
             assert False
         return failure
 
-    def run_service_testcases(self, svc_id, test_cases, extra_option_keys=[], lowercase=True):
+    def run_service_testcases(self, svc_id, test_cases, extra_option_keys=[], lowercase=True, disable_recognition=False):
         """
         a generic way to run a number of test cases for a given service
         """
@@ -202,7 +202,7 @@ class TestClass():
                     text=text_input,
                     options=options,
                     callbacks={
-                        'okay': self.get_verify_audio_callback(svc_id, options['voice'], expected_output, test_case['recognition_language'], lowercase),
+                        'okay': self.get_verify_audio_callback(svc_id, options['voice'], expected_output, test_case['recognition_language'], lowercase, disable_recognition),
                         'fail': self.get_failure_callback(svc_id, options['voice'], text_input, test_case['recognition_language'])
                     },
                     async_variable=False
@@ -425,3 +425,31 @@ class TestClass():
                     },
                     async_variable=False
                 )
+
+    def test_ftpai(self):
+        # python -m pytest tests -rPP -k 'test_ftpai'
+        svc_id = 'fptai'
+
+        FPTAI_SERVICES_KEY_ENVVAR_NAME = 'FPTAPI_SERVICES_KEY'
+        if FPTAI_SERVICES_KEY_ENVVAR_NAME not in os.environ:
+            return
+
+        service_key = os.environ[FPTAI_SERVICES_KEY_ENVVAR_NAME]
+        assert len(service_key) > 0
+
+        # add the the API key in the config
+        config_snippet = {
+            'extras': {'fptai': {'key': service_key}}
+        }
+        self.addon.config.update(config_snippet)
+
+        # run successful test cases
+        # =========================
+
+        test_cases = [
+            {'voice': 'leminh', 'text_input': 'Tôi không hiểu.', 'recognition_language': 'vi-VN'},
+            {'voice': 'linhsan', 'text_input': 'Tôi không hiểu.', 'recognition_language': 'vi-VN'},
+            {'voice': 'banmai', 'text_input': 'Tôi không hiểu.', 'recognition_language': 'vi-VN'}
+        ]
+        # speech recognition not available for vietnamese
+        self.run_service_testcases(svc_id, test_cases, [], False, True)

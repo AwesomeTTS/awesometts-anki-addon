@@ -32,6 +32,7 @@ from .ekho import Ekho
 from .espeak import ESpeak
 from .festival import Festival
 from .fluencynl import FluencyNl
+from .fptai import FptAi
 from .google import Google
 from .googletts import GoogleTTS
 from .howjsay import Howjsay
@@ -67,6 +68,7 @@ __all__ = [
     'ESpeak',
     'Festival',
     'FluencyNl',
+    'FPT.AI',
     'Google',
     'GoogleTTS',
     'Howjsay',
