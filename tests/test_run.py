@@ -366,6 +366,7 @@ class TestClass():
         ]
         self.run_service_testcases(svc_id, test_cases)                                
 
+    @pytest.mark.skip(reason="2020/08/28 too many timeouts on the website")
     def test_duden(self):
         # python -m pytest tests -rPP -k 'test_duden'
         svc_id = 'Duden'
