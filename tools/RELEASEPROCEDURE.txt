@@ -6,7 +6,7 @@ to create an AwesomeTTS release
      git tag -a v1.15.0 -m "version 1.15.0"
      git push origin v1.15.0
 - build the addon file:
-    tools/package.sh ~/awesometts-releases/AwesomeTTS-v1.15.0.ankiaddon
+    tools/package.sh ~/anki-addon-releases/AwesomeTTS-v1.15.0.ankiaddon
 - create a new release on github:
     make sure to upload the ".ankiaddon" file
     https://github.com/AwesomeTTS/awesometts-anki-addon/releases
