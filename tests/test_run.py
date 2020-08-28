@@ -78,6 +78,7 @@ class TestClass():
 
 
     def test_services(self):
+        # python -m pytest tests -rPP -k 'test_services'
         """Tests all services (except services which require an API key) using a single word.
 
         Retrieving, processing, and playing of word "successful" will be tested,
@@ -87,7 +88,21 @@ class TestClass():
         require_key = ['iSpeech', 'Google Cloud Text-to-Speech', 'Microsoft Azure', 'Forvo', 'FptAi Vietnamese']
         # in an attempt to get continuous integration running again, a number of services had to be disabled. 
         # we'll have to revisit this when we get a baseline of working tests
-        it_fails = ['Baidu Translate', 'Duden', 'abair.ie', 'Fluency.nl', 'ImTranslator', 'NeoSpeech', 'VoiceText', 'Wiktionary', 'Yandex.Translate', 'NAVER Translate']
+
+        # remove google translate, the quality is so low that it fails the recognition test
+        # remove Oddcast, the low quality doesn't pass the recognition test, and we have a separate odcast test
+        it_fails = ['Baidu Translate', 
+                    'Duden', 
+                    'abair.ie', 
+                    'Fluency.nl',  
+                    'ImTranslator', 
+                    'NeoSpeech', 
+                     'VoiceText', 
+                     'Wiktionary', 
+                     'Yandex.Translate', 
+                     'NAVER Translate', 
+                     'Google Translate',
+                     'Oddcast']
 
         for svc_id, name, in self.addon.router.get_services():
 
