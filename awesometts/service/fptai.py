@@ -31,7 +31,7 @@ __all__ = ['FptAi']
 
 VOICES = [
     ('banmai', 'Ban Mai (Nữ miền Bắc), female northern'),
-    ('lannhi', 'Ban Mai (Nữ miền Bắc), female southern'),
+    ('lannhi', 'Lan Nhi (Nữ miền Nam), female southern'),
     ('leminh', 'Lê Minh (Nam miền Bắc), male northern'),
     ('myan', 'Mỹ An (Nữ miền Trung), female middle'),
     ('thuminh', 'Thu Minh (Nữ miền Bắc), female northern'),
