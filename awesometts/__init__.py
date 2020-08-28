@@ -570,24 +570,25 @@ def editor_button():
     which is present in the "Add" and browser windows.
     """
 
-    anki.hooks.addHook(
-        'setupEditorButtons',
-        lambda buttons, editor: gui.HTMLButton(
-            buttons, editor,
-            link_id='awesometts_btn',
-            tooltip="Record and insert an audio clip here w/ AwesomeTTS",
-            sequence=sequences['editor_generator'],
-            target=Bundle(
-                constructor=gui.EditorGenerator,
-                args=(),
-                kwargs=dict(editor=editor,
-                            addon=addon,
-                            alerts=aqt.utils.showWarning,
-                            ask=aqt.utils.getText,
-                            parent=editor.parentWindow),
-            )
-        ).buttons
-    )
+    def createAwesomeTTSEditorLambda():
+        def launch(editor):
+            editor_generator = gui.EditorGenerator(editor=editor,
+                                                   addon=addon,
+                                                   alerts=aqt.utils.showWarning,
+                                                   ask=aqt.utils.getText,
+                                                   parent=editor.parentWindow)
+            editor_generator.show()
+        return launch
+
+    def addAwesomeTTSEditorButton(buttons, editor):
+        cmd_string = 'awesometts_btn'
+        editor._links[cmd_string] = createAwesomeTTSEditorLambda()
+        new_button = editor._addButton(icon = gui.ICON_FILE,
+            cmd = cmd_string,
+            tip = "Record and insert an audio clip here w/ AwesomeTTS")
+        return buttons + [new_button]
+
+    anki.hooks.addHook('setupEditorButtons', addAwesomeTTSEditorButton)
 
     anki.hooks.addHook(
         'setupEditorShortcuts',

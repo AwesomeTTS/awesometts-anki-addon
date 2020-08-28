@@ -671,7 +671,6 @@ class EditorGenerator(ServiceDialog):
             title="Add TTS Audio to Note",
             *args, **kwargs
         )
-
     # UI Construction ########################################################
 
     def _ui_control(self):

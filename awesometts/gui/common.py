@@ -31,7 +31,7 @@ from PyQt5.QtCore import Qt
 from ..paths import ICONS
 
 __all__ = ['ICON', 'key_event_combo', 'key_combo_desc', 'Action', 'Button',
-           'Checkbox', 'Filter', 'HTML', 'Label', 'Note', 'HTMLButton']
+           'Checkbox', 'Filter', 'HTML', 'Label', 'Note']
 
 
 ICON_FILE = f'{ICONS}/speaker.png'
@@ -140,33 +140,6 @@ class _QtConnector(_Connector):
         signal.connect(self._show)
 
 
-class _HTMLConnector(_Connector):
-
-    @staticmethod
-    def generate_link_id(owner, base_id='btn'):
-
-        new_id = base_id
-
-        while True:
-            if new_id in owner._links:
-                new_id += 'X'
-            else:
-                return new_id
-
-    def __init__(self, target, owner, link_id=None, **kwargs):
-        """
-        Create a link for WebView-Python bridge,
-        placing it on owner's list of links.
-        """
-        super().__init__(target, **kwargs)
-
-        self.link_id = link_id or self.generate_link_id(owner)
-
-        # access to private, though that is the way proposed in Anki 2.1 docs:
-        # https://apps.ankiweb.net/docs/addons21.html#hooks
-        owner._links[self.link_id] = self._show
-
-
 class Action(QtWidgets.QAction, _QtConnector):
     """
     Provides a menu action to show a dialog when triggered.
@@ -249,31 +222,6 @@ class Button(QtWidgets.QPushButton, _QtConnector, AbstractButton):
 
         if style:
             self.setStyle(style)
-
-
-class HTMLButton(AbstractButton, _HTMLConnector):
-
-    def __init__(self, buttons, owner, target, tooltip, sequence, text=None, link_id=None):
-        """
-        Initializes the button and wires its 'clicked' event.
-
-        Note that HTMLButton does not connect key-sequence as a shortcut
-        to target action, as such an option is not exposed in Anki API.
-        """
-
-        _HTMLConnector.__init__(self, target, owner, link_id)
-        self.buttons = buttons
-
-        # access to private, though that is the way proposed in Anki 2.1 docs:
-        # https://apps.ankiweb.net/docs/addons21.html#hooks
-        self.html = owner._addButton(
-            ICON_FILE,
-            self.link_id,
-            self.tooltip_text(tooltip, sequence),
-            label=text
-        )
-
-        self.buttons.append(self.html)
 
 
 class Checkbox(QtWidgets.QCheckBox):

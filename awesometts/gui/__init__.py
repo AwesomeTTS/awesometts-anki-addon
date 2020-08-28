@@ -23,9 +23,9 @@ GUI classes for AwesomeTTS
 from .common import (
     Action,
     Button,
-    HTMLButton,
     Filter,
     ICON,
+    ICON_FILE
 )
 
 from .configurator import Configurator
@@ -46,9 +46,9 @@ __all__ = [
     # common
     'Action',
     'Button',
-    'HTMLButton',
     'Filter',
     'ICON',
+    'ICON_FILE'
 
     # dialog windows
     'Configurator',
