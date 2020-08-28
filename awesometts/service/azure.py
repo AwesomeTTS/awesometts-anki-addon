@@ -171,6 +171,15 @@ REGIONS = [
 ('uksouth', 'Europe, UK South'),
 ]
 
+SPEEDS = [
+    ('x-slow', 'Extra Slow'),
+    ('slow', 'Slow'),
+    ('medium', 'Medium'),
+    ('default', 'Default'),
+    ('fast', 'Fast'),
+    ('x-fast', 'Extra Fast')
+]
+
 class Azure(Service):
     """
     Provides a Service-compliant implementation for Microsoft Azure Text To Speech.
@@ -238,7 +247,13 @@ class Azure(Service):
                  label='Region',
                  values=REGIONS,
                  default='eastus',
-                 transform=lambda value: value)
+                 transform=lambda value: value),
+            dict(key='speed',
+                label='Speed',
+                values=SPEEDS,
+                default='default',
+                transform=lambda value: value),
+            
         ]
 
     def get_token(self, subscription_key, region):
@@ -276,6 +291,8 @@ class Azure(Service):
         voice_name = voice
         language = self.get_language_for_voice(voice)
 
+        rate = options['speed']
+
         base_url = f'https://{region}.tts.speech.microsoft.com/'
         url_path = 'cognitiveservices/v1'
         constructed_url = base_url + url_path
@@ -294,8 +311,13 @@ class Azure(Service):
         voice.set(
             'name', voice_name)
 
-        voice.text = text
+        prosody = ElementTree.SubElement(voice, 'prosody')
+        prosody.set('rate', rate)
+
+        prosody.text = text
         body = ElementTree.tostring(xml_body)
+
+        self._logger.info(f"xml request: {body}")
 
         response = requests.post(constructed_url, headers=headers, data=body)
         if response.status_code == 200:
