@@ -24,6 +24,7 @@ from PyQt5 import QtWidgets
 
 from .base import ServiceDialog
 from .common import Checkbox, Label, Note
+import aqt.utils
 
 __all__ = ['Templater']
 
@@ -53,6 +54,7 @@ class Templater(ServiceDialog):
         from anki.consts import MODEL_CLOZE
         self._card_layout = card_layout
         self._is_cloze = card_layout.model['type'] == MODEL_CLOZE
+
 
         super(Templater, self).__init__(
             title="Add On-the-Fly TTS Tag to Template",
@@ -109,12 +111,7 @@ class Templater(ServiceDialog):
                     ('global', "add rule to hide any TTS tag for note type"),
                 ]),
 
-                (2, "Add to:", 'target', [
-                    ('front', "Front Template"),
-                    ('back', "Back Template"),
-                ]),
-
-                # row 3 is used below if self._is_cloze is True
+                # row 2 is used below if self._is_cloze is True
         ]:
             label = Label(label)
             label.setFont(self._FONT_LABEL)
@@ -130,8 +127,8 @@ class Templater(ServiceDialog):
             warning = Label("Remember 'cloze:' for any cloze fields.")
             warning.setMinimumHeight(25)
 
-            layout.addWidget(cloze, 3, 1)
-            layout.addWidget(warning, 3, 1)
+            layout.addWidget(cloze, 2, 1)
+            layout.addWidget(warning, 2, 1)
 
             widgets['field'].setCurrentIndex(-1)
             widgets['field'].currentIndexChanged.connect(lambda index: (
@@ -167,6 +164,22 @@ class Templater(ServiceDialog):
 
         return buttons
 
+    def set_button_label(self):
+        target_name = ""
+        if self.front_template_selected:
+            target_name = "Front Template"
+        elif self.back_template_selected:
+            target_name = "Back Template"        
+        self.findChild(QtWidgets.QAbstractButton, 'okay').setText("&Insert into " + target_name)
+
+    def get_target_selected(self):
+        self.front_template_selected = False
+        self.back_template_selected = False
+        if self._card_layout.tform.front_button.isChecked():
+            self.front_template_selected = True
+        if self._card_layout.tform.back_button.isChecked():
+            self.back_template_selected = True        
+
     # Events #################################################################
 
     def show(self, *args, **kwargs):
@@ -175,9 +188,20 @@ class Templater(ServiceDialog):
         field dropdown.
         """
 
+        # did we select the front or back template ?
+        self.get_target_selected()
+
+        # set the label of the insert button
+        self.set_button_label()
+
+        # if the user selected styling, exit as it doesn't make sense to insert a TTS tag there
+        if self.front_template_selected == False and self.back_template_selected == False:
+            aqt.utils.showCritical("Please Select Front Template or Back Template", title="AwesomeTTS")
+            return
+
         super(Templater, self).show(*args, **kwargs)
 
-        for name in ['hide', 'target', 'field']:
+        for name in ['hide', 'field']:
             dropdown = self.findChild(QtWidgets.QComboBox, name)
             dropdown.setCurrentIndex(max(
                 dropdown.findData(self._addon.config['templater_' + name]), 0
@@ -202,7 +226,8 @@ class Templater(ServiceDialog):
 
         now = self._get_all()
         tform = self._card_layout.tform
-        target = getattr(tform, now['templater_target'])
+        # there's now a single edit area, as of anki 2.1.28
+        target = getattr(tform, 'edit_area')
         presets = self.findChild(QtWidgets.QComboBox, 'presets_dropdown')
 
         last_service = now['last_service']
@@ -246,7 +271,7 @@ class Templater(ServiceDialog):
 
         combos = {
             name: widget.itemData(widget.currentIndex())
-            for name in ['field', 'hide', 'target']
+            for name in ['field', 'hide']
             for widget in [self.findChild(QtWidgets.QComboBox, name)]
         }
 
