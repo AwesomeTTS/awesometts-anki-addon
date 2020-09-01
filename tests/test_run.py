@@ -85,7 +85,7 @@ class TestClass():
         using default (or first available) options. To expose a specific
         value of an option for testing purposes only, use test_default.
         """
-        require_key = ['iSpeech', 'Google Cloud Text-to-Speech', 'Microsoft Azure', 'Forvo', 'FptAi Vietnamese', 'Naver Clova']
+        require_key = ['iSpeech', 'Google Cloud Text-to-Speech', 'Microsoft Azure', 'Forvo', 'FptAi Vietnamese', 'Naver Clova', 'Naver Clova Premium']
         # in an attempt to get continuous integration running again, a number of services had to be disabled. 
         # we'll have to revisit this when we get a baseline of working tests
 
@@ -344,6 +344,38 @@ class TestClass():
 
         self.run_service_testcases(svc_id, test_cases, extra_option_keys=['clientid', 'clientsecret'])
 
+    def test_naverclovapremium(self):
+        # test Naver Clova Premium service
+        # to run this test only:
+        # python -m pytest tests -s -k 'test_naverclovapremium'
+
+        svc_id = 'Naver Clova Premium'
+
+        NAVERCLOVA_CLIENT_ID_ENVVAR = 'NAVERCLOVA_CLIENT_ID'
+        NAVERCLOVA_CLIENT_SECRET_ENVVAR = 'NAVERCLOVA_CLIENT_SECRET'
+        if NAVERCLOVA_CLIENT_ID_ENVVAR not in os.environ or NAVERCLOVA_CLIENT_SECRET_ENVVAR not in os.environ:
+            return
+
+        client_id = os.environ[NAVERCLOVA_CLIENT_ID_ENVVAR]
+        client_secret = os.environ[NAVERCLOVA_CLIENT_SECRET_ENVVAR]
+        assert len(client_id)
+        assert len(client_secret)
+
+        # add api keys
+        config_snippet = {
+            'extras': {'naverclovapremium': 
+                {'clientid': client_id,
+                 'clientsecret': client_secret}
+            }
+        }
+        self.addon.config.update(config_snippet)
+
+        # generate audio files for all these test cases, then run them through the speech recognition API to make sure the output is correct
+        test_cases = [
+            {'voice': 'nara', 'text_input': '여보세요', 'recognition_language':'ko-KR'},
+        ]
+
+        self.run_service_testcases(svc_id, test_cases, extra_option_keys=['clientid', 'clientsecret'])
 
     def test_youdao(self):
         # python -m pytest tests -s -k 'test_youdao'

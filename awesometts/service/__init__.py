@@ -40,6 +40,7 @@ from .imtranslator import ImTranslator
 from .ispeech import ISpeech
 from .naver import Naver
 from .naverclova import NaverClova
+from .naverclovapremium import NaverClovaPremium
 from .neospeech import NeoSpeech
 from .oddcast import Oddcast
 from .oxford import Oxford

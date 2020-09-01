@@ -218,6 +218,7 @@ router = Router(
             ('ispeech', service.ISpeech),
             ('naver', service.Naver),
             ('naverclova', service.NaverClova),
+            ('naverclovapremium', service.NaverClovaPremium),
             ('neospeech', service.NeoSpeech),
             ('oddcast', service.Oddcast),
             ('oxford', service.Oxford),
