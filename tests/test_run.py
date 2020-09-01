@@ -303,6 +303,48 @@ class TestClass():
 
         self.run_service_testcases(svc_id, test_cases)
 
+    def test_naverclova(self):
+        # test Naver Clova service
+        # to run this test only:
+        # python -m pytest tests -s -k 'test_naverclova'
+
+        svc_id = 'Naver Clova'
+
+        NAVERCLOVA_CLIENT_ID_ENVVAR = 'NAVERCLOVA_CLIENT_ID'
+        NAVERCLOVA_CLIENT_SECRET_ENVVAR = 'NAVERCLOVA_CLIENT_SECRET'
+        if NAVERCLOVA_CLIENT_ID_ENVVAR not in os.environ or NAVERCLOVA_CLIENT_SECRET_ENVVAR not in os.environ:
+            return
+
+        client_id = os.environ[NAVERCLOVA_CLIENT_ID_ENVVAR]
+        client_secret = os.environ[NAVERCLOVA_CLIENT_SECRET_ENVVAR]
+        assert len(client_id)
+        assert len(client_secret)
+
+        # add api keys
+        config_snippet = {
+            'extras': {'naverclova': 
+                {'clientid': client_id,
+                 'clientsecret': client_secret}
+            }
+        }
+        self.addon.config.update(config_snippet)
+
+        # generate audio files for all these test cases, then run them through the speech recognition API to make sure the output is correct
+        test_cases = [
+            {'voice': 'mijin', 'text_input': '여보세요', 'recognition_language':'ko-KR'},
+            {'voice': 'jinho', 'text_input': '여보세요', 'recognition_language':'ko-KR'},
+            {'voice': 'clara', 'text_input': 'this is the first sentence', 'recognition_language':'en-US'},
+            {'voice': 'matt', 'text_input': 'this is the first sentence', 'recognition_language':'en-US'},
+            {'voice': 'shinji', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},            
+            {'voice': 'meimei', 'text_input': '你好', 'recognition_language':'zh-CN'},
+            {'voice': 'liangliang', 'text_input': '你好', 'recognition_language':'zh-CN'},
+            {'voice': 'jose', 'text_input': 'muchas gracias', 'recognition_language':'es-ES'},
+            {'voice': 'carmen', 'text_input': 'muchas gracias', 'recognition_language':'es-ES'},
+        ]
+
+        self.run_service_testcases(svc_id, test_cases, extra_option_keys=['clientid', 'clientsecret'])
+
+
     def test_youdao(self):
         # python -m pytest tests -s -k 'test_youdao'
 

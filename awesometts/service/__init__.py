@@ -39,6 +39,7 @@ from .howjsay import Howjsay
 from .imtranslator import ImTranslator
 from .ispeech import ISpeech
 from .naver import Naver
+from .naverclova import NaverClova
 from .neospeech import NeoSpeech
 from .oddcast import Oddcast
 from .oxford import Oxford
@@ -75,6 +76,7 @@ __all__ = [
     'ImTranslator',
     'ISpeech',
     'Naver',
+    'NaverClova',
     'NeoSpeech',
     'Oddcast',
     'Oxford',

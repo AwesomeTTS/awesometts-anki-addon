@@ -217,6 +217,7 @@ router = Router(
             ('imtranslator', service.ImTranslator),
             ('ispeech', service.ISpeech),
             ('naver', service.Naver),
+            ('naverclova', service.NaverClova),
             ('neospeech', service.NeoSpeech),
             ('oddcast', service.Oddcast),
             ('oxford', service.Oxford),
