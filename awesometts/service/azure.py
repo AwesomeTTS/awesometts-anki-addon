@@ -269,6 +269,8 @@ class Azure(Service):
         self.access_token_timestamp = datetime.datetime.now()
         self._logger.debug(f'requested access_token')
 
+
+
     def token_refresh_required(self):
         if self.access_token == None:
             self._logger.debug(f'no token, must request')
@@ -324,7 +326,8 @@ class Azure(Service):
             with open(path, 'wb') as audio:
                 audio.write(response.content)
         else:
-            error_message = f"Status code: {response.status_code} reason: {response.reason} voice: [{voice_name}] language: [{language} subscription key: [{subscription_key}]]"
+            error_message = f"Status code: {response.status_code} reason: {response.reason} voice: [{voice_name}] language: [{language} " + \
+            f"subscription key: [{subscription_key}]] access token timestamp: [{self.access_token_timestamp}] access token: [{self.access_token}]"
             raise ValueError(error_message)
 
 
