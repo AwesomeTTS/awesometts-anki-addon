@@ -592,15 +592,23 @@ def editor_button():
 
     anki.hooks.addHook('setupEditorButtons', addAwesomeTTSEditorButton)
 
-    anki.hooks.addHook(
-        'setupEditorShortcuts',
-        lambda shortcuts, editor: shortcuts.append(
-            (
-                sequences['editor_generator'].toString(),
-                editor._links['awesometts_btn']
-            )
-        )
-    )
+    def createAwesomeTTSEditorShortcutLambda(editor):
+        def launch():
+            editor_generator = gui.EditorGenerator(editor=editor,
+                                                   addon=addon,
+                                                   alerts=aqt.utils.showWarning,
+                                                   ask=aqt.utils.getText,
+                                                   parent=editor.parentWindow)
+            editor_generator.show()
+        return launch
+
+    def editor_init_shortcuts(shortcuts, editor: aqt.editor.Editor):
+        shortcut_sequence = sequences['editor_generator'].toString()
+        lambda_function = createAwesomeTTSEditorShortcutLambda(editor)
+        shortcut_entry = (shortcut_sequence, lambda_function, True)
+        shortcuts.append(shortcut_entry)
+
+    aqt.gui_hooks.editor_did_init_shortcuts.append(editor_init_shortcuts)
 
     # TODO: Editor buttons are now in the WebView, not sure how (and if)
     # we should implement muzzling. Please see:
