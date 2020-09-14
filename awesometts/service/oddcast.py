@@ -135,8 +135,19 @@ MAPPINGS = [
     (3, 10, 1, 'CMN', 'female', "Lily"),
     (3, 10, 3, 'CMN', 'female', "Hui"),
     (3, 10, 4, 'CMN', 'male', "Liang"),
+    # Japanese
     (3, 12, 2, None, 'male', "Show"),
     (3, 12, 3, None, 'female', "Misaki"),
+    (3, 12, 4, None, 'female', "Sayaka"),
+    (3, 12, 6, None, 'female', "Haruka"),
+    (3, 12, 7, None, 'male', "Ryo"),
+    (3, 12, 8, None, 'male', "Takeru"),
+    (3, 12, 5, None, 'female', "Hikari"),
+    (7, 12, 1, None, 'female', "Himari"),
+    (7, 12, 2, None, 'male', "Kaito"),
+    (4, 12, 1, None, 'female', "Kyoko"),
+
+
     (3, 13, 1, None, 'female', "Yumi"),
     (3, 13, 2, None, 'male', "Junwoo"),
     (4, 1, 1, 'US', 'female', "Jennifer"),

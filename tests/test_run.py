@@ -427,6 +427,16 @@ class TestClass():
         test_cases = [
             {'voice': 'en/steven', 'text_input': 'successful', 'recognition_language':'en-US'},
             {'voice': 'th/narisa', 'text_input': 'กรุงเทพฯ', 'recognition_language':'th-TH'},
+            {'voice': 'ja/show', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
+            {'voice': 'ja/misaki', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
+            {'voice': 'ja/haruka', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
+            {'voice': 'ja/hikari', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
+            {'voice': 'ja/himari', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
+            {'voice': 'ja/kaito', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
+            {'voice': 'ja/kyoko', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
+            {'voice': 'ja/ryo', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
+            {'voice': 'ja/sayaka', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
+            {'voice': 'ja/takeru', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
         ]
         self.run_service_testcases(svc_id, test_cases)
 
