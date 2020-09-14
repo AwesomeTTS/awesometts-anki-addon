@@ -426,7 +426,11 @@ class TestClass():
 
         test_cases = [
             {'voice': 'en/steven', 'text_input': 'successful', 'recognition_language':'en-US'},
+            # thai
             {'voice': 'th/narisa', 'text_input': 'กรุงเทพฯ', 'recognition_language':'th-TH'},
+            {'voice': 'th/sarawut', 'text_input': 'กรุงเทพฯ', 'recognition_language':'th-TH'},
+            {'voice': 'th/somsi', 'text_input': 'กรุงเทพฯ', 'recognition_language':'th-TH'},
+            # japanese
             {'voice': 'ja/show', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
             {'voice': 'ja/misaki', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},
             {'voice': 'ja/haruka', 'text_input': 'おはようございます', 'recognition_language':'ja-JP'},

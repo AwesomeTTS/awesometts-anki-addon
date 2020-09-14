@@ -209,7 +209,11 @@ MAPPINGS = [
     (4, 23, 1, None, 'male', "Mikko"),
     (4, 24, 1, None, 'female', "Lekha"),
     # outputs a ton of silence: (4, 25, 1, None, 'female', "Ragga"),
+    # Thai
     (4, 26, 1, None, 'female', "Narisa"),
+    (3, 26, 1, None, 'male', "Sarawut"),
+    (3, 26, 2, None, 'female', "Somsi"),
+
     (4, 27, 1, None, 'male', "Maged"),
     (4, 28, 1, None, 'female', "Damayanti"),
     (4, 29, 1, None, 'female', "Eszter"),
