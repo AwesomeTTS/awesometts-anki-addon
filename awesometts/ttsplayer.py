@@ -10,6 +10,7 @@ import sys
 from concurrent.futures import Future
 from dataclasses import dataclass
 from typing import List, cast
+import threading
 
 import anki.sound
 from anki.lang import compatMap
@@ -43,57 +44,59 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
 
     # this is called on a background thread, and will not block the UI
     def _play(self, tag: AVTag) -> None:
-        try:
-            assert isinstance(tag, TTSTag)
-            match = self.voice_for_tag(tag)
-            assert match
-            voice = cast(AwesomeTTSVoice, match.voice)
+        self.audio_file_path = None
 
-            # is the field blank?
-            if not tag.field_text.strip():
-                return
-            
-            awesometts_preset = voice.atts_preset
+        assert isinstance(tag, TTSTag)
+        match = self.voice_for_tag(tag)
+        assert match
+        voice = cast(AwesomeTTSVoice, match.voice)
 
-            #sys.stderr.write(f"need to play audio: [{tag.field_text}], preset: {awesometts_preset}")
+        # is the field blank?
+        if not tag.field_text.strip():
+            return
 
-            # load the preset from the above name
-            text = tag.field_text
-            print("*step1")
+        text = tag.field_text
+        print(f"need to pronounce sound: [{text}]")
 
-            config = self._addon.config
-            print("*step2")
+        # load preset
+        awesometts_preset = voice.atts_preset        
+        config = self._addon.config
+        config_presets = config['presets']
+        preset = config_presets[awesometts_preset]
 
-            config_presets = config['presets']
+        self.done_event = threading.Event()
 
-            print("*step3")
+        self._addon.router(
+            svc_id=preset['service'],
+            text=text,
+            options=preset,
+            callbacks=dict(
+                okay=self.audio_file_ready,
+                fail=self.failure,
+            )
+        )
 
-            preset = config_presets[awesometts_preset]
+        # need to wait until we get either a successful callback, or
+        self.done_event.wait(timeout=60)
 
-            print("*step4")
+    def failure(self, exception, text):
+        print(f"could not play text: {exception}")
+        self.done_event.set()
 
-            #sys.stderr.write(preset)
-            print(preset)
-
-            self._addon.router(
-                svc_id=preset['service'],
-                text=text,
-                options=preset,
-                callbacks=dict(
-                    okay=anki.sound.play,
-                    fail=lambda exception, text: (
-                        print(f"could not play text: {exception}")
-                    ),
-                ),
-            )        
-        except:
-            e = sys.exc_info()[0]            
-            sys.stderr.write(e)
-
+    def audio_file_ready(self, path):
+        self.audio_file_path = path
+        self.done_event.set()
 
     # this is called on the main thread, after _play finishes
     def _on_done(self, ret: Future, cb: OnDoneCallback) -> None:
-        pass
+        ret.result()
+
+        # inject file into the top of the audio queue
+        if self.audio_file_path != None:
+            av_player.insert_file(self.audio_file_path)
+
+        # then tell player to advance, which will cause the file to be played
+        cb()
 
     # we don't support stopping while the file is being downloaded
     # (but the user can interrupt playing after it has been downloaded)
