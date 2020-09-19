@@ -877,4 +877,4 @@ def window_shortcuts():
 
 
 def register_tts_tag():
-    register_tts_player()
+    register_tts_player(addon)
