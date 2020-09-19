@@ -37,6 +37,7 @@ from .config import Config
 from .player import Player
 from .router import Router
 from .text import Sanitizer
+from .ttsplayer import register_tts_player
 
 __all__ = ['browser_menus', 'cards_button', 'config_menu', 'editor_button',
            'reviewer_hooks', 'sound_tag_delays', 
@@ -873,3 +874,7 @@ def window_shortcuts():
     on_sequence_change(config)  # set config menu if created before we ran
     config.bind(['launch_' + key for key in sequences.keys()],
                 on_sequence_change)
+
+
+def register_tts_tag():
+    register_tts_player()
