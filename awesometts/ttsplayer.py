@@ -19,6 +19,7 @@ from aqt import mw
 from aqt.taskman import TaskManager
 from aqt.sound import OnDoneCallback, av_player
 from aqt.tts import TTSProcessPlayer, TTSVoice
+import aqt.utils
 
 # we subclass the default voice object to store the gtts language code
 @dataclass
@@ -33,6 +34,7 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
 
     # this is called the first time Anki tries to play a TTS file
     def get_available_voices(self) -> List[TTSVoice]:
+        print("* get_available_voices")
         voices = []
         std_code="en_US"
         preset_name = "Microsoft Azure Neural Guy"
@@ -56,10 +58,10 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
             return
 
         text = tag.field_text
-        print(f"need to pronounce sound: [{text}]")
 
         # load preset
-        awesometts_preset = voice.atts_preset        
+        awesometts_preset = voice.atts_preset
+        self.awesometts_preset = awesometts_preset
         config = self._addon.config
         config_presets = config['presets']
         preset = config_presets[awesometts_preset]
@@ -80,7 +82,8 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         self.done_event.wait(timeout=60)
 
     def failure(self, exception, text):
-        print(f"could not play text: {exception}")
+        #print(f"could not play text: {exception}")
+        aqt.utils.showWarning(f"could not play audio: {exception} (preset: {self.awesometts_preset})")
         self.done_event.set()
 
     def audio_file_ready(self, path):
