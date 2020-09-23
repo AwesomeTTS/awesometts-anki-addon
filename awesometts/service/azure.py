@@ -26,6 +26,9 @@ import datetime
 import requests
 from xml.etree import ElementTree
 from .base import Service
+from .languages import Gender
+from .languages import Language
+from .languages import Voice
 
 __all__ = ['Azure']
 
@@ -180,6 +183,24 @@ SPEEDS = [
     ('x-fast', 'Extra Fast')
 ]
 
+class AzureVoice(Voice):
+    # {'Name': 'Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)', 
+    # 'DisplayName': 'Guy', 'LocalName': 'Guy', 'ShortName': 'en-US-GuyNeural',
+    #  'Gender': 'Male', 'Locale': 'en-US', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'English (US)'},
+    def __init__(self, language: Language, gender: Gender, name: str, display_name: str, local_name: str, short_name: str, voice_type: str):
+        self.language = language
+        self.gender = gender
+        self.name = name
+
+    def get_language(self) -> Language:
+        return self.language
+
+    def get_gender(self) -> Gender:
+        return self.gender
+
+    def get_key(self) -> str:
+        return self.name
+
 class Azure(Service):
     """
     Provides a Service-compliant implementation for Microsoft Azure Text To Speech.
@@ -206,6 +227,11 @@ class Azure(Service):
         """The Azure API requires an API key."""
 
         return [dict(key='key', label="API Key", required=True)]
+
+    def get_voices(self) -> List[AzureVoice]:
+        return [
+            AzureVoice(Language.en_US, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)', 'Guy', 'Guy', 'en-US-GuyNeural', 'Neural')
+        ]
 
     def get_voice_list(self):
         """
