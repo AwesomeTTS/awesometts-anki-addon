@@ -253,7 +253,13 @@ class Azure(Service):
                 values=SPEEDS,
                 default='default',
                 transform=lambda value: value),
-            
+            dict(
+                key='pitch',
+                label="Pitch",
+                values=(-50, 50),
+                transform=int,
+                default=0,
+            ),
         ]
 
     def get_token(self, subscription_key, region):
@@ -294,6 +300,8 @@ class Azure(Service):
         language = self.get_language_for_voice(voice)
 
         rate = options['speed']
+        pitchValue = options['pitch']
+        pitch = '{0}%'.format(pitchValue)
 
         base_url = f'https://{region}.tts.speech.microsoft.com/'
         url_path = 'cognitiveservices/v1'
@@ -315,6 +323,7 @@ class Azure(Service):
 
         prosody = ElementTree.SubElement(voice, 'prosody')
         prosody.set('rate', rate)
+        prosody.set('pitch', pitch)
 
         prosody.text = text
         body = ElementTree.tostring(xml_body)
