@@ -29,6 +29,7 @@ from .base import Service
 from .languages import Gender
 from .languages import Language
 from .languages import Voice
+from typing import List
 
 __all__ = ['Azure']
 
@@ -187,10 +188,14 @@ class AzureVoice(Voice):
     # {'Name': 'Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)', 
     # 'DisplayName': 'Guy', 'LocalName': 'Guy', 'ShortName': 'en-US-GuyNeural',
     #  'Gender': 'Male', 'Locale': 'en-US', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'English (US)'},
-    def __init__(self, language: Language, gender: Gender, name: str, display_name: str, local_name: str, short_name: str, voice_type: str):
+    def __init__(self, language: Language, gender: Gender, name: str, display_name: str, local_name: str, short_name: str, voice_type: str, language_code: str):
         self.language = language
         self.gender = gender
         self.name = name
+        self.display_name = display_name
+        self.local_name = local_name
+        self.voice_type = voice_type
+        self.language_code = language_code
 
     def get_language(self) -> Language:
         return self.language
@@ -200,6 +205,17 @@ class AzureVoice(Voice):
 
     def get_key(self) -> str:
         return self.name
+
+    def get_language_code(self) -> str:
+        return self.language_code
+
+    def get_description(self) -> str:
+        display_name = self.display_name
+        if self.display_name != self.local_name:
+            display_name = f"{self.display_name}, {self.local_name}"
+        value = f"{self.language.lang_name}, {self.gender.name}, {self.voice_type}, {display_name}"
+        return value
+
 
 class Azure(Service):
     """
@@ -230,33 +246,18 @@ class Azure(Service):
 
     def get_voices(self) -> List[AzureVoice]:
         return [
-            AzureVoice(Language.en_US, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)', 'Guy', 'Guy', 'en-US-GuyNeural', 'Neural')
+            AzureVoice(Language.en_US, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)', 'Guy', 'Guy', 'en-US-GuyNeural', 'Neural', 'en-US'),
+            AzureVoice(Language.en_GB, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-GB, LibbyNeural)', 'Libby', 'Libby', 'en-GB-LibbyNeural', 'Neural', 'en-GB')
         ]
 
+    def get_voice_for_key(self, key) -> AzureVoice:
+        voice = [voice for voice in self.get_voices() if voice.get_key() == key]
+        assert(len(voice) == 1)
+        return voice[0]
+
+
     def get_voice_list(self):
-        """
-        present the list of voices in a tuple, the first element being a key, the second one
-        is a human-readable value
-        """
-        processed_voice_list = []
-        for voice in VOICE_LIST:
-            key = voice['Name']
-            display_name = voice['DisplayName']
-            if voice['DisplayName'] != voice['LocalName']:
-                display_name = f"{voice['DisplayName']}, {voice['LocalName']}"
-            value = f"{voice['Language']}, {voice['Gender']}, {voice['VoiceType']}, {display_name}"
-            processed_voice_list.append((key, value))
-
-        # sort by human description order
-        processed_voice_list.sort(key=lambda x: x[1])
-
-        return processed_voice_list
-
-    def get_language_for_voice(self, voice):
-        for voice_entry in VOICE_LIST:
-            if voice_entry['Name'] == voice:
-                return voice_entry['Locale']
-        raise ValueError(f'Voice not found: {voice}')
+        return [(voice.get_key(), voice.get_description()) for voice in self.get_voices()]
 
     def options(self):
         """Provides access to voice only."""
@@ -315,9 +316,10 @@ class Azure(Service):
         if self.token_refresh_required():
             self.get_token(subscription_key, region)
 
-        voice = options['voice']
-        voice_name = voice
-        language = self.get_language_for_voice(voice)
+        voice_key = options['voice']
+        voice = self.get_voice_for_key(voice_key)
+        voice_name = voice.get_key()
+        language = voice.get_language_code()
 
         rate = options['speed']
 
