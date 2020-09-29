@@ -213,7 +213,7 @@ router = Router(
             ('fptai', service.FptAi),
             ('google', service.Google),
             ('googletts', service.GoogleTTS),
-            ('howjsay', service.Howjsay),
+            #('howjsay', service.Howjsay),
             #('imtranslator', service.ImTranslator), # https://github.com/AwesomeTTS/awesometts-anki-addon/issues/94
             ('ispeech', service.ISpeech),
             ('naver', service.Naver),

@@ -102,7 +102,8 @@ class TestClass():
                      'Yandex.Translate', 
                      'NAVER Translate', 
                      'Google Translate',
-                     'Oddcast']
+                     'Oddcast', 
+                     'Howjsay']
 
         for svc_id, name, in self.addon.router.get_services():
 
