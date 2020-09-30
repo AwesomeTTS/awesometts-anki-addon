@@ -67,6 +67,15 @@ SPEEDS = [
     ('x-fast', 'Extra Fast')
 ]
 
+PITCH = [
+    ('x-low', 'Extra Low'),
+    ('low', 'Low'),
+    ('medium', 'Medium'),
+    ('default', 'Default'),
+    ('high', 'High'),
+    ('x-high', 'Extra High')
+]
+
 class AzureVoice(Voice):
     # {'Name': 'Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)', 
     # 'DisplayName': 'Guy', 'LocalName': 'Guy', 'ShortName': 'en-US-GuyNeural',
@@ -307,6 +316,11 @@ class Azure(Service):
                 values=SPEEDS,
                 default='default',
                 transform=lambda value: value),
+            dict(key='pitch',
+                label='Pitch',
+                values=PITCH,
+                default='default',
+                transform=lambda value: value),                
             
         ]
 
@@ -349,6 +363,7 @@ class Azure(Service):
         language = voice.get_language_code()
 
         rate = options['speed']
+        pitch = options['pitch']
 
         base_url = f'https://{region}.tts.speech.microsoft.com/'
         url_path = 'cognitiveservices/v1'
@@ -370,6 +385,7 @@ class Azure(Service):
 
         prosody = ElementTree.SubElement(voice, 'prosody')
         prosody.set('rate', rate)
+        prosody.set('pitch', pitch)
 
         prosody.text = text
         body = ElementTree.tostring(xml_body)
