@@ -89,8 +89,11 @@ def get_voices(access_token):
     response = requests.get(constructed_url, headers=headers)
     if response.status_code == 200:
         voice_data = json.loads(response.content)
+        for voice in voice_data:
+            language = LOCALE_TO_LANGUAGE[voice['Locale']]
+            voice['language_fullname'] = language
         #print(voice_data)
-        sorted_voice_data = sorted(voice_data, key=lambda x: x['Name'])
+        sorted_voice_data = sorted(voice_data, key=lambda x: x['language_fullname'])
         for voice in sorted_voice_data:
             # AzureVoice(Language.en_US, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)', 'Guy', 'Guy', 'en-US-GuyNeural', 'Neural', 'en-US'),
             language_enum_name = voice['Locale'].replace('-', '_')
