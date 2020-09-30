@@ -496,7 +496,7 @@ class TestClass():
             {'voice': 'en', 'text_input': 'successful', 'recognition_language':'en-US'}, # no country set
             {'voice': 'en', 'sex': 'f', 'text_input': 'greetings', 'recognition_language':'en-US'}, # set sex=female
             {'voice': 'en', 'text_input': 'greetings', 'recognition_language':'en-US'}, # set country=USA
-            {'voice': 'zh', 'sex': 'f', 'text_input': '你好', 'recognition_language':'zh-CN'}, # chinese, female
+            {'voice': 'zh', 'sex': 'f', 'text_input': '你好吗？', 'recognition_language':'zh-CN'}, # chinese, female
             {'voice': 'pt', 'sex': 'f', 'text_input': 'obrigado', 'recognition_language':'pt-PT'}, # portuguese, portugal, female
             {'voice': 'pt', 'sex': 'm', 'country':'BRA', 'text_input': 'obrigado', 'recognition_language':'pt-BR'}, # portuguese, brazil, male
         ]
