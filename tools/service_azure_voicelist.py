@@ -92,20 +92,13 @@ def get_voices(access_token):
         #print(voice_data)
         sorted_voice_data = sorted(voice_data, key=lambda x: x['Name'])
         for voice in sorted_voice_data:
-            #print(voice)
+            # AzureVoice(Language.en_US, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)', 'Guy', 'Guy', 'en-US-GuyNeural', 'Neural', 'en-US'),
+            language_enum_name = voice['Locale'].replace('-', '_')
             language = LOCALE_TO_LANGUAGE[voice['Locale']]
             voice['Language'] = language
-            print(str(voice) + ',')
-            #output = "'" + voice['Name'] + "': ('" + voice['Locale'] + "', '" + voice['Gender'] + "'),"
-            #print(output)
-            #print(f"'{voice['Name']}': ('{voice['Locale]}', '{voice['Gender']}')")
+            azure_voice_formatted = f"AzureVoice(Language.{language_enum_name}, Gender.{voice['Gender']}, '{voice['Name']}', '{voice['DisplayName']}','{voice['LocalName']}', '{voice['ShortName']}', '{voice['VoiceType']}', '{voice['Locale']}'),"
+            print(azure_voice_formatted)
 
-def print_voice_list():
-
-    service_region = "eastus"
-    speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
-
-    #speech_config.
 
 if __name__ == '__main__':
     assert AZURE_SERVICES_KEY_ENVVAR_NAME in os.environ

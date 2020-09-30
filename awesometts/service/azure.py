@@ -26,125 +26,12 @@ import datetime
 import requests
 from xml.etree import ElementTree
 from .base import Service
+from .languages import Gender
+from .languages import Language
+from .languages import Voice
+from typing import List
 
 __all__ = ['Azure']
-
-# generated using tools/service_azure_voicelist.py
-VOICE_LIST = [
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ar-EG, Hoda)', 'DisplayName': 'Hoda', 'LocalName': 'هدى', 'ShortName': 'ar-EG-Hoda', 'Gender': 'Female', 'Locale': 'ar-EG', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Arabic (Egypt)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ar-EG, SalmaNeural)', 'DisplayName': 'Salma', 'LocalName': 'سلمى', 'ShortName': 'ar-EG-SalmaNeural', 'Gender': 'Female', 'Locale': 'ar-EG', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Arabic (Egypt)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ar-SA, Naayf)', 'DisplayName': 'Naayf', 'LocalName': 'نايف', 'ShortName': 'ar-SA-Naayf', 'Gender': 'Male', 'Locale': 'ar-SA', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Arabic (Saudi Arabia)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ar-SA, ZariyahNeural)', 'DisplayName': 'Zariyah', 'LocalName': 'زارية', 'ShortName': 'ar-SA-ZariyahNeural', 'Gender': 'Female', 'Locale': 'ar-SA', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Arabic (Saudi Arabia)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (bg-BG, Ivan)', 'DisplayName': 'Ivan', 'LocalName': 'Ivan', 'ShortName': 'bg-BG-Ivan', 'Gender': 'Male', 'Locale': 'bg-BG', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Bulgarian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ca-ES, AlbaNeural)', 'DisplayName': 'Alba', 'LocalName': 'Alba', 'ShortName': 'ca-ES-AlbaNeural', 'Gender': 'Female', 'Locale': 'ca-ES', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Catalan'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ca-ES, HerenaRUS)', 'DisplayName': 'Herena', 'LocalName': 'Herena', 'ShortName': 'ca-ES-HerenaRUS', 'Gender': 'Female', 'Locale': 'ca-ES', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Catalan'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (cs-CZ, Jakub)', 'DisplayName': 'Jakub', 'LocalName': 'Jakub', 'ShortName': 'cs-CZ-Jakub', 'Gender': 'Male', 'Locale': 'cs-CZ', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Czech'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (da-DK, ChristelNeural)', 'DisplayName': 'Christel', 'LocalName': 'Christel', 'ShortName': 'da-DK-ChristelNeural', 'Gender': 'Female', 'Locale': 'da-DK', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Danish'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (da-DK, HelleRUS)', 'DisplayName': 'Helle', 'LocalName': 'Helle', 'ShortName': 'da-DK-HelleRUS', 'Gender': 'Female', 'Locale': 'da-DK', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Danish'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (de-AT, Michael)', 'DisplayName': 'Michael', 'LocalName': 'Michael', 'ShortName': 'de-AT-Michael', 'Gender': 'Male', 'Locale': 'de-AT', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'German (Austria)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (de-CH, Karsten)', 'DisplayName': 'Karsten', 'LocalName': 'Karsten', 'ShortName': 'de-CH-Karsten', 'Gender': 'Male', 'Locale': 'de-CH', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'German (Switzerland)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (de-DE, HeddaRUS)', 'DisplayName': 'Hedda', 'LocalName': 'Hedda', 'ShortName': 'de-DE-HeddaRUS', 'Gender': 'Female', 'Locale': 'de-DE', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'German (Germany)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (de-DE, KatjaNeural)', 'DisplayName': 'Katja', 'LocalName': 'Katja', 'ShortName': 'de-DE-KatjaNeural', 'Gender': 'Female', 'Locale': 'de-DE', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'German (Germany)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (de-DE, Stefan, Apollo)', 'DisplayName': 'Stefan', 'LocalName': 'Stefan', 'ShortName': 'de-DE-Stefan-Apollo', 'Gender': 'Male', 'Locale': 'de-DE', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'German (Germany)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (el-GR, Stefanos)', 'DisplayName': 'Stefanos', 'LocalName': 'Stefanos', 'ShortName': 'el-GR-Stefanos', 'Gender': 'Male', 'Locale': 'el-GR', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Greek'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-AU, Catherine)', 'DisplayName': 'Catherine', 'LocalName': 'Catherine', 'ShortName': 'en-AU-Catherine', 'Gender': 'Female', 'Locale': 'en-AU', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (Australia)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-AU, HayleyRUS)', 'DisplayName': 'Hayley', 'LocalName': 'Hayley', 'ShortName': 'en-AU-HayleyRUS', 'Gender': 'Female', 'Locale': 'en-AU', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (Australia)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-AU, NatashaNeural)', 'DisplayName': 'Natasha', 'LocalName': 'Natasha', 'ShortName': 'en-AU-NatashaNeural', 'Gender': 'Female', 'Locale': 'en-AU', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'English (Australia)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-CA, ClaraNeural)', 'DisplayName': 'Clara', 'LocalName': 'Clara', 'ShortName': 'en-CA-ClaraNeural', 'Gender': 'Female', 'Locale': 'en-CA', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'English (Canada)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-CA, HeatherRUS)', 'DisplayName': 'Heather', 'LocalName': 'Heather', 'ShortName': 'en-CA-HeatherRUS', 'Gender': 'Female', 'Locale': 'en-CA', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (Canada)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-CA, Linda)', 'DisplayName': 'Linda', 'LocalName': 'Linda', 'ShortName': 'en-CA-Linda', 'Gender': 'Female', 'Locale': 'en-CA', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (Canada)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-GB, George, Apollo)', 'DisplayName': 'George', 'LocalName': 'George', 'ShortName': 'en-GB-George-Apollo', 'Gender': 'Male', 'Locale': 'en-GB', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (UK)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-GB, HazelRUS)', 'DisplayName': 'Hazel', 'LocalName': 'Hazel', 'ShortName': 'en-GB-HazelRUS', 'Gender': 'Female', 'Locale': 'en-GB', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (UK)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-GB, LibbyNeural)', 'DisplayName': 'Libby', 'LocalName': 'Libby', 'ShortName': 'en-GB-LibbyNeural', 'Gender': 'Female', 'Locale': 'en-GB', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'English (UK)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-GB, MiaNeural)', 'DisplayName': 'Mia', 'LocalName': 'Mia', 'ShortName': 'en-GB-MiaNeural', 'Gender': 'Female', 'Locale': 'en-GB', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'English (UK)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-GB, Susan, Apollo)', 'DisplayName': 'Susan', 'LocalName': 'Susan', 'ShortName': 'en-GB-Susan-Apollo', 'Gender': 'Female', 'Locale': 'en-GB', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (UK)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-IE, Sean)', 'DisplayName': 'Sean', 'LocalName': 'Sean', 'ShortName': 'en-IE-Sean', 'Gender': 'Male', 'Locale': 'en-IE', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (Ireland)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-IN, Heera, Apollo)', 'DisplayName': 'Heera', 'LocalName': 'Heera', 'ShortName': 'en-IN-Heera-Apollo', 'Gender': 'Female', 'Locale': 'en-IN', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (India)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-IN, NeerjaNeural)', 'DisplayName': 'Neerja', 'LocalName': 'Neerja', 'ShortName': 'en-IN-NeerjaNeural', 'Gender': 'Female', 'Locale': 'en-IN', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'English (India)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-IN, PriyaRUS)', 'DisplayName': 'Priya', 'LocalName': 'Priya', 'ShortName': 'en-IN-PriyaRUS', 'Gender': 'Female', 'Locale': 'en-IN', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (India)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-IN, Ravi, Apollo)', 'DisplayName': 'Ravi', 'LocalName': 'Ravi', 'ShortName': 'en-IN-Ravi-Apollo', 'Gender': 'Male', 'Locale': 'en-IN', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (India)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-US, Aria24kRUS)', 'DisplayName': 'Aria', 'LocalName': 'Aria', 'ShortName': 'en-US-Aria24kRUS', 'Gender': 'Female', 'Locale': 'en-US', 'SampleRateHertz': '24000', 'VoiceType': 'Standard', 'Language': 'English (US)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-US, AriaNeural)', 'DisplayName': 'Aria', 'LocalName': 'Aria', 'ShortName': 'en-US-AriaNeural', 'Gender': 'Female', 'Locale': 'en-US', 'StyleList': ['newscast', 'customerservice', 'chat', 'cheerful', 'empathetic'], 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'English (US)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-US, BenjaminRUS)', 'DisplayName': 'Benjamin', 'LocalName': 'Benjamin', 'ShortName': 'en-US-BenjaminRUS', 'Gender': 'Male', 'Locale': 'en-US', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (US)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-US, Guy24kRUS)', 'DisplayName': 'Guy', 'LocalName': 'Guy', 'ShortName': 'en-US-Guy24kRUS', 'Gender': 'Male', 'Locale': 'en-US', 'SampleRateHertz': '24000', 'VoiceType': 'Standard', 'Language': 'English (US)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)', 'DisplayName': 'Guy', 'LocalName': 'Guy', 'ShortName': 'en-US-GuyNeural', 'Gender': 'Male', 'Locale': 'en-US', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'English (US)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)', 'DisplayName': 'Zira', 'LocalName': 'Zira', 'ShortName': 'en-US-ZiraRUS', 'Gender': 'Female', 'Locale': 'en-US', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'English (US)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (es-ES, ElviraNeural)', 'DisplayName': 'Elvira', 'LocalName': 'Elvira', 'ShortName': 'es-ES-ElviraNeural', 'Gender': 'Female', 'Locale': 'es-ES', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Spanish (Spain)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (es-ES, HelenaRUS)', 'DisplayName': 'Helena', 'LocalName': 'Helena', 'ShortName': 'es-ES-HelenaRUS', 'Gender': 'Female', 'Locale': 'es-ES', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Spanish (Spain)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (es-ES, Laura, Apollo)', 'DisplayName': 'Laura', 'LocalName': 'Laura', 'ShortName': 'es-ES-Laura-Apollo', 'Gender': 'Female', 'Locale': 'es-ES', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Spanish (Spain)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (es-ES, Pablo, Apollo)', 'DisplayName': 'Pablo', 'LocalName': 'Pablo', 'ShortName': 'es-ES-Pablo-Apollo', 'Gender': 'Male', 'Locale': 'es-ES', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Spanish (Spain)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (es-MX, DaliaNeural)', 'DisplayName': 'Dalia', 'LocalName': 'Dalia', 'ShortName': 'es-MX-DaliaNeural', 'Gender': 'Female', 'Locale': 'es-MX', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Spanish (Mexico)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (es-MX, HildaRUS)', 'DisplayName': 'Hilda', 'LocalName': 'Hilda', 'ShortName': 'es-MX-HildaRUS', 'Gender': 'Female', 'Locale': 'es-MX', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Spanish (Mexico)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (es-MX, Raul, Apollo)', 'DisplayName': 'Raul', 'LocalName': 'Raúl', 'ShortName': 'es-MX-Raul-Apollo', 'Gender': 'Male', 'Locale': 'es-MX', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Spanish (Mexico)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (fi-FI, HeidiRUS)', 'DisplayName': 'Heidi', 'LocalName': 'Heidi', 'ShortName': 'fi-FI-HeidiRUS', 'Gender': 'Female', 'Locale': 'fi-FI', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Finnish'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (fi-FI, NooraNeural)', 'DisplayName': 'Noora', 'LocalName': 'Noora', 'ShortName': 'fi-FI-NooraNeural', 'Gender': 'Female', 'Locale': 'fi-FI', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Finnish'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (fr-CA, Caroline)', 'DisplayName': 'Caroline', 'LocalName': 'Caroline', 'ShortName': 'fr-CA-Caroline', 'Gender': 'Female', 'Locale': 'fr-CA', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'French (Canada)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (fr-CA, HarmonieRUS)', 'DisplayName': 'Harmonie', 'LocalName': 'Harmonie', 'ShortName': 'fr-CA-HarmonieRUS', 'Gender': 'Female', 'Locale': 'fr-CA', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'French (Canada)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (fr-CA, SylvieNeural)', 'DisplayName': 'Sylvie', 'LocalName': 'Sylvie', 'ShortName': 'fr-CA-SylvieNeural', 'Gender': 'Female', 'Locale': 'fr-CA', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'French (Canada)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (fr-CH, Guillaume)', 'DisplayName': 'Guillaume', 'LocalName': 'Guillaume', 'ShortName': 'fr-CH-Guillaume', 'Gender': 'Male', 'Locale': 'fr-CH', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'French (Switzerland)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (fr-FR, DeniseNeural)', 'DisplayName': 'Denise', 'LocalName': 'Denise', 'ShortName': 'fr-FR-DeniseNeural', 'Gender': 'Female', 'Locale': 'fr-FR', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'French (France)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (fr-FR, HortenseRUS)', 'DisplayName': 'Hortense', 'LocalName': 'Hortense', 'ShortName': 'fr-FR-HortenseRUS', 'Gender': 'Female', 'Locale': 'fr-FR', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'French (France)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (fr-FR, Julie, Apollo)', 'DisplayName': 'Julie', 'LocalName': 'Julie', 'ShortName': 'fr-FR-Julie-Apollo', 'Gender': 'Female', 'Locale': 'fr-FR', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'French (France)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (fr-FR, Paul, Apollo)', 'DisplayName': 'Paul', 'LocalName': 'Paul', 'ShortName': 'fr-FR-Paul-Apollo', 'Gender': 'Male', 'Locale': 'fr-FR', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'French (France)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (he-IL, Asaf)', 'DisplayName': 'Asaf', 'LocalName': 'אסף', 'ShortName': 'he-IL-Asaf', 'Gender': 'Male', 'Locale': 'he-IL', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Hebrew (Israel)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (hi-IN, Hemant)', 'DisplayName': 'Hemant', 'LocalName': 'हेमन्त', 'ShortName': 'hi-IN-Hemant', 'Gender': 'Male', 'Locale': 'hi-IN', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Hindi (India)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (hi-IN, Kalpana)', 'DisplayName': 'Kalpana', 'LocalName': 'कल्पना', 'ShortName': 'hi-IN-Kalpana', 'Gender': 'Female', 'Locale': 'hi-IN', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Hindi (India)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (hi-IN, SwaraNeural)', 'DisplayName': 'Swara', 'LocalName': 'Swara', 'ShortName': 'hi-IN-SwaraNeural', 'Gender': 'Female', 'Locale': 'hi-IN', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Hindi (India)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (hr-HR, Matej)', 'DisplayName': 'Matej', 'LocalName': 'Matej', 'ShortName': 'hr-HR-Matej', 'Gender': 'Male', 'Locale': 'hr-HR', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Croatian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (hu-HU, Szabolcs)', 'DisplayName': 'Szabolcs', 'LocalName': 'Szabolcs', 'ShortName': 'hu-HU-Szabolcs', 'Gender': 'Male', 'Locale': 'hu-HU', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Hungarian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (id-ID, Andika)', 'DisplayName': 'Andika', 'LocalName': 'Andika', 'ShortName': 'id-ID-Andika', 'Gender': 'Male', 'Locale': 'id-ID', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Indonesian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (it-IT, Cosimo, Apollo)', 'DisplayName': 'Cosimo', 'LocalName': 'Cosimo', 'ShortName': 'it-IT-Cosimo-Apollo', 'Gender': 'Male', 'Locale': 'it-IT', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Italian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (it-IT, ElsaNeural)', 'DisplayName': 'Elsa', 'LocalName': 'Elsa', 'ShortName': 'it-IT-ElsaNeural', 'Gender': 'Female', 'Locale': 'it-IT', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Italian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (it-IT, LuciaRUS)', 'DisplayName': 'Lucia', 'LocalName': 'Lucia', 'ShortName': 'it-IT-LuciaRUS', 'Gender': 'Female', 'Locale': 'it-IT', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Italian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ja-JP, Ayumi, Apollo)', 'DisplayName': 'Ayumi', 'LocalName': '歩美', 'ShortName': 'ja-JP-Ayumi-Apollo', 'Gender': 'Female', 'Locale': 'ja-JP', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Japanese'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ja-JP, HarukaRUS)', 'DisplayName': 'Haruka', 'LocalName': '春香', 'ShortName': 'ja-JP-HarukaRUS', 'Gender': 'Female', 'Locale': 'ja-JP', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Japanese'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ja-JP, Ichiro, Apollo)', 'DisplayName': 'Ichiro', 'LocalName': '一郎', 'ShortName': 'ja-JP-Ichiro-Apollo', 'Gender': 'Male', 'Locale': 'ja-JP', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Japanese'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ja-JP, NanamiNeural)', 'DisplayName': 'Nanami', 'LocalName': '七海', 'ShortName': 'ja-JP-NanamiNeural', 'Gender': 'Female', 'Locale': 'ja-JP', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Japanese'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ko-KR, HeamiRUS)', 'DisplayName': 'Heami', 'LocalName': '해 미', 'ShortName': 'ko-KR-HeamiRUS', 'Gender': 'Female', 'Locale': 'ko-KR', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Korean'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ko-KR, SunHiNeural)', 'DisplayName': 'Sun-Hi', 'LocalName': '선히', 'ShortName': 'ko-KR-SunHiNeural', 'Gender': 'Female', 'Locale': 'ko-KR', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Korean'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ms-MY, Rizwan)', 'DisplayName': 'Rizwan', 'LocalName': 'Rizwan', 'ShortName': 'ms-MY-Rizwan', 'Gender': 'Male', 'Locale': 'ms-MY', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Malay'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (nb-NO, HuldaRUS)', 'DisplayName': 'Hulda', 'LocalName': 'Hulda', 'ShortName': 'nb-NO-HuldaRUS', 'Gender': 'Female', 'Locale': 'nb-NO', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Norwegian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (nb-NO, IselinNeural)', 'DisplayName': 'Iselin', 'LocalName': 'Iselin', 'ShortName': 'nb-NO-IselinNeural', 'Gender': 'Female', 'Locale': 'nb-NO', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Norwegian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (nl-NL, ColetteNeural)', 'DisplayName': 'Colette', 'LocalName': 'Colette', 'ShortName': 'nl-NL-ColetteNeural', 'Gender': 'Female', 'Locale': 'nl-NL', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Dutch'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (nl-NL, HannaRUS)', 'DisplayName': 'Hanna', 'LocalName': 'Hanna', 'ShortName': 'nl-NL-HannaRUS', 'Gender': 'Female', 'Locale': 'nl-NL', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Dutch'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (pl-PL, PaulinaRUS)', 'DisplayName': 'Paulina', 'LocalName': 'Paulina', 'ShortName': 'pl-PL-PaulinaRUS', 'Gender': 'Female', 'Locale': 'pl-PL', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Polish'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (pl-PL, ZofiaNeural)', 'DisplayName': 'Zofia', 'LocalName': 'Zofia', 'ShortName': 'pl-PL-ZofiaNeural', 'Gender': 'Female', 'Locale': 'pl-PL', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Polish'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (pt-BR, Daniel, Apollo)', 'DisplayName': 'Daniel', 'LocalName': 'Daniel', 'ShortName': 'pt-BR-Daniel-Apollo', 'Gender': 'Male', 'Locale': 'pt-BR', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Portuguese (Brazil)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (pt-BR, FranciscaNeural)', 'DisplayName': 'Francisca', 'LocalName': 'Francisca', 'ShortName': 'pt-BR-FranciscaNeural', 'Gender': 'Female', 'Locale': 'pt-BR', 'StyleList': ['cheerful', 'calm'], 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Portuguese (Brazil)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (pt-BR, HeloisaRUS)', 'DisplayName': 'Heloisa', 'LocalName': 'Heloisa', 'ShortName': 'pt-BR-HeloisaRUS', 'Gender': 'Female', 'Locale': 'pt-BR', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Portuguese (Brazil)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (pt-PT, FernandaNeural)', 'DisplayName': 'Fernanda', 'LocalName': 'Fernanda', 'ShortName': 'pt-PT-FernandaNeural', 'Gender': 'Female', 'Locale': 'pt-PT', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Portuguese (Portugal)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (pt-PT, HeliaRUS)', 'DisplayName': 'Helia', 'LocalName': 'Hélia', 'ShortName': 'pt-PT-HeliaRUS', 'Gender': 'Female', 'Locale': 'pt-PT', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Portuguese (Portugal)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ro-RO, Andrei)', 'DisplayName': 'Andrei', 'LocalName': 'Andrei', 'ShortName': 'ro-RO-Andrei', 'Gender': 'Male', 'Locale': 'ro-RO', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Romanian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ru-RU, DariyaNeural)', 'DisplayName': 'Dariya', 'LocalName': 'Дария', 'ShortName': 'ru-RU-DariyaNeural', 'Gender': 'Female', 'Locale': 'ru-RU', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Russian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ru-RU, EkaterinaRUS)', 'DisplayName': 'Ekaterina', 'LocalName': 'Екатерина', 'ShortName': 'ru-RU-EkaterinaRUS', 'Gender': 'Female', 'Locale': 'ru-RU', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Russian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ru-RU, Irina, Apollo)', 'DisplayName': 'Irina', 'LocalName': 'Ирина', 'ShortName': 'ru-RU-Irina-Apollo', 'Gender': 'Female', 'Locale': 'ru-RU', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Russian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ru-RU, Pavel, Apollo)', 'DisplayName': 'Pavel', 'LocalName': 'Павел', 'ShortName': 'ru-RU-Pavel-Apollo', 'Gender': 'Male', 'Locale': 'ru-RU', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Russian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (sk-SK, Filip)', 'DisplayName': 'Filip', 'LocalName': 'Filip', 'ShortName': 'sk-SK-Filip', 'Gender': 'Male', 'Locale': 'sk-SK', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Slovak'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (sl-SI, Lado)', 'DisplayName': 'Lado', 'LocalName': 'Lado', 'ShortName': 'sl-SI-Lado', 'Gender': 'Male', 'Locale': 'sl-SI', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Slovenian'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (sv-SE, HedvigRUS)', 'DisplayName': 'Hedvig', 'LocalName': 'Hedvig', 'ShortName': 'sv-SE-HedvigRUS', 'Gender': 'Female', 'Locale': 'sv-SE', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Swedish'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (sv-SE, HilleviNeural)', 'DisplayName': 'Hillevi', 'LocalName': 'Hillevi', 'ShortName': 'sv-SE-HilleviNeural', 'Gender': 'Female', 'Locale': 'sv-SE', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Swedish'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (ta-IN, Valluvar)', 'DisplayName': 'Valluvar', 'LocalName': 'வள்ளுவர்', 'ShortName': 'ta-IN-Valluvar', 'Gender': 'Male', 'Locale': 'ta-IN', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Tamil (India)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (te-IN, Chitra)', 'DisplayName': 'Chitra', 'LocalName': 'చిత్ర', 'ShortName': 'te-IN-Chitra', 'Gender': 'Female', 'Locale': 'te-IN', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Telugu (India)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (th-TH, AcharaNeural)', 'DisplayName': 'Achara', 'LocalName': 'อัจฉรา', 'ShortName': 'th-TH-AcharaNeural', 'Gender': 'Female', 'Locale': 'th-TH', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Thai'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (th-TH, Pattara)', 'DisplayName': 'Pattara', 'LocalName': 'ภัทรา', 'ShortName': 'th-TH-Pattara', 'Gender': 'Male', 'Locale': 'th-TH', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Thai'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (tr-TR, EmelNeural)', 'DisplayName': 'Emel', 'LocalName': 'Emel', 'ShortName': 'tr-TR-EmelNeural', 'Gender': 'Female', 'Locale': 'tr-TR', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Turkish (Turkey)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (tr-TR, SedaRUS)', 'DisplayName': 'Seda', 'LocalName': 'Seda', 'ShortName': 'tr-TR-SedaRUS', 'Gender': 'Female', 'Locale': 'tr-TR', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Turkish (Turkey)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (vi-VN, An)', 'DisplayName': 'An', 'LocalName': 'An', 'ShortName': 'vi-VN-An', 'Gender': 'Male', 'Locale': 'vi-VN', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Vietnamese'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-CN, HuihuiRUS)', 'DisplayName': 'Huihui', 'LocalName': '慧慧', 'ShortName': 'zh-CN-HuihuiRUS', 'Gender': 'Female', 'Locale': 'zh-CN', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Chinese (Mandarin, simplified)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-CN, Kangkang, Apollo)', 'DisplayName': 'Kangkang', 'LocalName': '康康', 'ShortName': 'zh-CN-Kangkang-Apollo', 'Gender': 'Male', 'Locale': 'zh-CN', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Chinese (Mandarin, simplified)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)', 'DisplayName': 'Xiaoxiao', 'LocalName': '晓晓', 'ShortName': 'zh-CN-XiaoxiaoNeural', 'Gender': 'Female', 'Locale': 'zh-CN', 'StyleList': ['lyrical', 'customerservice', 'newscast', 'assistant'], 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Chinese (Mandarin, simplified)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoyouNeural)', 'DisplayName': 'Xiaoyou', 'LocalName': '晓悠', 'ShortName': 'zh-CN-XiaoyouNeural', 'Gender': 'Female', 'Locale': 'zh-CN', 'StyleList': ['chat'], 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Chinese (Mandarin, simplified)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-CN, Yaoyao, Apollo)', 'DisplayName': 'Yaoyao', 'LocalName': '瑶瑶', 'ShortName': 'zh-CN-Yaoyao-Apollo', 'Gender': 'Female', 'Locale': 'zh-CN', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Chinese (Mandarin, simplified)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-CN, YunyangNeural)', 'DisplayName': 'Yunyang', 'LocalName': '云扬', 'ShortName': 'zh-CN-YunyangNeural', 'Gender': 'Male', 'Locale': 'zh-CN', 'StyleList': ['customerservice'], 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Chinese (Mandarin, simplified)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-CN, YunyeNeural)', 'DisplayName': 'Yunye', 'LocalName': '云野', 'ShortName': 'zh-CN-YunyeNeural', 'Gender': 'Male', 'Locale': 'zh-CN', 'StyleList': ['calm', 'sad', 'serious'], 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Chinese (Mandarin, simplified)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-HK, Danny, Apollo)', 'DisplayName': 'Danny', 'LocalName': 'Danny', 'ShortName': 'zh-HK-Danny-Apollo', 'Gender': 'Male', 'Locale': 'zh-HK', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Chinese (Cantonese, Traditional)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-HK, HiuGaaiNeural)', 'DisplayName': 'Hiugaai', 'LocalName': '曉佳', 'ShortName': 'zh-HK-HiugaaiNeural', 'Gender': 'Female', 'Locale': 'zh-HK', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Chinese (Cantonese, Traditional)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-HK, TracyRUS)', 'DisplayName': 'Tracy', 'LocalName': 'Tracy', 'ShortName': 'zh-HK-TracyRUS', 'Gender': 'Female', 'Locale': 'zh-HK', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Chinese (Cantonese, Traditional)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-TW, HanHanRUS)', 'DisplayName': 'HanHan', 'LocalName': '涵涵', 'ShortName': 'zh-TW-HanHanRUS', 'Gender': 'Female', 'Locale': 'zh-TW', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Chinese (Taiwanese Mandarin)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-TW, HsiaoYuNeural)', 'DisplayName': 'HsiaoYu', 'LocalName': '曉雨', 'ShortName': 'zh-TW-HsiaoYuNeural', 'Gender': 'Female', 'Locale': 'zh-TW', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'Chinese (Taiwanese Mandarin)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-TW, Yating, Apollo)', 'DisplayName': 'Yating', 'LocalName': '雅婷', 'ShortName': 'zh-TW-Yating-Apollo', 'Gender': 'Female', 'Locale': 'zh-TW', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Chinese (Taiwanese Mandarin)'},
-{'Name': 'Microsoft Server Speech Text to Speech Voice (zh-TW, Zhiwei, Apollo)', 'DisplayName': 'Zhiwei', 'LocalName': '志威', 'ShortName': 'zh-TW-Zhiwei-Apollo', 'Gender': 'Male', 'Locale': 'zh-TW', 'SampleRateHertz': '16000', 'VoiceType': 'Standard', 'Language': 'Chinese (Taiwanese Mandarin)'},
-]
 
 
 REGIONS = [
@@ -180,6 +67,48 @@ SPEEDS = [
     ('x-fast', 'Extra Fast')
 ]
 
+PITCH = [
+    ('x-low', 'Extra Low'),
+    ('low', 'Low'),
+    ('medium', 'Medium'),
+    ('default', 'Default'),
+    ('high', 'High'),
+    ('x-high', 'Extra High')
+]
+
+class AzureVoice(Voice):
+    # {'Name': 'Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)', 
+    # 'DisplayName': 'Guy', 'LocalName': 'Guy', 'ShortName': 'en-US-GuyNeural',
+    #  'Gender': 'Male', 'Locale': 'en-US', 'SampleRateHertz': '24000', 'VoiceType': 'Neural', 'Language': 'English (US)'},
+    def __init__(self, language: Language, gender: Gender, name: str, display_name: str, local_name: str, short_name: str, voice_type: str, language_code: str):
+        self.language = language
+        self.gender = gender
+        self.name = name
+        self.display_name = display_name
+        self.local_name = local_name
+        self.voice_type = voice_type
+        self.language_code = language_code
+
+    def get_language(self) -> Language:
+        return self.language
+
+    def get_gender(self) -> Gender:
+        return self.gender
+
+    def get_key(self) -> str:
+        return self.name
+
+    def get_language_code(self) -> str:
+        return self.language_code
+
+    def get_description(self) -> str:
+        display_name = self.display_name
+        if self.display_name != self.local_name:
+            display_name = f"{self.display_name}, {self.local_name}"
+        value = f"{self.language.lang_name}, {self.gender.name}, {self.voice_type}, {display_name}"
+        return value
+
+
 class Azure(Service):
     """
     Provides a Service-compliant implementation for Microsoft Azure Text To Speech.
@@ -207,30 +136,164 @@ class Azure(Service):
 
         return [dict(key='key', label="API Key", required=True)]
 
+    def get_voices(self) -> List[AzureVoice]:
+        # generated using tools/service_azure_voicelist.py
+        return [
+            AzureVoice(Language.ar_EG, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ar-EG, Hoda)', 'Hoda','هدى', 'ar-EG-Hoda', 'Standard', 'ar-EG'),
+            AzureVoice(Language.ar_EG, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ar-EG, SalmaNeural)', 'Salma','سلمى', 'ar-EG-SalmaNeural', 'Neural', 'ar-EG'),
+            AzureVoice(Language.ar_SA, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (ar-SA, Naayf)', 'Naayf','نايف', 'ar-SA-Naayf', 'Standard', 'ar-SA'),
+            AzureVoice(Language.ar_SA, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ar-SA, ZariyahNeural)', 'Zariyah','زارية', 'ar-SA-ZariyahNeural', 'Neural', 'ar-SA'),
+            AzureVoice(Language.bg_BG, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (bg-BG, Ivan)', 'Ivan','Иван', 'bg-BG-Ivan', 'Standard', 'bg-BG'),
+            AzureVoice(Language.bg_BG, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (bg-BG, KalinaNeural)', 'Kalina','Калина', 'bg-BG-KalinaNeural', 'Neural', 'bg-BG'),
+            AzureVoice(Language.ca_ES, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ca-ES, AlbaNeural)', 'Alba','Alba', 'ca-ES-AlbaNeural', 'Neural', 'ca-ES'),
+            AzureVoice(Language.ca_ES, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ca-ES, HerenaRUS)', 'Herena','Helena', 'ca-ES-HerenaRUS', 'Standard', 'ca-ES'),
+            AzureVoice(Language.cs_CZ, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (cs-CZ, Jakub)', 'Jakub','Jakub', 'cs-CZ-Jakub', 'Standard', 'cs-CZ'),
+            AzureVoice(Language.cs_CZ, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (cs-CZ, VlastaNeural)', 'Vlasta','Vlasta', 'cs-CZ-VlastaNeural', 'Neural', 'cs-CZ'),
+            AzureVoice(Language.da_DK, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (da-DK, ChristelNeural)', 'Christel','Christel', 'da-DK-ChristelNeural', 'Neural', 'da-DK'),
+            AzureVoice(Language.da_DK, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (da-DK, HelleRUS)', 'Helle','Helle', 'da-DK-HelleRUS', 'Standard', 'da-DK'),
+            AzureVoice(Language.de_AT, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (de-AT, IngridNeural)', 'Ingrid','Ingrid', 'de-AT-IngridNeural', 'Neural', 'de-AT'),
+            AzureVoice(Language.de_AT, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (de-AT, Michael)', 'Michael','Michael', 'de-AT-Michael', 'Standard', 'de-AT'),
+            AzureVoice(Language.de_CH, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (de-CH, Karsten)', 'Karsten','Karsten', 'de-CH-Karsten', 'Standard', 'de-CH'),
+            AzureVoice(Language.de_CH, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (de-CH, LeniNeural)', 'Leni','Leni', 'de-CH-LeniNeural', 'Neural', 'de-CH'),
+            AzureVoice(Language.de_DE, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (de-DE, ConradNeural)', 'Conrad','Conrad', 'de-DE-ConradNeural', 'Neural', 'de-DE'),
+            AzureVoice(Language.de_DE, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (de-DE, HeddaRUS)', 'Hedda','Hedda', 'de-DE-HeddaRUS', 'Standard', 'de-DE'),
+            AzureVoice(Language.de_DE, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (de-DE, KatjaNeural)', 'Katja','Katja', 'de-DE-KatjaNeural', 'Neural', 'de-DE'),
+            AzureVoice(Language.de_DE, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (de-DE, Stefan)', 'Stefan','Stefan', 'de-DE-Stefan', 'Standard', 'de-DE'),
+            AzureVoice(Language.el_GR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (el-GR, AthinaNeural)', 'Athina','Αθηνά', 'el-GR-AthinaNeural', 'Neural', 'el-GR'),
+            AzureVoice(Language.el_GR, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (el-GR, Stefanos)', 'Stefanos','Στέφανος', 'el-GR-Stefanos', 'Standard', 'el-GR'),
+            AzureVoice(Language.en_AU, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-AU, Catherine)', 'Catherine','Catherine', 'en-AU-Catherine', 'Standard', 'en-AU'),
+            AzureVoice(Language.en_AU, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-AU, HayleyRUS)', 'Hayley','Hayley', 'en-AU-HayleyRUS', 'Standard', 'en-AU'),
+            AzureVoice(Language.en_AU, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-AU, NatashaNeural)', 'Natasha','Natasha', 'en-AU-NatashaNeural', 'Neural', 'en-AU'),
+            AzureVoice(Language.en_AU, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-AU, WilliamNeural)', 'William','William', 'en-AU-WilliamNeural', 'Neural', 'en-AU'),
+            AzureVoice(Language.en_CA, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-CA, ClaraNeural)', 'Clara','Clara', 'en-CA-ClaraNeural', 'Neural', 'en-CA'),
+            AzureVoice(Language.en_CA, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-CA, HeatherRUS)', 'Heather','Heather', 'en-CA-HeatherRUS', 'Standard', 'en-CA'),
+            AzureVoice(Language.en_CA, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-CA, Linda)', 'Linda','Linda', 'en-CA-Linda', 'Standard', 'en-CA'),
+            AzureVoice(Language.en_GB, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-GB, George)', 'George','George', 'en-GB-George', 'Standard', 'en-GB'),
+            AzureVoice(Language.en_GB, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-GB, HazelRUS)', 'Hazel','Hazel', 'en-GB-HazelRUS', 'Standard', 'en-GB'),
+            AzureVoice(Language.en_GB, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-GB, LibbyNeural)', 'Libby','Libby', 'en-GB-LibbyNeural', 'Neural', 'en-GB'),
+            AzureVoice(Language.en_GB, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-GB, MiaNeural)', 'Mia','Mia', 'en-GB-MiaNeural', 'Neural', 'en-GB'),
+            AzureVoice(Language.en_GB, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-GB, RyanNeural)', 'Ryan','Ryan', 'en-GB-RyanNeural', 'Neural', 'en-GB'),
+            AzureVoice(Language.en_GB, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-GB, Susan)', 'Susan','Susan', 'en-GB-Susan', 'Standard', 'en-GB'),
+            AzureVoice(Language.en_IE, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-IE, EmilyNeural)', 'Emily','Emily', 'en-IE-EmilyNeural', 'Neural', 'en-IE'),
+            AzureVoice(Language.en_IE, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-IE, Sean)', 'Sean','Sean', 'en-IE-Sean', 'Standard', 'en-IE'),
+            AzureVoice(Language.en_IN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-IN, Heera)', 'Heera','Heera', 'en-IN-Heera', 'Standard', 'en-IN'),
+            AzureVoice(Language.en_IN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-IN, NeerjaNeural)', 'Neerja','Neerja', 'en-IN-NeerjaNeural', 'Neural', 'en-IN'),
+            AzureVoice(Language.en_IN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-IN, PriyaRUS)', 'Priya','Priya', 'en-IN-PriyaRUS', 'Standard', 'en-IN'),
+            AzureVoice(Language.en_IN, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-IN, Ravi)', 'Ravi','Ravi', 'en-IN-Ravi', 'Standard', 'en-IN'),
+            AzureVoice(Language.en_US, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-US, AriaNeural)', 'Aria','Aria', 'en-US-AriaNeural', 'Neural', 'en-US'),
+            AzureVoice(Language.en_US, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-US, AriaRUS)', 'Aria','Aria', 'en-US-AriaRUS', 'Standard', 'en-US'),
+            AzureVoice(Language.en_US, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-US, BenjaminRUS)', 'Benjamin','Benjamin', 'en-US-BenjaminRUS', 'Standard', 'en-US'),
+            AzureVoice(Language.en_US, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)', 'Guy','Guy', 'en-US-GuyNeural', 'Neural', 'en-US'),
+            AzureVoice(Language.en_US, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-US, GuyRUS)', 'Guy','Guy', 'en-US-GuyRUS', 'Standard', 'en-US'),
+            AzureVoice(Language.en_US, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-US, JennyNeural)', 'Jenny','Jenny', 'en-US-JennyNeural', 'Neural', 'en-US'),
+            AzureVoice(Language.en_US, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)', 'Zira','Zira', 'en-US-ZiraRUS', 'Standard', 'en-US'),
+            AzureVoice(Language.es_ES, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (es-ES, AlvaroNeural)', 'Alvaro','Álvaro', 'es-ES-AlvaroNeural', 'Neural', 'es-ES'),
+            AzureVoice(Language.es_ES, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (es-ES, ElviraNeural)', 'Elvira','Elvira', 'es-ES-ElviraNeural', 'Neural', 'es-ES'),
+            AzureVoice(Language.es_ES, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (es-ES, HelenaRUS)', 'Helena','Helena', 'es-ES-HelenaRUS', 'Standard', 'es-ES'),
+            AzureVoice(Language.es_ES, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (es-ES, Laura)', 'Laura','Laura', 'es-ES-Laura', 'Standard', 'es-ES'),
+            AzureVoice(Language.es_ES, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (es-ES, Pablo)', 'Pablo','Pablo', 'es-ES-Pablo', 'Standard', 'es-ES'),
+            AzureVoice(Language.es_MX, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (es-MX, DaliaNeural)', 'Dalia','Dalia', 'es-MX-DaliaNeural', 'Neural', 'es-MX'),
+            AzureVoice(Language.es_MX, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (es-MX, HildaRUS)', 'Hilda','Hilda', 'es-MX-HildaRUS', 'Standard', 'es-MX'),
+            AzureVoice(Language.es_MX, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (es-MX, JorgeNeural)', 'Jorge','Jorge', 'es-MX-JorgeNeural', 'Neural', 'es-MX'),
+            AzureVoice(Language.es_MX, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (es-MX, Raul)', 'Raul','Raúl', 'es-MX-Raul', 'Standard', 'es-MX'),
+            AzureVoice(Language.fi_FI, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fi-FI, HeidiRUS)', 'Heidi','Heidi', 'fi-FI-HeidiRUS', 'Standard', 'fi-FI'),
+            AzureVoice(Language.fi_FI, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fi-FI, NooraNeural)', 'Noora','Noora', 'fi-FI-NooraNeural', 'Neural', 'fi-FI'),
+            AzureVoice(Language.fr_CA, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fr-CA, Caroline)', 'Caroline','Caroline', 'fr-CA-Caroline', 'Standard', 'fr-CA'),
+            AzureVoice(Language.fr_CA, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fr-CA, HarmonieRUS)', 'Harmonie','Harmonie', 'fr-CA-HarmonieRUS', 'Standard', 'fr-CA'),
+            AzureVoice(Language.fr_CA, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (fr-CA, JeanNeural)', 'Jean','Jean', 'fr-CA-JeanNeural', 'Neural', 'fr-CA'),
+            AzureVoice(Language.fr_CA, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fr-CA, SylvieNeural)', 'Sylvie','Sylvie', 'fr-CA-SylvieNeural', 'Neural', 'fr-CA'),
+            AzureVoice(Language.fr_CH, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fr-CH, ArianeNeural)', 'Ariane','Ariane', 'fr-CH-ArianeNeural', 'Neural', 'fr-CH'),
+            AzureVoice(Language.fr_CH, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (fr-CH, Guillaume)', 'Guillaume','Guillaume', 'fr-CH-Guillaume', 'Standard', 'fr-CH'),
+            AzureVoice(Language.fr_FR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fr-FR, DeniseNeural)', 'Denise','Denise', 'fr-FR-DeniseNeural', 'Neural', 'fr-FR'),
+            AzureVoice(Language.fr_FR, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (fr-FR, HenriNeural)', 'Henri','Henri', 'fr-FR-HenriNeural', 'Neural', 'fr-FR'),
+            AzureVoice(Language.fr_FR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fr-FR, HortenseRUS)', 'Hortense','Hortense', 'fr-FR-HortenseRUS', 'Standard', 'fr-FR'),
+            AzureVoice(Language.fr_FR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fr-FR, Julie)', 'Julie','Julie', 'fr-FR-Julie', 'Standard', 'fr-FR'),
+            AzureVoice(Language.fr_FR, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (fr-FR, Paul)', 'Paul','Paul', 'fr-FR-Paul', 'Standard', 'fr-FR'),
+            AzureVoice(Language.he_IL, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (he-IL, Asaf)', 'Asaf','אסף', 'he-IL-Asaf', 'Standard', 'he-IL'),
+            AzureVoice(Language.he_IL, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (he-IL, HilaNeural)', 'Hila','הילה', 'he-IL-HilaNeural', 'Neural', 'he-IL'),
+            AzureVoice(Language.hi_IN, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (hi-IN, Hemant)', 'Hemant','हेमन्त', 'hi-IN-Hemant', 'Standard', 'hi-IN'),
+            AzureVoice(Language.hi_IN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (hi-IN, Kalpana)', 'Kalpana','कल्पना', 'hi-IN-Kalpana', 'Standard', 'hi-IN'),
+            AzureVoice(Language.hi_IN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (hi-IN, SwaraNeural)', 'Swara','स्वरा', 'hi-IN-SwaraNeural', 'Neural', 'hi-IN'),
+            AzureVoice(Language.hr_HR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (hr-HR, GabrijelaNeural)', 'Gabrijela','Gabrijela', 'hr-HR-GabrijelaNeural', 'Neural', 'hr-HR'),
+            AzureVoice(Language.hr_HR, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (hr-HR, Matej)', 'Matej','Matej', 'hr-HR-Matej', 'Standard', 'hr-HR'),
+            AzureVoice(Language.hu_HU, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (hu-HU, NoemiNeural)', 'Noemi','Noémi', 'hu-HU-NoemiNeural', 'Neural', 'hu-HU'),
+            AzureVoice(Language.hu_HU, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (hu-HU, Szabolcs)', 'Szabolcs','Szabolcs', 'hu-HU-Szabolcs', 'Standard', 'hu-HU'),
+            AzureVoice(Language.id_ID, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (id-ID, Andika)', 'Andika','Andika', 'id-ID-Andika', 'Standard', 'id-ID'),
+            AzureVoice(Language.id_ID, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (id-ID, ArdiNeural)', 'Ardi','Ardi', 'id-ID-ArdiNeural', 'Neural', 'id-ID'),
+            AzureVoice(Language.it_IT, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (it-IT, Cosimo)', 'Cosimo','Cosimo', 'it-IT-Cosimo', 'Standard', 'it-IT'),
+            AzureVoice(Language.it_IT, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (it-IT, DiegoNeural)', 'Diego','Diego', 'it-IT-DiegoNeural', 'Neural', 'it-IT'),
+            AzureVoice(Language.it_IT, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (it-IT, ElsaNeural)', 'Elsa','Elsa', 'it-IT-ElsaNeural', 'Neural', 'it-IT'),
+            AzureVoice(Language.it_IT, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (it-IT, IsabellaNeural)', 'Isabella','Isabella', 'it-IT-IsabellaNeural', 'Neural', 'it-IT'),
+            AzureVoice(Language.it_IT, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (it-IT, LuciaRUS)', 'Lucia','Lucia', 'it-IT-LuciaRUS', 'Standard', 'it-IT'),
+            AzureVoice(Language.ja_JP, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ja-JP, Ayumi)', 'Ayumi','歩美', 'ja-JP-Ayumi', 'Standard', 'ja-JP'),
+            AzureVoice(Language.ja_JP, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ja-JP, HarukaRUS)', 'Haruka','春香', 'ja-JP-HarukaRUS', 'Standard', 'ja-JP'),
+            AzureVoice(Language.ja_JP, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (ja-JP, Ichiro)', 'Ichiro','一郎', 'ja-JP-Ichiro', 'Standard', 'ja-JP'),
+            AzureVoice(Language.ja_JP, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (ja-JP, KeitaNeural)', 'Keita','圭太', 'ja-JP-KeitaNeural', 'Neural', 'ja-JP'),
+            AzureVoice(Language.ja_JP, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ja-JP, NanamiNeural)', 'Nanami','七海', 'ja-JP-NanamiNeural', 'Neural', 'ja-JP'),
+            AzureVoice(Language.ko_KR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ko-KR, HeamiRUS)', 'Heami','해 미', 'ko-KR-HeamiRUS', 'Standard', 'ko-KR'),
+            AzureVoice(Language.ko_KR, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (ko-KR, InJoonNeural)', 'InJoon','인준', 'ko-KR-InJoonNeural', 'Neural', 'ko-KR'),
+            AzureVoice(Language.ko_KR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ko-KR, SunHiNeural)', 'Sun-Hi','선히', 'ko-KR-SunHiNeural', 'Neural', 'ko-KR'),
+            AzureVoice(Language.ms_MY, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (ms-MY, Rizwan)', 'Rizwan','Rizwan', 'ms-MY-Rizwan', 'Standard', 'ms-MY'),
+            AzureVoice(Language.ms_MY, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ms-MY, YasminNeural)', 'Yasmin','Yasmin', 'ms-MY-YasminNeural', 'Neural', 'ms-MY'),
+            AzureVoice(Language.nb_NO, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (nb-NO, HuldaRUS)', 'Hulda','Hulda', 'nb-NO-HuldaRUS', 'Standard', 'nb-NO'),
+            AzureVoice(Language.nb_NO, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (nb-NO, IselinNeural)', 'Iselin','Iselin', 'nb-NO-IselinNeural', 'Neural', 'nb-NO'),
+            AzureVoice(Language.nl_NL, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (nl-NL, ColetteNeural)', 'Colette','Colette', 'nl-NL-ColetteNeural', 'Neural', 'nl-NL'),
+            AzureVoice(Language.nl_NL, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (nl-NL, HannaRUS)', 'Hanna','Hanna', 'nl-NL-HannaRUS', 'Standard', 'nl-NL'),
+            AzureVoice(Language.pl_PL, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (pl-PL, PaulinaRUS)', 'Paulina','Paulina', 'pl-PL-PaulinaRUS', 'Standard', 'pl-PL'),
+            AzureVoice(Language.pl_PL, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (pl-PL, ZofiaNeural)', 'Zofia','Zofia', 'pl-PL-ZofiaNeural', 'Neural', 'pl-PL'),
+            AzureVoice(Language.pt_BR, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (pt-BR, AntonioNeural)', 'Antonio','Antônio', 'pt-BR-AntonioNeural', 'Neural', 'pt-BR'),
+            AzureVoice(Language.pt_BR, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (pt-BR, Daniel)', 'Daniel','Daniel', 'pt-BR-Daniel', 'Standard', 'pt-BR'),
+            AzureVoice(Language.pt_BR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (pt-BR, FranciscaNeural)', 'Francisca','Francisca', 'pt-BR-FranciscaNeural', 'Neural', 'pt-BR'),
+            AzureVoice(Language.pt_BR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (pt-BR, HeloisaRUS)', 'Heloisa','Heloisa', 'pt-BR-HeloisaRUS', 'Standard', 'pt-BR'),
+            AzureVoice(Language.pt_PT, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (pt-PT, FernandaNeural)', 'Fernanda','Fernanda', 'pt-PT-FernandaNeural', 'Neural', 'pt-PT'),
+            AzureVoice(Language.pt_PT, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (pt-PT, HeliaRUS)', 'Helia','Hélia', 'pt-PT-HeliaRUS', 'Standard', 'pt-PT'),
+            AzureVoice(Language.ro_RO, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ro-RO, AlinaNeural)', 'Alina','Alina', 'ro-RO-AlinaNeural', 'Neural', 'ro-RO'),
+            AzureVoice(Language.ro_RO, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (ro-RO, Andrei)', 'Andrei','Andrei', 'ro-RO-Andrei', 'Standard', 'ro-RO'),
+            AzureVoice(Language.ru_RU, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ru-RU, DariyaNeural)', 'Dariya','Дария', 'ru-RU-DariyaNeural', 'Neural', 'ru-RU'),
+            AzureVoice(Language.ru_RU, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ru-RU, EkaterinaRUS)', 'Ekaterina','Екатерина', 'ru-RU-EkaterinaRUS', 'Standard', 'ru-RU'),
+            AzureVoice(Language.ru_RU, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ru-RU, Irina)', 'Irina','Ирина', 'ru-RU-Irina', 'Standard', 'ru-RU'),
+            AzureVoice(Language.ru_RU, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (ru-RU, Pavel)', 'Pavel','Павел', 'ru-RU-Pavel', 'Standard', 'ru-RU'),
+            AzureVoice(Language.sk_SK, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (sk-SK, Filip)', 'Filip','Filip', 'sk-SK-Filip', 'Standard', 'sk-SK'),
+            AzureVoice(Language.sk_SK, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (sk-SK, ViktoriaNeural)', 'Viktoria','Viktória', 'sk-SK-ViktoriaNeural', 'Neural', 'sk-SK'),
+            AzureVoice(Language.sl_SI, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (sl-SI, Lado)', 'Lado','Lado', 'sl-SI-Lado', 'Standard', 'sl-SI'),
+            AzureVoice(Language.sl_SI, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (sl-SI, PetraNeural)', 'Petra','Petra', 'sl-SI-PetraNeural', 'Neural', 'sl-SI'),
+            AzureVoice(Language.sv_SE, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (sv-SE, HedvigRUS)', 'Hedvig','Hedvig', 'sv-SE-HedvigRUS', 'Standard', 'sv-SE'),
+            AzureVoice(Language.sv_SE, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (sv-SE, HilleviNeural)', 'Hillevi','Hillevi', 'sv-SE-HilleviNeural', 'Neural', 'sv-SE'),
+            AzureVoice(Language.ta_IN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ta-IN, PallaviNeural)', 'Pallavi','பல்லவி', 'ta-IN-PallaviNeural', 'Neural', 'ta-IN'),
+            AzureVoice(Language.ta_IN, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (ta-IN, Valluvar)', 'Valluvar','வள்ளுவர்', 'ta-IN-Valluvar', 'Standard', 'ta-IN'),
+            AzureVoice(Language.te_IN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (te-IN, Chitra)', 'Chitra','చిత్ర', 'te-IN-Chitra', 'Standard', 'te-IN'),
+            AzureVoice(Language.te_IN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (te-IN, ShrutiNeural)', 'Shruti','శ్రుతి', 'te-IN-ShrutiNeural', 'Neural', 'te-IN'),
+            AzureVoice(Language.th_TH, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (th-TH, AcharaNeural)', 'Achara','อัจฉรา', 'th-TH-AcharaNeural', 'Neural', 'th-TH'),
+            AzureVoice(Language.th_TH, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (th-TH, Pattara)', 'Pattara','ภัทรา', 'th-TH-Pattara', 'Standard', 'th-TH'),
+            AzureVoice(Language.th_TH, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (th-TH, PremwadeeNeural)', 'Premwadee','เปรมวดี', 'th-TH-PremwadeeNeural', 'Neural', 'th-TH'),
+            AzureVoice(Language.tr_TR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (tr-TR, EmelNeural)', 'Emel','Emel', 'tr-TR-EmelNeural', 'Neural', 'tr-TR'),
+            AzureVoice(Language.tr_TR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (tr-TR, SedaRUS)', 'Seda','Seda', 'tr-TR-SedaRUS', 'Standard', 'tr-TR'),
+            AzureVoice(Language.vi_VN, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (vi-VN, An)', 'An','An', 'vi-VN-An', 'Standard', 'vi-VN'),
+            AzureVoice(Language.vi_VN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (vi-VN, HoaiMyNeural)', 'HoaiMy','Hoài My', 'vi-VN-HoaiMyNeural', 'Neural', 'vi-VN'),
+            AzureVoice(Language.zh_CN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (zh-CN, HuihuiRUS)', 'Huihui','慧慧', 'zh-CN-HuihuiRUS', 'Standard', 'zh-CN'),
+            AzureVoice(Language.zh_CN, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (zh-CN, Kangkang)', 'Kangkang','康康', 'zh-CN-Kangkang', 'Standard', 'zh-CN'),
+            AzureVoice(Language.zh_CN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)', 'Xiaoxiao','晓晓', 'zh-CN-XiaoxiaoNeural', 'Neural', 'zh-CN'),
+            AzureVoice(Language.zh_CN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoyouNeural)', 'Xiaoyou','晓悠', 'zh-CN-XiaoyouNeural', 'Neural', 'zh-CN'),
+            AzureVoice(Language.zh_CN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (zh-CN, Yaoyao)', 'Yaoyao','瑶瑶', 'zh-CN-Yaoyao', 'Standard', 'zh-CN'),
+            AzureVoice(Language.zh_CN, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (zh-CN, YunyangNeural)', 'Yunyang','云扬', 'zh-CN-YunyangNeural', 'Neural', 'zh-CN'),
+            AzureVoice(Language.zh_CN, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (zh-CN, YunyeNeural)', 'Yunye','云野', 'zh-CN-YunyeNeural', 'Neural', 'zh-CN'),
+            AzureVoice(Language.zh_HK, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (zh-HK, Danny)', 'Danny','Danny', 'zh-HK-Danny', 'Standard', 'zh-HK'),
+            AzureVoice(Language.zh_HK, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (zh-HK, HiuGaaiNeural)', 'Hiugaai','曉佳', 'zh-HK-HiugaaiNeural', 'Neural', 'zh-HK'),
+            AzureVoice(Language.zh_HK, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (zh-HK, TracyRUS)', 'Tracy','Tracy', 'zh-HK-TracyRUS', 'Standard', 'zh-HK'),
+            AzureVoice(Language.zh_TW, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (zh-TW, HanHanRUS)', 'HanHan','涵涵', 'zh-TW-HanHanRUS', 'Standard', 'zh-TW'),
+            AzureVoice(Language.zh_TW, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (zh-TW, HsiaoYuNeural)', 'HsiaoYu','曉雨', 'zh-TW-HsiaoYuNeural', 'Neural', 'zh-TW'),
+            AzureVoice(Language.zh_TW, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (zh-TW, Yating)', 'Yating','雅婷', 'zh-TW-Yating', 'Standard', 'zh-TW'),
+            AzureVoice(Language.zh_TW, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (zh-TW, Zhiwei)', 'Zhiwei','志威', 'zh-TW-Zhiwei', 'Standard', 'zh-TW')
+        ]
+
+    def get_voice_for_key(self, key) -> AzureVoice:
+        voice = [voice for voice in self.get_voices() if voice.get_key() == key]
+        assert(len(voice) == 1)
+        return voice[0]
+
+
     def get_voice_list(self):
-        """
-        present the list of voices in a tuple, the first element being a key, the second one
-        is a human-readable value
-        """
-        processed_voice_list = []
-        for voice in VOICE_LIST:
-            key = voice['Name']
-            display_name = voice['DisplayName']
-            if voice['DisplayName'] != voice['LocalName']:
-                display_name = f"{voice['DisplayName']}, {voice['LocalName']}"
-            value = f"{voice['Language']}, {voice['Gender']}, {voice['VoiceType']}, {display_name}"
-            processed_voice_list.append((key, value))
-
-        # sort by human description order
-        processed_voice_list.sort(key=lambda x: x[1])
-
-        return processed_voice_list
-
-    def get_language_for_voice(self, voice):
-        for voice_entry in VOICE_LIST:
-            if voice_entry['Name'] == voice:
-                return voice_entry['Locale']
-        raise ValueError(f'Voice not found: {voice}')
+        return [(voice.get_key(), voice.get_description()) for voice in self.get_voices()]
 
     def options(self):
         """Provides access to voice only."""
@@ -253,6 +316,11 @@ class Azure(Service):
                 values=SPEEDS,
                 default='default',
                 transform=lambda value: value),
+            dict(key='pitch',
+                label='Pitch',
+                values=PITCH,
+                default='default',
+                transform=lambda value: value),                
             
         ]
 
@@ -289,11 +357,13 @@ class Azure(Service):
         if self.token_refresh_required():
             self.get_token(subscription_key, region)
 
-        voice = options['voice']
-        voice_name = voice
-        language = self.get_language_for_voice(voice)
+        voice_key = options['voice']
+        voice = self.get_voice_for_key(voice_key)
+        voice_name = voice.get_key()
+        language = voice.get_language_code()
 
         rate = options['speed']
+        pitch = options['pitch']
 
         base_url = f'https://{region}.tts.speech.microsoft.com/'
         url_path = 'cognitiveservices/v1'
@@ -315,6 +385,7 @@ class Azure(Service):
 
         prosody = ElementTree.SubElement(voice, 'prosody')
         prosody.set('rate', rate)
+        prosody.set('pitch', pitch)
 
         prosody.text = text
         body = ElementTree.tostring(xml_body)
