@@ -35,6 +35,12 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
     # this is called the first time Anki tries to play a TTS file
     def get_available_voices(self) -> List[TTSVoice]:
         print("* get_available_voices")
+        # can we list awesome TTS presets here ?
+        config = self._addon.config
+        config_presets = config['presets']
+        preset_keys = config_presets.keys()
+        print(f"* preset_keys: {preset_keys}")
+
         voices = []
         std_code="en_US"
         preset_name = "Microsoft Azure Neural Guy"

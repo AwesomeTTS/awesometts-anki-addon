@@ -97,21 +97,24 @@ class Templater(ServiceDialog):
 
         for row, label, name, options in [
                 (0, "Field:", 'field', [
-                    ('', "customize the tag's content"),
-                ] + [
                     (field, field)
                     for field in sorted({field['name']
                                          for field
                                          in self._card_layout.model['flds']})
                 ]),
 
-                (1, "Visibility:", 'hide', [
-                    ('normal', "insert the tag as-is"),
-                    ('inline', "hide just this tag w/ inline CSS"),
-                    ('global', "add rule to hide any TTS tag for note type"),
+                (1, "Type:", 'type', [
+                    ('normal', "Regular field"),
+                    ('cloze', "Cloze field: pronounce non-hidden part on front side and everything on back side"),
+                    ('cloze-hidden', "Cloze field: hidden part only, on back side only"),
                 ]),
 
-                # row 2 is used below if self._is_cloze is True
+                (2, "Language:", 'language', [
+                    ('en_US', "American English"),
+                    ('fr_FR', "French France"),
+                ]),
+
+
         ]:
             label = Label(label)
             label.setFont(self._FONT_LABEL)
@@ -119,26 +122,6 @@ class Templater(ServiceDialog):
             widgets[name] = self._ui_control_fields_dropdown(name, options)
             layout.addWidget(label, row, 0)
             layout.addWidget(widgets[name], row, 1)
-
-        if self._is_cloze:
-            cloze = Checkbox(object_name='cloze')
-            cloze.setMinimumHeight(25)
-
-            warning = Label("Remember 'cloze:' for any cloze fields.")
-            warning.setMinimumHeight(25)
-
-            layout.addWidget(cloze, 2, 1)
-            layout.addWidget(warning, 2, 1)
-
-            widgets['field'].setCurrentIndex(-1)
-            widgets['field'].currentIndexChanged.connect(lambda index: (
-                cloze.setVisible(index),
-                cloze.setText(
-                    "%s uses cloze" %
-                    (widgets['field'].itemData(index) if index else "this")
-                ),
-                warning.setVisible(not index),
-            ))
 
         return layout
 
@@ -201,17 +184,6 @@ class Templater(ServiceDialog):
 
         super(Templater, self).show(*args, **kwargs)
 
-        for name in ['hide', 'field']:
-            dropdown = self.findChild(QtWidgets.QComboBox, name)
-            dropdown.setCurrentIndex(max(
-                dropdown.findData(self._addon.config['templater_' + name]), 0
-            ))
-
-        if self._is_cloze:
-            self.findChild(Checkbox, 'cloze') \
-                .setChecked(self._addon.config['templater_cloze'])
-
-        dropdown.setFocus()  # abuses fact that 'field' is last in the loop
 
     def accept(self):
         """
