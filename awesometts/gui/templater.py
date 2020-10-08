@@ -191,48 +191,19 @@ class Templater(ServiceDialog):
         tag and then remembers the options.
         """
 
-        try:
-            from html import escape
-        except ImportError:
-            from cgi import escape
 
-        now = self._get_all()
+        settings = self._get_all()
         tform = self._card_layout.tform
         # there's now a single edit area, as of anki 2.1.28
         target = getattr(tform, 'edit_area')
-        presets = self.findChild(QtWidgets.QComboBox, 'presets_dropdown')
 
-        last_service = now['last_service']
-        attrs = ([('group', last_service[6:])]
-                 if last_service.startswith('group:') else
-                 [('preset', presets.currentText())]
-                 if presets.currentIndex() > 0 else
-                 [('service', last_service)] +
-                 sorted(now['last_options'][last_service].items()))
-        if now['templater_hide'] == 'inline':
-            attrs.append(('style', 'display: none'))
-        attrs = ' '.join('%s="%s"' % (key, escape(str(value), quote=True))
-                         for key, value in attrs)
 
-        cloze = now.get('templater_cloze')
-        field = now['templater_field']
-        html = ('' if not field
-                else '{{cloze:%s}}' % field if cloze
-                else '{{%s}}' % field)
+        field_syntax = settings['field']
+        tag_syntax = f"tts en_US voices={settings['preset_name']}:{field_syntax}"
 
-        target.setPlainText('\n'.join([target.toPlainText(),
-                                       '<tts %s>%s</tts>' % (attrs, html)]))
+        target.setPlainText('\n'.join([target.toPlainText(), '{{' + tag_syntax + '}}'] ))
 
-        if now['templater_hide'] == 'global':
-            existing_css = tform.css.toPlainText()
-            extra_css = 'tts { display: none }'
-            if existing_css.find(extra_css) < 0:
-                tform.css.setPlainText('\n'.join([
-                    existing_css,
-                    extra_css,
-                ]))
-
-        self._addon.config.update(now)
+        #self._addon.config.update(now)
         super(Templater, self).accept()
 
     def _get_all(self):
@@ -243,19 +214,15 @@ class Templater(ServiceDialog):
 
         combos = {
             name: widget.itemData(widget.currentIndex())
-            for name in ['field', 'hide']
+            for name in ['field', 'type', 'language']
             for widget in [self.findChild(QtWidgets.QComboBox, name)]
         }
 
-        return dict(
-            list(super(Templater, self)._get_all().items()) +
-            [('templater_' + name, value) for name, value in combos.items()] +
-            (
-                [(
-                    'templater_cloze',
-                    self.findChild(Checkbox, 'cloze').isChecked(),
-                )]
-                if self._is_cloze and combos['field']
-                else []
-            )
-        )
+        presets = self.findChild(QtWidgets.QComboBox, 'presets_dropdown')
+        preset_name = presets.currentText()
+
+        combos['preset_name'] = preset_name
+
+        print(f"* combos: {combos}")
+
+        return combos
