@@ -41,6 +41,10 @@ class Templater(ServiceDialog):
 
     HELP_USAGE_SLUG = 'on-the-fly'
 
+    FIELD_TYPE_REGULAR = "regular"
+    FIELD_TYPE_CLOZE = "cloze"
+    FIELD_TYPE_CLOZE_HIDDEN = "cloze_hidden"
+
     __slots__ = [
         '_card_layout',  # reference to the card layout window
         '_is_cloze',     # True if the model attached
@@ -104,9 +108,9 @@ class Templater(ServiceDialog):
                 ]),
 
                 (1, "Type:", 'type', [
-                    ('normal', "Regular field"),
-                    ('cloze', "Cloze field: pronounce non-hidden part on front side and everything on back side"),
-                    ('cloze-hidden', "Cloze field: hidden part only, on back side only"),
+                    (Templater.FIELD_TYPE_REGULAR, "Regular field, or cloze field"),
+                    (Templater.FIELD_TYPE_CLOZE, "Cloze field: speak non-hidden parts of front, speak everything on back"),
+                    (Templater.FIELD_TYPE_CLOZE_HIDDEN, "Cloze field: hidden part only, on back side only"),
                 ]),
 
                 (2, "Language:", 'language', [
@@ -199,7 +203,14 @@ class Templater(ServiceDialog):
 
 
         field_syntax = settings['field']
-        tag_syntax = f"tts en_US voices={settings['preset_name']}:{field_syntax}"
+        field_type = settings['type']
+        if field_type == Templater.FIELD_TYPE_CLOZE:
+            field_syntax = f"cloze:{settings['field']}"
+        elif field_type == Templater.FIELD_TYPE_CLOZE_HIDDEN:
+            field_syntax = f"cloze-only:{settings['field']}"
+
+        language = settings['language']
+        tag_syntax = f"tts {language} voices={settings['preset_name']}:{field_syntax}"
 
         target.setPlainText('\n'.join([target.toPlainText(), '{{' + tag_syntax + '}}'] ))
 
