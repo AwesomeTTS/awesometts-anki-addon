@@ -21,6 +21,10 @@ from aqt.sound import OnDoneCallback, av_player
 from aqt.tts import TTSProcessPlayer, TTSVoice
 import aqt.utils
 
+def tts_preset_name_valid(preset_name: str) -> bool:
+    if "," in preset_name:
+        return (False, f"preset name [{preset_name}] cannot contain any commas (,)")
+    return (True, None)
 
 # we subclass the default voice object to store the gtts language code
 @dataclass
@@ -40,14 +44,12 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         config = self._addon.config
         config_presets = config['presets']
         preset_keys = config_presets.keys()
-        print(f"* preset_keys: {preset_keys}")
-
         voices = []
-        std_code="en_US"
-        preset_name = "Microsoft Azure Neural Guy"
-        #voices.append(AwesomeTTSVoice(name="aTTS", lang=std_code, atts_preset=preset_name))
-        #voices.append(AwesomeTTSVoice(name="aTTS_preset_1", lang=std_code, atts_preset=preset_name))
-        voices.append(AwesomeTTSVoice(name=preset_name, lang=std_code, atts_preset=preset_name))
+        for preset_name in preset_keys:
+            (is_valid, reason) = tts_preset_name_valid(preset_name)
+            if is_valid:
+                std_code="en_US"
+                voices.append(AwesomeTTSVoice(name=preset_name, lang=std_code, atts_preset=preset_name))
 
         return voices  # type: ignore
 
