@@ -634,14 +634,37 @@ def reviewer_hooks():
     from PyQt5.QtCore import QEvent
     from PyQt5.QtWidgets import QMenu
 
-    reviewer = gui.Reviewer(addon=addon,
-                            alerts=aqt.utils.showWarning,
-                            mw=aqt.mw)
 
     # context menu playback
 
     strip = Sanitizer([('newline_ellipsize', 'ellip_template_newlines')] +
                       STRIP_TEMPLATE_POSTHTML, config=config, logger=logger)
+
+    def say_text_preset_handler(text, preset, parent):
+        """Play the selected text using the preset."""
+
+        router(
+            svc_id=preset['service'],
+            text=text,
+            options=preset,
+            callbacks=dict(
+                okay=player.menu_click,
+                fail=lambda exception, text: (),
+            ),
+        )
+
+    def say_text_group_handler(text, group, parent):
+        """Play the selected text using the group."""
+
+        router.group(
+            text=text,
+            group=group,
+            presets=config['presets'],
+            callbacks=dict(
+                okay=player.menu_click,
+                fail=lambda exception, text: (),
+            ),
+        )    
 
     def on_context_menu(web_view, menu):
         """Populate context menu, given the context/configuration."""
@@ -654,30 +677,6 @@ def reviewer_hooks():
             atts_button = None
 
         say_text = config['presets'] and strip(web_view.selectedText())
-
-        tts_card = tts_side = None
-        tts_shortcuts = False
-        try:  # this works for web views in the reviewer and template dialog
-            if window is aqt.mw and aqt.mw.state == 'review':
-                tts_card = aqt.mw.reviewer.card
-                tts_side = aqt.mw.reviewer.state
-                tts_shortcuts = True
-            elif web_view.objectName() == 'mainText':  # card template dialog
-                parent_name = web_view.parentWidget().objectName()
-                tts_card = window.card
-                tts_side = ('question' if parent_name == 'groupBox'
-                            else 'answer' if parent_name == 'groupBox_2'
-                            else None)
-        except Exception:  # just in case, pylint:disable=broad-except
-            pass
-
-        tts_question = tts_card and tts_side and \
-            reviewer.has_tts('question', tts_card)
-        tts_answer = tts_card and tts_side == 'answer' and \
-            reviewer.has_tts('answer', tts_card)
-
-        if not (atts_button or say_text or tts_question or tts_answer):
-            return
 
         submenu = QMenu("Awesome&TTS", menu)
         submenu.setIcon(gui.ICON)
@@ -710,7 +709,7 @@ def reviewer_hooks():
                     (name, preset) = xxx_todo_changeme
                     submenu.addAction(
                         'Say "%s" w/ %s' % (say_display, name),
-                        lambda: reviewer.selection_handler(say_text,
+                        lambda: say_text_preset_handler(say_text,
                                                            preset,
                                                            window),
                     )
@@ -729,33 +728,13 @@ def reviewer_hooks():
                     (name, group) = xxx_todo_changeme1
                     submenu.addAction(
                         'Say "%s" w/ %s' % (say_display, name),
-                        lambda: reviewer.selection_handler_group(say_text,
+                        lambda: say_text_group_handler(say_text,
                                                                  group,
                                                                  window),
                     )
                 for item in sorted(config['groups'].items(),
                                    key=lambda item: item[0].lower()):
                     group_glue(item)
-
-        if tts_question or tts_answer:
-            if needs_separator:
-                submenu.addSeparator()
-
-            if tts_question:
-                submenu.addAction(
-                    "Play On-the-Fly TTS from Question Side",
-                    lambda: reviewer.nonselection_handler('question', tts_card,
-                                                          window),
-                    tts_shortcuts and config['tts_key_q'] or 0,
-                )
-
-            if tts_answer:
-                submenu.addAction(
-                    "Play On-the-Fly TTS from Answer Side",
-                    lambda: reviewer.nonselection_handler('answer', tts_card,
-                                                          window),
-                    tts_shortcuts and config['tts_key_a'] or 0,
-                )
 
         menu.addMenu(submenu)
 
