@@ -48,6 +48,7 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         for preset_name in preset_keys:
             (is_valid, reason) = tts_preset_name_valid(preset_name)
             if is_valid:
+                print(f"* adding preset: {preset_name}")
                 std_code="en_US"
                 voices.append(AwesomeTTSVoice(name=preset_name, lang=std_code, atts_preset=preset_name))
 
@@ -75,6 +76,8 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         config_presets = config['presets']
         preset = config_presets[awesometts_preset]
 
+        print(f"*** AwesomeTTSPlayer._play, preset: {awesometts_preset}, preset data: {preset}, text: {text}")
+
         self.done_event = threading.Event()
 
         self._addon.router(
@@ -91,11 +94,12 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         self.done_event.wait(timeout=60)
 
     def failure(self, exception, text):
+        print(f"* failure: {exception}")
         #print(f"could not play text: {exception}")
-        aqt.utils.showWarning(f"could not play audio: {exception} (preset: {self.awesometts_preset})")
         self.done_event.set()
 
     def audio_file_ready(self, path):
+        print("* autio_file_ready")
         self.audio_file_path = path
         self.done_event.set()
 
