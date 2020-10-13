@@ -21,10 +21,6 @@ from aqt.sound import OnDoneCallback, av_player
 from aqt.tts import TTSProcessPlayer, TTSVoice
 import aqt.utils
 
-def tts_preset_name_valid(preset_name: str) -> bool:
-    if "," in preset_name:
-        return (False, f"preset name [{preset_name}] cannot contain any commas (,)")
-    return (True, None)
 
 # we subclass the default voice object to store the gtts language code
 @dataclass
@@ -42,15 +38,13 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         print("* get_available_voices")
         # can we list awesome TTS presets here ?
         config = self._addon.config
-        config_presets = config['presets']
-        preset_keys = config_presets.keys()
+        tts_voices = config['tts_voices']
+        languages = tts_voices.keys()
         voices = []
-        for preset_name in preset_keys:
-            (is_valid, reason) = tts_preset_name_valid(preset_name)
-            if is_valid:
-                print(f"* adding preset: {preset_name}")
-                std_code="en_US"
-                voices.append(AwesomeTTSVoice(name=preset_name, lang=std_code, atts_preset=preset_name))
+        for language in languages:
+            std_code = language
+            preset_name = tts_voices[language]['preset']
+            voices.append(AwesomeTTSVoice(name="AwesomeTTS", lang=std_code, atts_preset=preset_name))
 
         return voices  # type: ignore
 

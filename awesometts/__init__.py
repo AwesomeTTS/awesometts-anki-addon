@@ -163,6 +163,7 @@ config = Config(
          to.substitution_json),
         ('throttle_sleep', 'integer', 30, int, int),
         ('throttle_threshold', 'integer', 10, int, int),
+        ('tts_voices', 'text', {}, to.deserialized_dict, to.compact_json),
         ('TTS_KEY_A', 'integer', Qt.Key_F4, to.nullable_key, to.nullable_int),
         ('TTS_KEY_Q', 'integer', Qt.Key_F3, to.nullable_key, to.nullable_int),
     ],

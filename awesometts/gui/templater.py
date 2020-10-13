@@ -200,11 +200,18 @@ class Templater(ServiceDialog):
             aqt.utils.showCritical("You must select a service preset", self)
             return
 
-        preset_name = settings['preset_name']
-        if "," in preset_name:
-            aqt.utils.showCritical(f"Preset name [{preset_name}] cannot contain any commas (,). Please rename the preset.", self)
-            return
+        # get language
+        language = settings['language']
+        is_new_language = False
 
+        tts_voices = self._addon.config['tts_voices']
+        if language not in tts_voices:
+            is_new_language = True
+
+        config_update = {'tts_voices': {language: {'preset': settings['preset_name']}}}
+
+        #self._addon.config['tts_voices'][language] = {'preset': settings['preset_name']}
+        
         tform = self._card_layout.tform
         # there's now a single edit area, as of anki 2.1.28
         target = getattr(tform, 'edit_area')
@@ -221,7 +228,7 @@ class Templater(ServiceDialog):
 
         target.setPlainText('\n'.join([target.toPlainText(), '{{' + tag_syntax + '}}'] ))
 
-        #self._addon.config.update(now)
+        self._addon.config.update(config_update)
 
         super(Templater, self).accept()
 
