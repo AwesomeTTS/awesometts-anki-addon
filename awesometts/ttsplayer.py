@@ -21,6 +21,7 @@ from aqt.sound import OnDoneCallback, av_player
 from aqt.tts import TTSProcessPlayer, TTSVoice
 import aqt.utils
 
+
 # we subclass the default voice object to store the gtts language code
 @dataclass
 class AwesomeTTSVoice(TTSVoice):

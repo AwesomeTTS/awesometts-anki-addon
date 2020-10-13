@@ -26,6 +26,7 @@ from .base import ServiceDialog
 from .common import Checkbox, Label, Note
 import aqt.utils
 
+
 __all__ = ['Templater']
 
 # all methods might need 'self' in the future, pylint:disable=R0201
@@ -78,14 +79,12 @@ class Templater(ServiceDialog):
 
         layout = super(Templater, self)._ui_control()
         layout.addWidget(header)
-        layout.addWidget(Note("AwesomeTTS will speak <tts> tags as you "
-                              "review."))
+        layout.addWidget(Note("Configure TTS tag settings"))
         layout.addStretch()
         layout.addLayout(self._ui_control_fields())
         layout.addStretch()
-        layout.addWidget(Note("This feature requires desktop Anki w/ "
-                              "AwesomeTTS installed; it will not work on "
-                              "mobile apps or AnkiWeb."))
+        layout.addWidget(Note("This feature will use AwesomeTTS on Anki desktop, and will fallback to other voices (based on the selected language) " +
+        "where AwesomeTTS is not available."))
         layout.addStretch()
         layout.addWidget(self._ui_buttons())
 
@@ -108,7 +107,7 @@ class Templater(ServiceDialog):
                 ]),
 
                 (1, "Type:", 'type', [
-                    (Templater.FIELD_TYPE_REGULAR, "Regular field, or cloze field"),
+                    (Templater.FIELD_TYPE_REGULAR, "Regular field"),
                     (Templater.FIELD_TYPE_CLOZE, "Cloze field: speak non-hidden parts of front, speak everything on back"),
                     (Templater.FIELD_TYPE_CLOZE_HIDDEN, "Cloze field: hidden part only, on back side only"),
                 ]),
@@ -195,12 +194,20 @@ class Templater(ServiceDialog):
         tag and then remembers the options.
         """
 
-
         settings = self._get_all()
+
+        if settings['preset_name'] == None:
+            aqt.utils.showCritical("You must select a service preset", self)
+            return
+
+        preset_name = settings['preset_name']
+        if "," in preset_name:
+            aqt.utils.showCritical(f"Preset name [{preset_name}] cannot contain any commas (,). Please rename the preset.", self)
+            return
+
         tform = self._card_layout.tform
         # there's now a single edit area, as of anki 2.1.28
         target = getattr(tform, 'edit_area')
-
 
         field_syntax = settings['field']
         field_type = settings['type']
@@ -215,6 +222,7 @@ class Templater(ServiceDialog):
         target.setPlainText('\n'.join([target.toPlainText(), '{{' + tag_syntax + '}}'] ))
 
         #self._addon.config.update(now)
+
         super(Templater, self).accept()
 
     def _get_all(self):
@@ -230,10 +238,11 @@ class Templater(ServiceDialog):
         }
 
         presets = self.findChild(QtWidgets.QComboBox, 'presets_dropdown')
-        preset_name = presets.currentText()
 
-        combos['preset_name'] = preset_name
-
-        print(f"* combos: {combos}")
+        if presets.currentIndex() == 0:
+            combos['preset_name'] = None
+        else:
+            preset_name = presets.currentText()
+            combos['preset_name'] = preset_name
 
         return combos
