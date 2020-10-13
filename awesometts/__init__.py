@@ -101,10 +101,6 @@ config = Config(
               table='general',
               normalize=to.normalized_ascii),
     cols=[
-        ('automaticAnswers', 'integer', True, to.lax_bool, int),
-        ('automatic_answers_errors', 'integer', True, to.lax_bool, int),
-        ('automaticQuestions', 'integer', True, to.lax_bool, int),
-        ('automatic_questions_errors', 'integer', True, to.lax_bool, int),
         ('cache_days', 'integer', 365, int, int),
         ('delay_answers_onthefly', 'integer', 0, int, int),
         ('delay_answers_stored_ours', 'integer', 0, int, int),
@@ -164,8 +160,6 @@ config = Config(
         ('throttle_sleep', 'integer', 30, int, int),
         ('throttle_threshold', 'integer', 10, int, int),
         ('tts_voices', 'text', {}, to.deserialized_dict, to.compact_json),
-        ('TTS_KEY_A', 'integer', Qt.Key_F4, to.nullable_key, to.nullable_int),
-        ('TTS_KEY_Q', 'integer', Qt.Key_F3, to.nullable_key, to.nullable_int),
     ],
     logger=logger,
     events=[
@@ -643,38 +637,6 @@ def reviewer_hooks():
     reviewer = gui.Reviewer(addon=addon,
                             alerts=aqt.utils.showWarning,
                             mw=aqt.mw)
-
-    # # automatic playback
-
-    # anki.hooks.addHook(
-    #     'showQuestion',
-    #     lambda: reviewer.card_handler('question', aqt.mw.reviewer.card),
-    # )
-
-    # anki.hooks.addHook(
-    #     'showAnswer',
-    #     lambda: reviewer.card_handler('answer', aqt.mw.reviewer.card),
-    # )
-
-    # # shortcut-triggered playback
-
-    # reviewer_filter = gui.Filter(
-    #     relay=lambda event: reviewer.key_handler(
-    #         key_event=event,
-    #         state=aqt.mw.reviewer.state,
-    #         card=aqt.mw.reviewer.card,
-    #         replay_audio=aqt.mw.reviewer.replayAudio,
-    #     ),
-
-    #     when=lambda event: (aqt.mw.state == 'review' and
-    #                         event.type() == QEvent.KeyPress and
-    #                         not event.isAutoRepeat() and
-    #                         not event.spontaneous()),
-
-    #     parent=aqt.mw,  # prevents filter from being garbage collected
-    # )
-
-    # aqt.mw.installEventFilter(reviewer_filter)
 
     # context menu playback
 

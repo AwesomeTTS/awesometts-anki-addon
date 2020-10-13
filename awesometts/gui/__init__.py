@@ -39,9 +39,6 @@ from .stripper import BrowserStripper
 
 from .templater import Templater
 
-
-from .reviewer import Reviewer
-
 __all__ = [
     # common
     'Action',
@@ -57,6 +54,4 @@ __all__ = [
     'BrowserStripper',
     'Templater',
 
-    # headless
-    'Reviewer',
 ]

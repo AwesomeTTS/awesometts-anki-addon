@@ -42,8 +42,7 @@ class Configurator(Dialog):
     """Provides a dialog for configuring the add-on."""
 
     _PROPERTY_KEYS = [
-        'automatic_answers', 'automatic_answers_errors', 'automatic_questions',
-        'automatic_questions_errors', 'cache_days', 'delay_answers_onthefly',
+        'cache_days', 'delay_answers_onthefly',
         'delay_answers_stored_ours', 'delay_answers_stored_theirs',
         'delay_questions_onthefly', 'delay_questions_stored_ours',
         'delay_questions_stored_theirs', 'ellip_note_newlines',
@@ -57,7 +56,7 @@ class Configurator(Dialog):
         'strip_note_brackets', 'strip_note_parens', 'strip_template_braces',
         'strip_template_brackets', 'strip_template_parens', 'sub_note_cloze',
         'sub_template_cloze', 'sul_note', 'sul_template', 'throttle_sleep',
-        'throttle_threshold', 'tts_key_a', 'tts_key_q',
+        'throttle_threshold',
     ]
 
     _PROPERTY_WIDGETS = (Checkbox, QtWidgets.QComboBox, QtWidgets.QLineEdit,
