@@ -42,10 +42,7 @@ class Configurator(Dialog):
     """Provides a dialog for configuring the add-on."""
 
     _PROPERTY_KEYS = [
-        'cache_days', 'delay_answers_onthefly',
-        'delay_answers_stored_ours', 'delay_answers_stored_theirs',
-        'delay_questions_onthefly', 'delay_questions_stored_ours',
-        'delay_questions_stored_theirs', 'ellip_note_newlines',
+        'cache_days', 'ellip_note_newlines',
         'ellip_template_newlines', 'filenames', 'filenames_human',
         'lame_flags', 'launch_browser_generator', 'launch_browser_stripper',
         'launch_configurator', 'launch_editor_generator', 'launch_templater',
@@ -92,7 +89,6 @@ class Configurator(Dialog):
         tabs = QtWidgets.QTabWidget()
 
         for content, icon, label in [
-                (self._ui_tabs_playback, 'player-time', "Playback"),
                 (self._ui_tabs_text, 'editclear', "Text"),
                 (self._ui_tabs_mp3gen, 'document-new', "MP3s"),
                 (self._ui_tabs_windows, 'kpersonalizer', "Windows"),
@@ -108,77 +104,6 @@ class Configurator(Dialog):
                                              self.adjustSize()))
         return tabs
 
-    def _ui_tabs_playback(self):
-        """Returns the "Playback" tab."""
-
-        vert = QtWidgets.QVBoxLayout()
-        vert.addWidget(self._ui_tabs_playback_group(
-            'automatic_questions', 'tts_key_q',
-            'delay_questions_', "Questions / Fronts of Cards",
-        ))
-        vert.addWidget(self._ui_tabs_playback_group(
-            'automatic_answers', 'tts_key_a',
-            'delay_answers_', "Answers / Backs of Cards",
-        ))
-        vert.addSpacing(self._SPACING)
-        vert.addWidget(Label('Anki controls if and how to play [sound] '
-                             'tags. See "Help" for more information.'))
-        vert.addStretch()
-
-        tab = QtWidgets.QWidget()
-        tab.setLayout(vert)
-        return tab
-
-    def _ui_tabs_playback_group(self, automatic_key, shortcut_key,
-                                delay_key_prefix, label):
-        """
-        Returns the "Questions / Fronts of Cards" and "Answers / Backs
-        of Cards" input groups.
-        """
-
-        hor = QtWidgets.QHBoxLayout()
-        automatic = Checkbox("Automatically play on-the-fly <tts> tags",
-                             automatic_key)
-        errors = Checkbox("Show errors", automatic_key + '_errors')
-        hor.addWidget(automatic)
-        hor.addWidget(errors)
-        hor.addStretch()
-
-        layout = QtWidgets.QVBoxLayout()
-        layout.addLayout(hor)
-
-        wait_widgets = {}
-        for subkey, desc in [('onthefly', "on-the-fly <tts> tags"),
-                             ('stored_ours', "AwesomeTTS [sound] tags"),
-                             ('stored_theirs', "other [sound] tags")]:
-            spinner = QtWidgets.QSpinBox()
-            spinner.setObjectName(delay_key_prefix + subkey)
-            spinner.setRange(0, 30)
-            spinner.setSingleStep(1)
-            spinner.setSuffix(" seconds")
-            wait_widgets[subkey] = spinner
-
-            hor = QtWidgets.QHBoxLayout()
-            hor.addWidget(Label("Wait"))
-            hor.addWidget(spinner)
-            hor.addWidget(Label("before automatically playing " + desc))
-            hor.addStretch()
-            layout.addLayout(hor)
-
-        automatic.stateChanged.connect(lambda enabled: (
-            errors.setEnabled(enabled),
-            wait_widgets['onthefly'].setEnabled(enabled),
-        ))
-
-        hor = QtWidgets.QHBoxLayout()
-        hor.addWidget(Label("To manually play on-the-fly <tts> tags, strike"))
-        hor.addWidget(self._factory_shortcut(shortcut_key))
-        hor.addStretch()
-        layout.addLayout(hor)
-
-        group = QtWidgets.QGroupBox(label)
-        group.setLayout(layout)
-        return group
 
     def _ui_tabs_text(self):
         """Returns the "Text" tab."""

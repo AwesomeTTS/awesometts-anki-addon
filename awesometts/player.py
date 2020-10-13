@@ -55,34 +55,6 @@ class Player(object):
         self._insert_blanks(0, "context menu", path)
         self._anki.native(path)
 
-    def otf_question(self, path):
-        """
-        Plays path after the configured 'delay_questions_onthefly'
-        seconds.
-        """
-
-        self._insert_blanks(self._config['delay_questions_onthefly'],
-                            "on-the-fly automatic question",
-                            path)
-        self._anki.native(path)
-
-    def otf_answer(self, path):
-        """
-        Plays path after the configured 'delay_answers_onthefly'
-        seconds.
-        """
-
-        self._insert_blanks(self._config['delay_answers_onthefly'],
-                            "on-the-fly automatic answer",
-                            path)
-        self._anki.native(path)
-
-    def otf_shortcut(self, path):
-        """Play path with no delay."""
-
-        self._insert_blanks(0, "on-the-fly shortcut", path)
-        self._anki.native(path)
-
     def native_wrapper(self, path):
         """
         Provides a function that can be used as a wrapper around the
