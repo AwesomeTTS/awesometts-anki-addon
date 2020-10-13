@@ -98,6 +98,8 @@ class Templater(ServiceDialog):
         widgets = {}
         layout = QtWidgets.QGridLayout()
 
+        full_language_list = [(x.name, x.lang_name) for x in self._addon.language]
+
         for row, label, name, options in [
                 (0, "Field:", 'field', [
                     (field, field)
@@ -112,10 +114,7 @@ class Templater(ServiceDialog):
                     (Templater.FIELD_TYPE_CLOZE_HIDDEN, "Cloze field: hidden part only, on back side only"),
                 ]),
 
-                (2, "Language:", 'language', [
-                    ('en_US', "American English"),
-                    ('fr_FR', "French France"),
-                ]),
+                (2, "Language:", 'language', full_language_list),
 
 
         ]:

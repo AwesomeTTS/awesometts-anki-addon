@@ -22,12 +22,6 @@ from aqt.tts import TTSProcessPlayer, TTSVoice
 import aqt.utils
 
 
-# we subclass the default voice object to store the gtts language code
-@dataclass
-class AwesomeTTSVoice(TTSVoice):
-    atts_preset: str
-
-
 class AwesomeTTSPlayer(TTSProcessPlayer):
     def __init__(self, taskman: TaskManager, addon) -> None:
         super(TTSProcessPlayer, self).__init__(taskman)
@@ -35,6 +29,7 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
 
     # this is called the first time Anki tries to play a TTS file
     def get_available_voices(self) -> List[TTSVoice]:
+
         # register a voice for every possible language AwesomeTTS supports. This avoids forcing the user to do a restart when
         # they configure a new TTS tag
         
@@ -68,13 +63,11 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
             return
 
         awesometts_preset_name = self._addon.config['tts_voices'][language]['preset']
-                
         self.awesometts_preset = awesometts_preset_name
-
         preset = self._addon.config['presets'][awesometts_preset_name]
+        # print(f"*** AwesomeTTSPlayer._play, language: {language} preset: {awesometts_preset_name}, preset data: {preset}, text: {text}")
 
-        print(f"*** AwesomeTTSPlayer._play, language: {language} preset: {awesometts_preset_name}, preset data: {preset}, text: {text}")
-
+        # this allows us to block until the asynchronous callback is done
         self.done_event = threading.Event()
 
         self._addon.router(
@@ -91,7 +84,8 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         self.done_event.wait(timeout=60)
 
     def failure(self, exception, text):
-        print(f"* failure: {exception}")
+        # don't do anything, can't popup any dialogs
+        #print(f"* failure: {exception}")
         self.done_event.set()
 
     def audio_file_ready(self, path):
