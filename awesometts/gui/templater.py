@@ -202,6 +202,7 @@ class Templater(ServiceDialog):
 
         # get language
         language = settings['language']
+        language_enum = self._addon.language[language]
 
         # prepare the config update diff, which will be applied later
         config_update = {'tts_voices': {language: {'preset': preset_name}}}
@@ -221,6 +222,9 @@ class Templater(ServiceDialog):
         tag_syntax = f"tts {language} voices=AwesomeTTS:{field_syntax}"
 
         target.setPlainText('\n'.join([target.toPlainText(), '{{' + tag_syntax + '}}'] ))
+
+        aqt.utils.showInfo(f"You have now associated the {language_enum.lang_name} language with the [{preset_name}] preset. To change this association, "+ 
+        "delete the tag and add it again.", self)
 
         self._addon.config.update(config_update)
 
