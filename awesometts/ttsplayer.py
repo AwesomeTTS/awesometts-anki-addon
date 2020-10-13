@@ -35,16 +35,13 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
 
     # this is called the first time Anki tries to play a TTS file
     def get_available_voices(self) -> List[TTSVoice]:
-        print("* get_available_voices")
-        # can we list awesome TTS presets here ?
-        config = self._addon.config
-        tts_voices = config['tts_voices']
-        languages = tts_voices.keys()
+        # register a voice for every possible language AwesomeTTS supports. This avoids forcing the user to do a restart when
+        # they configure a new TTS tag
+        
         voices = []
-        for language in languages:
-            std_code = language
-            preset_name = tts_voices[language]['preset']
-            voices.append(AwesomeTTSVoice(name="AwesomeTTS", lang=std_code, atts_preset=preset_name))
+        for language in self._addon.language:
+            language_name = language.name
+            voices.append(TTSVoice(name="AwesomeTTS", lang=language_name))
 
         return voices  # type: ignore
 
@@ -55,7 +52,8 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         assert isinstance(tag, TTSTag)
         match = self.voice_for_tag(tag)
         assert match
-        voice = cast(AwesomeTTSVoice, match.voice)
+        voice = match.voice
+        language = voice.lang
 
         # is the field blank?
         if not tag.field_text.strip():
@@ -63,14 +61,19 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
 
         text = tag.field_text
 
-        # load preset
-        awesometts_preset = voice.atts_preset
-        self.awesometts_preset = awesometts_preset
-        config = self._addon.config
-        config_presets = config['presets']
-        preset = config_presets[awesometts_preset]
+        # load awesometts preset
+        tts_voices = self._addon.config['tts_voices']
+        if language not in tts_voices:
+            # language not configured
+            return
 
-        print(f"*** AwesomeTTSPlayer._play, preset: {awesometts_preset}, preset data: {preset}, text: {text}")
+        awesometts_preset_name = self._addon.config['tts_voices'][language]['preset']
+                
+        self.awesometts_preset = awesometts_preset_name
+
+        preset = self._addon.config['presets'][awesometts_preset_name]
+
+        print(f"*** AwesomeTTSPlayer._play, language: {language} preset: {awesometts_preset_name}, preset data: {preset}, text: {text}")
 
         self.done_event = threading.Event()
 
@@ -89,11 +92,9 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
 
     def failure(self, exception, text):
         print(f"* failure: {exception}")
-        #print(f"could not play text: {exception}")
         self.done_event.set()
 
     def audio_file_ready(self, path):
-        print("* autio_file_ready")
         self.audio_file_path = path
         self.done_event.set()
 

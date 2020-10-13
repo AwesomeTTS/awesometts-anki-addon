@@ -196,22 +196,17 @@ class Templater(ServiceDialog):
 
         settings = self._get_all()
 
-        if settings['preset_name'] == None:
+        preset_name = settings['preset_name']
+        if preset_name == None:
             aqt.utils.showCritical("You must select a service preset", self)
             return
 
         # get language
         language = settings['language']
-        is_new_language = False
 
-        tts_voices = self._addon.config['tts_voices']
-        if language not in tts_voices:
-            is_new_language = True
+        # prepare the config update diff, which will be applied later
+        config_update = {'tts_voices': {language: {'preset': preset_name}}}
 
-        config_update = {'tts_voices': {language: {'preset': settings['preset_name']}}}
-
-        #self._addon.config['tts_voices'][language] = {'preset': settings['preset_name']}
-        
         tform = self._card_layout.tform
         # there's now a single edit area, as of anki 2.1.28
         target = getattr(tform, 'edit_area')
@@ -224,7 +219,7 @@ class Templater(ServiceDialog):
             field_syntax = f"cloze-only:{settings['field']}"
 
         language = settings['language']
-        tag_syntax = f"tts {language} voices={settings['preset_name']}:{field_syntax}"
+        tag_syntax = f"tts {language} voices=AwesomeTTS:{field_syntax}"
 
         target.setPlainText('\n'.join([target.toPlainText(), '{{' + tag_syntax + '}}'] ))
 
