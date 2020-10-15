@@ -115,13 +115,22 @@ class FptAi(Service):
 
         self._logger.debug(f"got async url: {async_url}")
 
-        # pause for a while as TTS creation is asynchronous
-        time.sleep(2)
+        # wait until the audio is available
+        audio_available = False
+        max_tries = 7
+        wait_time = 0.2
+        while audio_available == False and max_tries > 0:
+            time.sleep(wait_time)
+            r = requests.get(async_url, allow_redirects=True)
+            self._logger.debug(f"status code: {r.status_code}")
+            if r.status_code == 200:
+                audio_available = True
+            wait_time = wait_time * 2
+            max_tries -= 1
 
         self.net_download(
             path,
             async_url,
             require=dict(mime='audio/mpeg', size=256),
-            add_padding=True,
         )
 

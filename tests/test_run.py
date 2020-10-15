@@ -555,7 +555,9 @@ class TestClass():
         test_cases = [
             {'voice': 'leminh', 'text_input': 'Tôi không hiểu.', 'recognition_language': 'vi-VN'},
             {'voice': 'linhsan', 'text_input': 'Tôi không hiểu.', 'recognition_language': 'vi-VN'},
-            {'voice': 'banmai', 'text_input': 'Tôi không hiểu.', 'recognition_language': 'vi-VN'}
+            {'voice': 'banmai', 'text_input': 'Tôi không hiểu.', 'recognition_language': 'vi-VN'},
+            {'voice': 'banmai', 'text_input': 'Có thể giới thiệu cho tôi một khách sạn khác được không?', 'recognition_language': 'vi-VN'},
+            {'voice': 'leminh', 'text_input': 'Có chấp nhận thẻ tín dụng không?', 'recognition_language': 'vi-VN'}
         ]
         # speech recognition not available for vietnamese
         self.run_service_testcases(svc_id, test_cases, [], False, True)
