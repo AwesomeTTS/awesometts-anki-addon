@@ -99,6 +99,8 @@ class Templater(ServiceDialog):
         layout = QtWidgets.QGridLayout()
 
         full_language_list = [(x.name, x.lang_name) for x in self._addon.language]
+        # sort by human name
+        full_language_list.sort(key=lambda x:x[1])
 
         for row, label, name, options in [
                 (0, "Field:", 'field', [
