@@ -62,23 +62,52 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
             # language not configured
             return
 
-        awesometts_preset_name = self._addon.config['tts_voices'][language]['preset']
-        self.awesometts_preset = awesometts_preset_name
-        preset = self._addon.config['presets'][awesometts_preset_name]
-        # print(f"*** AwesomeTTSPlayer._play, language: {language} preset: {awesometts_preset_name}, preset data: {preset}, text: {text}")
+        # print(f"* playing back: {self._addon.config['tts_voices'][language]}")
 
         # this allows us to block until the asynchronous callback is done
         self.done_event = threading.Event()
 
-        self._addon.router(
-            svc_id=preset['service'],
-            text=text,
-            options=preset,
-            callbacks=dict(
-                okay=self.audio_file_ready,
-                fail=self.failure,
+        is_group = self._addon.config['tts_voices'][language]['is_group']
+
+        if not is_group:
+            # playback with preset
+
+            awesometts_preset_name = self._addon.config['tts_voices'][language]['preset']
+            self.awesometts_preset = awesometts_preset_name
+            preset = self._addon.config['presets'][awesometts_preset_name]
+
+            self._addon.router(
+                svc_id=preset['service'],
+                text=text,
+                options=preset,
+                callbacks=dict(
+                    okay=self.audio_file_ready,
+                    fail=self.failure,
+                )
             )
-        )
+
+        else:
+            # playback with group
+
+            group_name = self._addon.config['tts_voices'][language]['group']
+            groups = self._addon.config['groups']
+            group = groups[group_name]
+            if group_name not in groups:
+                self.failure(f"group {group_name} not found")
+                return
+
+            #print(f"** playing back group {self._addon.config['tts_voices'][language]}")
+
+            self._addon.router.group(
+                text=text,
+                group=group,
+                presets=self._addon.config['presets'],
+                callbacks=dict(
+                    okay=self.audio_file_ready,
+                    fail=self.failure,
+                ),
+            )    
+
 
         # need to wait until we get either a successful callback, or
         self.done_event.wait(timeout=60)

@@ -195,17 +195,21 @@ class Templater(ServiceDialog):
 
         settings = self._get_all()
 
+        is_group = settings['is_group']
         preset_name = settings['preset_name']
-        if preset_name == None:
+        group_name = settings['group_name']
+        # get language
+        language = settings['language']
+        language_enum = self._addon.language[language]        
+
+        #print(settings)
+
+        if not is_group and preset_name == None:
             aqt.utils.showCritical("You must select a service preset", self)
             return
 
-        # get language
-        language = settings['language']
-        language_enum = self._addon.language[language]
-
         # prepare the config update diff, which will be applied later
-        config_update = {'tts_voices': {language: {'preset': preset_name}}}
+        config_update = {'tts_voices': {language: {'is_group': is_group, 'preset': preset_name, 'group': group_name}}}
 
         tform = self._card_layout.tform
         # there's now a single edit area, as of anki 2.1.28
@@ -223,7 +227,11 @@ class Templater(ServiceDialog):
 
         target.setPlainText('\n'.join([target.toPlainText(), '{{' + tag_syntax + '}}'] ))
 
-        aqt.utils.showInfo(f"You have now associated the {language_enum.lang_name} language with the [{preset_name}] preset. To change this association, "+ 
+        if is_group:
+            aqt.utils.showInfo(f"You have now associated the {language_enum.lang_name} language with the [{group_name}] group. To change this association, "+ 
+        "delete the tag and add it again.", self)
+        else:
+            aqt.utils.showInfo(f"You have now associated the {language_enum.lang_name} language with the [{preset_name}] preset. To change this association, "+ 
         "delete the tag and add it again.", self)
 
         self._addon.config.update(config_update)
@@ -243,11 +251,25 @@ class Templater(ServiceDialog):
         }
 
         presets = self.findChild(QtWidgets.QComboBox, 'presets_dropdown')
+        
+        #service
+        services = self.findChild(QtWidgets.QComboBox, 'service')
+        service_index = services.currentIndex()
+        service_id = services.itemData(service_index)
 
-        if presets.currentIndex() == 0:
+        # did the user select a group ?
+        if service_id.startswith('group:'):  # we handle groups differently
+            group_name = service_id[6:]
+            combos['group_name'] = group_name
             combos['preset_name'] = None
+            combos['is_group'] = True
         else:
-            preset_name = presets.currentText()
-            combos['preset_name'] = preset_name
+            combos['is_group'] = False
+            combos['group_name'] = None
+            if presets.currentIndex() == 0:
+                combos['preset_name'] = None
+            else:
+                preset_name = presets.currentText()
+                combos['preset_name'] = preset_name
 
         return combos
