@@ -59,7 +59,7 @@ class Language(Enum):
     vi_VN = ("Vietnamese")
     zh_CN = ("Chinese (Mandarin, simplified)")
     zh_HK = ("Chinese (Cantonese, Traditional)")
-    zh_TW = ("Chinese (Taiwanese Mandarin")
+    zh_TW = ("Chinese (Taiwanese Mandarin)")
 
     def __init__(self, lang_name):
         self.lang_name = lang_name
