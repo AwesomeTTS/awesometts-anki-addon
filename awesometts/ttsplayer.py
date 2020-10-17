@@ -43,12 +43,17 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
     # this is called on a background thread, and will not block the UI
     def _play(self, tag: AVTag) -> None:
         self.audio_file_path = None
+        self.playback_error = False
+        self.playback_error_message = None
 
         assert isinstance(tag, TTSTag)
         match = self.voice_for_tag(tag)
         assert match
         voice = match.voice
         language = voice.lang
+        language_human = self._addon.language[language].lang_name
+        
+        # print(f"* trying to play back for language: {language}, tts_voices: {self._addon.config['tts_voices']}")
 
         # is the field blank?
         if not tag.field_text.strip():
@@ -60,9 +65,11 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         tts_voices = self._addon.config['tts_voices']
         if language not in tts_voices:
             # language not configured
+            self.playback_error = True
+            self.playback_error_message = f"Language {language} ({language_human}) not configured for on-the-fly TTS, please add TTS tag in Card template editor to register this language."
             return
 
-        # print(f"* playing back: {self._addon.config['tts_voices'][language]}")
+        #print(f"* playing back: {self._addon.config['tts_voices'][language]}")
 
         # this allows us to block until the asynchronous callback is done
         self.done_event = threading.Event()
@@ -117,10 +124,13 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
 
     def failure(self, exception, text):
         # don't do anything, can't popup any dialogs
-        #print(f"* failure: {exception}")
+        # print(f"* failure: {exception}")
+        self.playback_error = True
+        self.playback_error_message = f"Could not play back {text}: {exception}"
         self.done_event.set()
 
     def audio_file_ready(self, path):
+        # print(f"* done playing")
         self.audio_file_path = path
         self.done_event.set()
 
@@ -131,6 +141,9 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         # inject file into the top of the audio queue
         if self.audio_file_path != None:
             av_player.insert_file(self.audio_file_path)
+
+        if self.playback_error:
+            aqt.utils.showWarning("AwesomeTTS: " + self.playback_error_message)
 
         # then tell player to advance, which will cause the file to be played
         cb()
