@@ -69,6 +69,9 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
 
         is_group = self._addon.config['tts_voices'][language]['is_group']
 
+        # sanitize text
+        text = self._addon.strip.from_unknown(text)
+
         if not is_group:
             # playback with preset
 
