@@ -186,26 +186,20 @@ player = Player(
 router = Router(
     services=Bundle(
         mappings=[
-            #('abair', service.Abair),  # https://github.com/AwesomeTTS/awesometts-anki-addon/issues/130
             ('azure', service.Azure),
-            #('baidu', service.Baidu),  # https://github.com/AwesomeTTS/awesometts-anki-addon/issues/11
             ('cambridge', service.Cambridge),
             ('collins', service.Collins),
             ('duden', service.Duden),
             ('ekho', service.Ekho),
             ('espeak', service.ESpeak),
             ('festival', service.Festival),
-            #('fluencynl', service.FluencyNl), # https://github.com/AwesomeTTS/awesometts-anki-addon/issues/20
             ('fptai', service.FptAi),
             ('google', service.Google),
             ('googletts', service.GoogleTTS),
-            #('howjsay', service.Howjsay),
-            #('imtranslator', service.ImTranslator), # https://github.com/AwesomeTTS/awesometts-anki-addon/issues/94
             ('ispeech', service.ISpeech),
             ('naver', service.Naver),
             ('naverclova', service.NaverClova),
             ('naverclovapremium', service.NaverClovaPremium),
-            #('neospeech', service.NeoSpeech), # https://github.com/AwesomeTTS/awesometts-anki-addon/issues/68
             ('oddcast', service.Oddcast),
             ('oxford', service.Oxford),
             ('pico2wave', service.Pico2Wave),
@@ -214,8 +208,6 @@ router = Router(
             ('sapi5js', service.SAPI5JS),
             ('say', service.Say),
             ('spanishdict', service.SpanishDict),
-            #('voicetext', service.VoiceText), # https://github.com/AwesomeTTS/awesometts-anki-addon/issues/33
-            #('wiktionary', service.Wiktionary), # https://github.com/AwesomeTTS/awesometts-anki-addon/issues/1
             ('yandex', service.Yandex),
             ('youdao', service.Youdao),
             ('forvo', service.Forvo),
