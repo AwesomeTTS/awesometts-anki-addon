@@ -22,26 +22,20 @@ Service classes for AwesomeTTS
 
 from .common import Trait
 
-from .abair import Abair
 from .azure import Azure
-from .baidu import Baidu
 from .cambridge import Cambridge
 from .collins import Collins
 from .duden import Duden
 from .ekho import Ekho
 from .espeak import ESpeak
 from .festival import Festival
-from .fluencynl import FluencyNl
 from .fptai import FptAi
 from .google import Google
 from .googletts import GoogleTTS
-from .howjsay import Howjsay
-from .imtranslator import ImTranslator
 from .ispeech import ISpeech
 from .naver import Naver
 from .naverclova import NaverClova
 from .naverclovapremium import NaverClovaPremium
-from .neospeech import NeoSpeech
 from .oddcast import Oddcast
 from .oxford import Oxford
 from .pico2wave import Pico2Wave
@@ -50,8 +44,6 @@ from .sapi5com import SAPI5COM
 from .sapi5js import SAPI5JS
 from .say import Say
 from .spanishdict import SpanishDict
-from .voicetext import VoiceText
-from .wiktionary import Wiktionary
 from .yandex import Yandex
 from .youdao import Youdao
 from .forvo import Forvo
