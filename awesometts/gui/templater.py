@@ -211,7 +211,8 @@ class Templater(ServiceDialog):
             return
 
         # prepare the config update diff, which will be applied later
-        tts_voices = self._addon.config['tts_voices']
+        # need to clone the data, otherwise setting an attribute will update the cache
+        tts_voices = dict(self._addon.config['tts_voices'])
         tts_voices[language] = {'is_group': is_group, 'preset': preset_name, 'group': group_name}
 
         tform = self._card_layout.tform
@@ -237,7 +238,7 @@ class Templater(ServiceDialog):
             aqt.utils.showInfo(f"You have now associated the {language_enum.lang_name} language with the [{preset_name}] preset. To change this association, "+ 
         "delete the tag and add it again.", self)
 
-        self._addon.config.update({'tts_voices': tts_voices})
+        self._addon.config['tts_voices'] = tts_voices
 
         super(Templater, self).accept()
 
