@@ -40,6 +40,7 @@ from .stripper import BrowserStripper
 from .templater import Templater
 
 from .homescreen import on_deckbrowser_will_render_content
+from .homescreen import linkHandler
 
 __all__ = [
     # common
@@ -56,5 +57,6 @@ __all__ = [
     'BrowserStripper',
     'Templater',
     'on_deckbrowser_will_render_content'
+    'linkHandler'
 
 ]
