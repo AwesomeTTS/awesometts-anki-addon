@@ -37,7 +37,7 @@ class BrowserGenerator(ServiceDialog):
 
     HELP_USAGE_DESC = "Adding audio to multiple notes"
 
-    HELP_USAGE_SLUG = 'browser'
+    HELP_USAGE_SLUG = 'Batch-Generation'
 
     _RE_WHITESPACE = re(r'\s+')
 
