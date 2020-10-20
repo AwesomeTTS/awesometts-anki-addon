@@ -40,7 +40,7 @@ class Templater(ServiceDialog):
 
     HELP_USAGE_DESC = "Inserting on-the-fly playback tags into templates"
 
-    HELP_USAGE_SLUG = 'on-the-fly'
+    HELP_USAGE_SLUG = 'On-the-fly-TTS'
 
     FIELD_TYPE_REGULAR = "regular"
     FIELD_TYPE_CLOZE = "cloze"

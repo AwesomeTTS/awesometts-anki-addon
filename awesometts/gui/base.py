@@ -202,7 +202,7 @@ class Dialog(QtWidgets.QDialog):
         Opens a URL on the AwesomeTTS website with the given path.
         """
 
-        url = '/'.join([self._addon.web, path])
+        url = '/wiki/'.join([self._addon.web, path])
         self._addon.logger.debug("Launching %s", url)
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
 
@@ -446,20 +446,12 @@ class ServiceDialog(Dialog):
         try:
             menu.addAction(
                 self.HELP_USAGE_DESC,
-                lambda: self._launch_link('usage/' + self.HELP_USAGE_SLUG),
+                lambda: self._launch_link(self.HELP_USAGE_SLUG),
             )
         except AttributeError:
             pass
 
-        menu.addAction(help_svc)
-        menu.addAction(
-            "Managing service presets",
-            lambda: self._launch_link('usage/presets'),
-        )
-        menu.addAction(
-            "Enabling other TTS services",
-            lambda: self._launch_link('services'),
-        )
+
         return menu
 
     def _on_service_activated(self, idx, initial=False, use_options=None):
