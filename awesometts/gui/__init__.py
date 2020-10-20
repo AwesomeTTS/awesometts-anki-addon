@@ -39,6 +39,8 @@ from .stripper import BrowserStripper
 
 from .templater import Templater
 
+from .homescreen import on_deckbrowser_will_render_content
+
 __all__ = [
     # common
     'Action',
@@ -53,5 +55,6 @@ __all__ = [
     'EditorGenerator',
     'BrowserStripper',
     'Templater',
+    'on_deckbrowser_will_render_content'
 
 ]

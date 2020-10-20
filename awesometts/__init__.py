@@ -803,3 +803,6 @@ def window_shortcuts():
 
 def register_tts_tag():
     register_tts_player(addon)
+
+def display_homescreen():
+    aqt.gui_hooks.deck_browser_will_render_content.append(gui.homescreen.on_deckbrowser_will_render_content)
