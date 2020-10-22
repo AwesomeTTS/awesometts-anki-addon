@@ -805,7 +805,10 @@ def register_tts_tag():
     register_tts_player(addon)
 
 def display_homescreen():
+    linkHandler = gui.homescreen.makeLinkHandler(addon)
     aqt.deckbrowser.DeckBrowser._linkHandler = anki.hooks.wrap(
-        aqt.deckbrowser.DeckBrowser._linkHandler, gui.homescreen.linkHandler, "before"
+        aqt.deckbrowser.DeckBrowser._linkHandler, linkHandler, "before"
     )    
-    aqt.gui_hooks.deck_browser_will_render_content.append(gui.homescreen.on_deckbrowser_will_render_content)
+
+    on_deckbrowser_will_render_content = gui.homescreen.makeDeckBrowserRenderContent(addon)
+    aqt.gui_hooks.deck_browser_will_render_content.append(on_deckbrowser_will_render_content)
