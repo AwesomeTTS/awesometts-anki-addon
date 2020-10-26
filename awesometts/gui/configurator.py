@@ -43,7 +43,7 @@ class Configurator(Dialog):
 
     _PROPERTY_KEYS = [
         'cache_days', 'ellip_note_newlines',
-        'ellip_template_newlines', 'filenames', 'filenames_human',
+        'ellip_template_newlines', 'filenames', 'filenames_human', 'homescreen_show',
         'lame_flags', 'launch_browser_generator', 'launch_browser_stripper',
         'launch_configurator', 'launch_editor_generator', 'launch_templater',
         'otf_only_revealed_cloze', 'otf_remove_hints', 'spec_note_strip',
@@ -411,6 +411,7 @@ class Configurator(Dialog):
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self._ui_tabs_advanced_presets())
         layout.addWidget(self._ui_tabs_advanced_cache())
+        layout.addWidget(self._ui_tabs_advanced_other())
         layout.addStretch()
 
         tab = QtWidgets.QWidget()
@@ -475,6 +476,16 @@ class Configurator(Dialog):
 
         group = QtWidgets.QGroupBox("Caching")
         group.setLayout(layout)
+        return group
+
+    def _ui_tabs_advanced_other(self):
+        pass
+
+        ver = QtWidgets.QVBoxLayout()
+        ver.addWidget(Checkbox("Show AwesomeTTS widget on Deck Browser", 'homescreen_show'))
+
+        group = QtWidgets.QGroupBox("Other")
+        group.setLayout(ver)
         return group
 
     # Factories ##############################################################
