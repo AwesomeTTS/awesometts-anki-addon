@@ -59,7 +59,8 @@ def makeDeckBrowserRenderContent(addon):
 
         night_mode = aqt.mw.pm.night_mode()
 
-        preset_names = addon.config['presets'].keys()
+        preset_names = list(addon.config['presets'].keys())
+        preset_names.sort()
         html_select_options = [f'<option value="{preset_name}">{preset_name}</option>' for preset_name in preset_names]
         html_select_options_str = '\n'.join(html_select_options)
 
