@@ -94,7 +94,6 @@ def makeDeckBrowserRenderContent(addon):
 
         .atts-say-button {
             border-radius: 10px;
-            background-color: #82bbf0;
         }       
         .atts-say-button-label {
             font-size: 30px;
