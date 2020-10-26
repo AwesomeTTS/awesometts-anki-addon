@@ -68,9 +68,11 @@ def makeDeckBrowserRenderContent(addon):
 
         light_dark_background = "#E0E0E0"
         light_dark_border_color = "#9E9E9E"
+        light_dark_placeholder_color = "#BDBDBD"
         if night_mode:
             light_dark_background = "#616161"
             light_dark_border_color = "#424242"
+            light_dark_placeholder_color = "#757575"
 
         html_content = """
         <br/>
@@ -95,7 +97,7 @@ def makeDeckBrowserRenderContent(addon):
             color: #0063de;
         }
         .atts-text-input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-            color: #BDBDBD;
+            color: """ + light_dark_placeholder_color + """;
         }        
 
         .atts-presets {
