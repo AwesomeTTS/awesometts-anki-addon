@@ -109,6 +109,8 @@ config = Config(
         ('filenames_human', 'text',
          '{{text}} ({{service}} {{voice}})', str, str),
         ('groups', 'text', {}, to.deserialized_dict, to.compact_json),
+        ('homescreen_last_preset', 'text', '', str, str),
+        ('homescreen_show', 'integer', True, to.lax_bool, int),
         ('lame_flags', 'text', '--quiet -q 2', str, str),
         ('last_mass_append', 'integer', True, to.lax_bool, int),
         ('last_mass_behavior', 'integer', True, to.lax_bool, int),

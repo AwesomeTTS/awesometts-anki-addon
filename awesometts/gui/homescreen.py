@@ -28,7 +28,6 @@ def makeLinkHandler(addon):
 
             data = json.loads(json_str)
 
-
             callbacks = dict(
                 okay=addon.player.preview,
                 fail=playbackFailure
@@ -43,7 +42,9 @@ def makeLinkHandler(addon):
                 text=text,
                 options=preset,
                 callbacks=callbacks
-            )                                
+            )
+
+            addon.config['homescreen_last_preset'] = awesometts_preset_name
 
         return False
 
@@ -58,7 +59,7 @@ def makeDeckBrowserRenderContent(addon):
 
         preset_names = list(addon.config['presets'].keys())
         preset_names.sort()
-        html_select_options = [f'<option value="{preset_name}">{preset_name}</option>' for preset_name in preset_names]
+        html_select_options = [f'<option value="{preset_name}" {"selected" if preset_name == addon.config["homescreen_last_preset"] else ""}>{preset_name}</option>' for preset_name in preset_names]
         html_select_options_str = '\n'.join(html_select_options)
 
         # theme colors are plagiarized from review heatmap
