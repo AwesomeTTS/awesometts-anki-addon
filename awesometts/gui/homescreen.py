@@ -65,15 +65,15 @@ def makeDeckBrowserRenderContent(addon):
         AwesomeTTS
         <br/>
         <input id='speech-input'><br/>
-        <select name="presets" id="presets">
+        <select name='preset' id='preset'>
         """ + html_select_options_str + """
         </select>
         <script>
         function getCommand() {
             const input_text = document.getElementById('speech-input').value;
-            const preset = 'Aria Neural';
-            const json_data = {'text': document.getElementById('speech-input').value, 'preset': 'Aria Neural'};
-            const final_command = 'awesomettsplayback:' +  btoa(unescape(encodeURIComponent(JSON.stringify({'text': document.getElementById('speech-input').value, 'preset': 'Aria Neural'}))));
+            const preset = document.getElementById('preset').value;;
+            const json_data = {'text': document.getElementById('speech-input').value, 'preset': preset};
+            const final_command = 'awesomettsplayback:' +  btoa(unescape(encodeURIComponent(JSON.stringify(json_data))));
             return final_command;
         }
         </script>
