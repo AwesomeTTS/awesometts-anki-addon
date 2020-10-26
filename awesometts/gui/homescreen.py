@@ -56,11 +56,18 @@ def makeDeckBrowserRenderContent(addon):
         #print(deck_browser)    
         #print(content)
 
+        preset_names = addon.config['presets'].keys()
+        html_select_options = [f'<option value="{preset_name}">{preset_name}</option>' for preset_name in preset_names]
+        html_select_options_str = '\n'.join(html_select_options)
+
         html_content = """
         <br/>
         AwesomeTTS
         <br/>
         <input id='speech-input'><br/>
+        <select name="presets" id="presets">
+        """ + html_select_options_str + """
+        </select>
         <script>
         function getCommand() {
             const input_text = document.getElementById('speech-input').value;
