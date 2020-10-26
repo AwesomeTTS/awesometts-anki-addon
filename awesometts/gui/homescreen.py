@@ -64,8 +64,37 @@ def makeDeckBrowserRenderContent(addon):
         <br/>
         AwesomeTTS
         <br/>
-        <input id='speech-input'><br/>
-        <select name='preset' id='preset'>
+        <style>
+        .atts-common {
+        font-size: 50px;  
+        margin-bottom: 10px;
+        }
+
+        .atts-text-input {
+        border: 2px solid red;
+        border-radius: 4px;  
+        }
+        .atts-text-input:focus {
+            background-color: lightblue;
+        }
+
+        .atts-presets {
+        font-size: 20px;
+        }
+
+        .atts-say-button {
+            -webkit-appearance: none;
+            font-size: 60px;
+            background-color: #4CAF50;
+            border-radius: 12px;
+        }       
+        .atts-say-button-label {
+            font-size: 50px;
+        } 
+        </style>
+        <input id='speech-input' class="atts-common atts-text-input">
+        <br/>
+        <select name='preset' id='preset' class='atts-common atts-presets'>
         """ + html_select_options_str + """
         </select>
         <script>
@@ -77,7 +106,8 @@ def makeDeckBrowserRenderContent(addon):
             return final_command;
         }
         </script>
-        <button onclick="return pycmd(getCommand())">say</button>
+        <br/>
+        <button onclick="return pycmd(getCommand())" class="atts-common atts-say-button"><span class="atts-common atts-say-button-label">Say</span></button>
         """
 
         content.stats += html_content
