@@ -61,7 +61,16 @@ def makeDeckBrowserRenderContent(addon):
         AwesomeTTS
         <br/>
         <input id='speech-input'><br/>
-        <button onclick="return pycmd('awesomettsplayback:' +  btoa(unescape(encodeURIComponent(JSON.stringify({'text': document.getElementById('speech-input').value, 'preset': 'Aria Neural'})))))">say</button>
+        <script>
+        function getCommand() {
+            const input_text = document.getElementById('speech-input').value;
+            const preset = 'Aria Neural';
+            const json_data = {'text': document.getElementById('speech-input').value, 'preset': 'Aria Neural'};
+            const final_command = 'awesomettsplayback:' +  btoa(unescape(encodeURIComponent(JSON.stringify({'text': document.getElementById('speech-input').value, 'preset': 'Aria Neural'}))));
+            return final_command;
+        }
+        </script>
+        <button onclick="return pycmd(getCommand())">say</button>
         """
 
         content.stats += html_content
