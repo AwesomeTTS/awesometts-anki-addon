@@ -65,53 +65,43 @@ def makeDeckBrowserRenderContent(addon):
 
         <style>
         .atts-common {
-            font-size: 50px;  
+            font-size: 40px;  
             margin-bottom: 10px;
         }
 
         .atts-text-input {
-        border: 2px solid red;
-        border-radius: 4px;  
+            border: 2px solid #F48FB1;
+            border-radius: 4px;  
+            background-color: #F8BBD0;
+            width: 100%;
         }
         .atts-text-input:focus {
-            background-color: lightblue;
+            background-color: #BBDEFB;
         }
 
         .atts-presets {
             font-size: 16px;
+            width: 100%;
         }
 
         .atts-say-button {
+            border-color: #F06292;
             border-radius: 10px;
-            background-color: #C2185B;            
+            background-color: #F48FB1;
         }       
         .atts-say-button-label {
             font-size: 40px;
         } 
-        .atts-frame-common {
-            width: 85%;
-        }
-        .atts-frame-header {
-            text-align: left;
-            color:#888888;
-        }
         .atts-frame {
             margin-top: 20px;
-            border: 1px solid #CCCCCC;
-            border-radius: 10px;
-            box-shadow: 3px 3px 5px grey;
-            background-color: #F5F5F5;
+            width: 650px;
         }
         .atts-name {
             width: 50%;
         }
         </style>
         <div class="atts-frame-common atts-frame">
-        <div class="atts-frame-header">
-            AwesomeTTS
-        </div>
-        <br/>        
-        <input id='speech-input' class="atts-common atts-text-input" placeholder="Pronounce using AwesomeTTS">
+        <input id='speech-input' class="atts-common atts-text-input" placeholder="Enter Text">
         <br/>
         <select name='preset' id='preset' class='atts-common atts-presets'>
         """ + html_select_options_str + """
