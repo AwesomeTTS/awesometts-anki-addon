@@ -1,5 +1,7 @@
 import aqt
 import anki.hooks
+import json
+import base64
 
 def failure(exception, text):
     # don't do anything, can't popup any dialogs
@@ -11,18 +13,29 @@ def makeLinkHandler(addon):
 
         print(f"* linkHandler {url}")
 
-        (cmd, arg) = url.split(":")
+        if url.startswith('awesomettsplayback:'):
+            # load the json part
+            colon_index = url.find(':')
 
-        if cmd == "awesomettsplayback":
+            base64_str = url[colon_index+1:]
+            print(f"* base64 string: {base64_str}")
+
+            # base64_bytes = str.encode(base64_str)
+            json_bytes = base64.b64decode(base64_str)
+            json_str = json_bytes.decode('utf-8')
+            print(f"* json string: {json_str}")
+
+            data = json.loads(json_str)
+
 
             callbacks = dict(
                 okay=addon.player.preview,
                 fail=failure
             )
 
-            text = arg
-            awesometts_preset_name = 'Aria Neural'
-            preset = addon.config['presets'][awesometts_preset_name]            
+            text = data['text']
+            awesometts_preset_name = data['preset']
+            preset = addon.config['presets'][awesometts_preset_name]
 
             addon.router(
                 svc_id=preset['service'],
@@ -31,6 +44,7 @@ def makeLinkHandler(addon):
                 callbacks=callbacks
             )                                
 
+        return False
 
     
     return linkHandler
@@ -47,7 +61,7 @@ def makeDeckBrowserRenderContent(addon):
         AwesomeTTS
         <br/>
         <input id='speech-input'><br/>
-        <button onclick="return pycmd('awesomettsplayback:' + document.getElementById('speech-input').value)">say</button>
+        <button onclick="return pycmd('awesomettsplayback:' +  btoa(unescape(encodeURIComponent(JSON.stringify({'text': document.getElementById('speech-input').value, 'preset': 'Aria Neural'})))))">say</button>
         """
 
         content.stats += html_content
