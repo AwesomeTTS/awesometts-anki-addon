@@ -83,11 +83,12 @@ def makeDeckBrowserRenderContent(addon):
             color: #0063de;
         }
         .atts-text-input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-            color: #9E9E9E;
+            color: #BDBDBD;
         }        
 
         .atts-presets {
             font-size: 16px;
+            border-radius: 4px;  
             width: 100%;
         }
 
