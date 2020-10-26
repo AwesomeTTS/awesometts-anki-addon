@@ -10,6 +10,10 @@ def failure(exception, text):
 
 
 def makeLinkHandler(addon):
+    def playbackFailure(exception, text):
+        playback_error_message = f"Could not play back {text}: {exception}"
+        aqt.utils.showWarning("AwesomeTTS: " + playback_error_message)
+
     def linkHandler(deckbrowser, url):
 
         print(f"* linkHandler {url}")
@@ -31,7 +35,7 @@ def makeLinkHandler(addon):
 
             callbacks = dict(
                 okay=addon.player.preview,
-                fail=failure
+                fail=playbackFailure
             )
 
             text = data['text']
