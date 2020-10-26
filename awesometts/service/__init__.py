@@ -23,6 +23,7 @@ Service classes for AwesomeTTS
 from .common import Trait
 
 from .azure import Azure
+from .baidu import Baidu
 from .cambridge import Cambridge
 from .collins import Collins
 from .duden import Duden
@@ -54,6 +55,7 @@ __all__ = [
 
     # services
     'Azure',
+    'Baidu',
     'Collins',
     'Duden',
     'Ekho',
