@@ -60,6 +60,9 @@ def makeDeckBrowserRenderContent(addon):
         html_select_options = [f'<option value="{preset_name}">{preset_name}</option>' for preset_name in preset_names]
         html_select_options_str = '\n'.join(html_select_options)
 
+        # theme colors are plagiarized from review heatmap
+        # https://github.com/glutanimate/review-heatmap/blob/master/resources/web/review-heatmap.css
+
         html_content = """
         <br/>
 
@@ -70,14 +73,18 @@ def makeDeckBrowserRenderContent(addon):
         }
 
         .atts-text-input {
-            border: 2px solid #F48FB1;
+            border: 1px solid #9E9E9E;
             border-radius: 4px;  
-            background-color: #F8BBD0;
+            background-color: #E0E0E0;
             width: 100%;
         }
         .atts-text-input:focus {
             background-color: #BBDEFB;
+            color: #0063de;
         }
+        .atts-text-input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+            color: #9E9E9E;
+        }        
 
         .atts-presets {
             font-size: 16px;
@@ -85,12 +92,12 @@ def makeDeckBrowserRenderContent(addon):
         }
 
         .atts-say-button {
-            border-color: #F06292;
             border-radius: 10px;
-            background-color: #F48FB1;
+            background-color: #82bbf0;
         }       
         .atts-say-button-label {
-            font-size: 40px;
+            font-size: 30px;
+            color: #0063de;
         } 
         .atts-frame {
             margin-top: 20px;
@@ -101,7 +108,7 @@ def makeDeckBrowserRenderContent(addon):
         }
         </style>
         <div class="atts-frame-common atts-frame">
-        <input id='speech-input' class="atts-common atts-text-input" placeholder="Enter Text">
+        <input id='speech-input' class="atts-common atts-text-input" placeholder="Pronounce with AwesomeTTS">
         <br/>
         <select name='preset' id='preset' class='atts-common atts-presets'>
         """ + html_select_options_str + """
