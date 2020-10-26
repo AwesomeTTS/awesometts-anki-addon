@@ -2,6 +2,7 @@ import aqt
 import anki.hooks
 import json
 import base64
+import aqt
 
 def failure(exception, text):
     # don't do anything, can't popup any dialogs
@@ -56,12 +57,20 @@ def makeDeckBrowserRenderContent(addon):
         #print(deck_browser)    
         #print(content)
 
+        night_mode = aqt.mw.pm.night_mode()
+
         preset_names = addon.config['presets'].keys()
         html_select_options = [f'<option value="{preset_name}">{preset_name}</option>' for preset_name in preset_names]
         html_select_options_str = '\n'.join(html_select_options)
 
         # theme colors are plagiarized from review heatmap
         # https://github.com/glutanimate/review-heatmap/blob/master/resources/web/review-heatmap.css
+
+        light_dark_background = "#E0E0E0"
+        light_dark_border_color = "#9E9E9E"
+        if night_mode:
+            light_dark_background = "#616161"
+            light_dark_border_color = "#424242"
 
         html_content = """
         <br/>
@@ -72,10 +81,13 @@ def makeDeckBrowserRenderContent(addon):
             margin-bottom: 10px;
         }
 
+        .atts-common-background {
+            background-color: """ + light_dark_background + """;
+            border: 1px solid """ + light_dark_border_color + """;
+            border-radius: 4px;
+        }
+
         .atts-text-input {
-            border: 1px solid #9E9E9E;
-            border-radius: 4px;  
-            background-color: #E0E0E0;
             width: 100%;
         }
         .atts-text-input:focus {
@@ -100,17 +112,15 @@ def makeDeckBrowserRenderContent(addon):
             color: #0063de;
         } 
         .atts-frame {
-            margin-top: 20px;
+            margin-top: 25px;
             width: 650px;
         }
-        .atts-name {
-            width: 50%;
-        }
+
         </style>
         <div class="atts-frame-common atts-frame">
-        <input id='speech-input' class="atts-common atts-text-input" placeholder="Pronounce with AwesomeTTS">
+        <input id='speech-input' class="atts-common atts-text-input atts-common-background" placeholder="Pronounce with AwesomeTTS">
         <br/>
-        <select name='preset' id='preset' class='atts-common atts-presets'>
+        <select name='preset' id='preset' class='atts-common atts-presets atts-common-background'>
         """ + html_select_options_str + """
         </select>
         <script>
