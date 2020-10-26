@@ -62,12 +62,11 @@ def makeDeckBrowserRenderContent(addon):
 
         html_content = """
         <br/>
-        AwesomeTTS
-        <br/>
+
         <style>
         .atts-common {
-        font-size: 50px;  
-        margin-bottom: 10px;
+            font-size: 50px;  
+            margin-bottom: 10px;
         }
 
         .atts-text-input {
@@ -79,20 +78,40 @@ def makeDeckBrowserRenderContent(addon):
         }
 
         .atts-presets {
-        font-size: 20px;
+            font-size: 16px;
         }
 
         .atts-say-button {
-            -webkit-appearance: none;
-            font-size: 60px;
-            background-color: #4CAF50;
-            border-radius: 12px;
+            border-radius: 10px;
+            background-color: #C2185B;            
         }       
         .atts-say-button-label {
-            font-size: 50px;
+            font-size: 40px;
         } 
+        .atts-frame-common {
+            width: 85%;
+        }
+        .atts-frame-header {
+            text-align: left;
+            color:#888888;
+        }
+        .atts-frame {
+            margin-top: 20px;
+            border: 1px solid #CCCCCC;
+            border-radius: 10px;
+            box-shadow: 3px 3px 5px grey;
+            background-color: #F5F5F5;
+        }
+        .atts-name {
+            width: 50%;
+        }
         </style>
-        <input id='speech-input' class="atts-common atts-text-input">
+        <div class="atts-frame-common atts-frame">
+        <div class="atts-frame-header">
+            AwesomeTTS
+        </div>
+        <br/>        
+        <input id='speech-input' class="atts-common atts-text-input" placeholder="Pronounce using AwesomeTTS">
         <br/>
         <select name='preset' id='preset' class='atts-common atts-presets'>
         """ + html_select_options_str + """
@@ -108,6 +127,7 @@ def makeDeckBrowserRenderContent(addon):
         </script>
         <br/>
         <button onclick="return pycmd(getCommand())" class="atts-common atts-say-button"><span class="atts-common atts-say-button-label">Say</span></button>
+        </div>
         """
 
         content.stats += html_content
