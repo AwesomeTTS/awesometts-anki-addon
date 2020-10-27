@@ -53,10 +53,11 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         language = voice.lang
         language_human = self._addon.language[language].lang_name
         
-        # print(f"* trying to play back for language: {language}, tts_voices: {self._addon.config['tts_voices']}")
+        self._addon.logger.debug(f"playing back for language {language}, text: {tag.field_text}")
 
         # is the field blank?
         if not tag.field_text.strip():
+            self._addon.logger.debug("field empty, not playing anything")
             return
 
         text = tag.field_text
@@ -83,6 +84,8 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
             # playback with preset
 
             awesometts_preset_name = self._addon.config['tts_voices'][language]['preset']
+            self._addon.logger.info(f"playing back text with preset: {awesometts_preset_name}, text {text}")
+
             self.awesometts_preset = awesometts_preset_name
             preset = self._addon.config['presets'][awesometts_preset_name]
 
@@ -100,6 +103,9 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
             # playback with group
 
             group_name = self._addon.config['tts_voices'][language]['group']
+
+            self._addon.logger.info(f"playing back text with group: {group_name}, text {text}")
+
             groups = self._addon.config['groups']
             group = groups[group_name]
             if group_name not in groups:
@@ -127,10 +133,11 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         # print(f"* failure: {exception}")
         self.playback_error = True
         self.playback_error_message = f"Could not play back {text}: {exception}"
+        self._addon.logger.error(self.playback_error_message)
         self.done_event.set()
 
     def audio_file_ready(self, path):
-        # print(f"* done playing")
+        self._addon.logger.debug("done playing")
         self.audio_file_path = path
         self.done_event.set()
 

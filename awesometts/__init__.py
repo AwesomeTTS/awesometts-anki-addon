@@ -85,7 +85,10 @@ AGENT = 'AwesomeTTS/%s (Anki %s; PyQt %s; %s)' % (VERSION, anki.version,
 
 if 'AWESOMETTS_DEBUG_LOGGING' in os.environ and os.environ['AWESOMETTS_DEBUG_LOGGING'] == 'enable':
     import logging 
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(format='%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', 
+                        datefmt='%Y%m%d-%H:%M:%S',
+                        stream=sys.stdout, 
+                        level=logging.DEBUG)
     logger = logging.getLogger('awesometts')
     logger.setLevel(logging.DEBUG)
 else:
