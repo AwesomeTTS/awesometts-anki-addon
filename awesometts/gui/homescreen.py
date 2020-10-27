@@ -61,6 +61,9 @@ def makeDeckBrowserRenderContent(addon):
         night_mode = aqt.mw.pm.night_mode()
 
         preset_names = list(addon.config['presets'].keys())
+        if len(preset_names) == 0:
+            # no presets defined
+            return
         preset_names.sort()
         html_select_options = [f'<option value="{preset_name}" {"selected" if preset_name == addon.config["homescreen_last_preset"] else ""}>{preset_name}</option>' for preset_name in preset_names]
         html_select_options_str = '\n'.join(html_select_options)
