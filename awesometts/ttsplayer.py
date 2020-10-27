@@ -84,7 +84,7 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
             # playback with preset
 
             awesometts_preset_name = self._addon.config['tts_voices'][language]['preset']
-            self._addon.logger.info(f"playing back text with preset: {awesometts_preset_name}, text {text}")
+            self._addon.logger.info(f"playing back text with preset: {awesometts_preset_name}, text: {text}.")
 
             self.awesometts_preset = awesometts_preset_name
             preset = self._addon.config['presets'][awesometts_preset_name]
@@ -104,7 +104,7 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
 
             group_name = self._addon.config['tts_voices'][language]['group']
 
-            self._addon.logger.info(f"playing back text with group: {group_name}, text {text}")
+            self._addon.logger.info(f"playing back text with group: {group_name}, text: {text}.")
 
             groups = self._addon.config['groups']
             group = groups[group_name]
