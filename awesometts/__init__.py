@@ -311,18 +311,9 @@ addon = Bundle(
             'whitespace',
         ], config=config, logger=logger),
 
-        # for cleaning up already-processed HTML templates (e.g. on-the-fly,
-        # where cloze is marked with <span class=cloze></span> tags)
-        from_template_front=Sanitizer([
+        # clean up fields coming from templates (on the fly TTS)
+        from_template=Sanitizer([
             ('clozes_rendered', 'sub_template_cloze'),
-            'hint_links',
-            ('hint_content', 'otf_remove_hints'),
-            ('newline_ellipsize', 'ellip_template_newlines'),
-            'html',
-        ] + STRIP_TEMPLATE_POSTHTML, config=config, logger=logger),
-
-        # like the previous, but for the back sides of cards
-        from_template_back=Sanitizer([
             ('clozes_revealed', 'otf_only_revealed_cloze'),
             'hint_links',
             ('hint_content', 'otf_remove_hints'),
