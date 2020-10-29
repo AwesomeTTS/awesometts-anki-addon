@@ -29,6 +29,10 @@ __all__ = ['Presets']
 class Presets(ServiceDialog):
     """Provides a dialog for editing presets."""
 
+    HELP_USAGE_DESC = "Manage service presets"
+
+    HELP_USAGE_SLUG = 'Presets'
+
     __slots__ = []
 
     def __init__(self, *args, **kwargs):
@@ -48,7 +52,7 @@ class Presets(ServiceDialog):
         layout.addWidget(Note(
             'Once saved, your service option presets can be easily recalled '
             'in most AwesomeTTS dialog windows and/or used for on-the-fly '
-            'playback with <tts preset="..."> ... </tts> template tags.'
+            'playback with tts template tags.'
         ))
         layout.addWidget(Note(
             "Selecting text and then side-clicking in some Anki panels (e.g. "
