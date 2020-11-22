@@ -635,7 +635,8 @@ COUNTRIES = [
 
 GENDERS = [
     ('m', 'Male'),
-    ('f', 'Female')
+    ('f', 'Female'),
+    ('any', 'Any')
 ]
 
 URL_API_CORPORATE = ('apicorporate', 'https://apicorporate.forvo.com/api2/v1.1/')
@@ -737,7 +738,10 @@ class Forvo(Service):
             # user selected a particular country
             country_code = f"/country/{options['country']}"
 
-        url = f'https://apifree.forvo.com/key/{api_key}/format/json/action/word-pronunciations/word/{encoded_text}/language/{encoded_language}/sex/{sex}/order/rate-desc/limit/1{country_code}'
+        if sex == 'any':
+            url = f'https://apifree.forvo.com/key/{api_key}/format/json/action/word-pronunciations/word/{encoded_text}/language/{encoded_language}/order/rate-desc/limit/1{country_code}'
+        else:
+            url = f'https://apifree.forvo.com/key/{api_key}/format/json/action/word-pronunciations/word/{encoded_text}/language/{encoded_language}/sex/{sex}/order/rate-desc/limit/1{country_code}'
 
         corporate_url = False
         if options['apiurl'] == URL_API_CORPORATE[0]:
