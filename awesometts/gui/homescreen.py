@@ -120,7 +120,7 @@ def makeDeckBrowserRenderContent(addon):
         } 
         .atts-frame {
             margin-top: 25px;
-            width: 650px;
+            width: 70%;
         }
 
         </style>
