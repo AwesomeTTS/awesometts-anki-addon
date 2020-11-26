@@ -83,12 +83,19 @@ AGENT = 'AwesomeTTS/%s (Anki %s; PyQt %s; %s)' % (VERSION, anki.version,
 
 # Begin core class initialization and dependency setup, pylint:disable=C0103
 
-if 'AWESOMETTS_DEBUG_LOGGING' in os.environ and os.environ['AWESOMETTS_DEBUG_LOGGING'] == 'enable':
+if 'AWESOMETTS_DEBUG_LOGGING' in os.environ:
     import logging 
-    logging.basicConfig(format='%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', 
-                        datefmt='%Y%m%d-%H:%M:%S',
-                        stream=sys.stdout, 
-                        level=logging.DEBUG)
+    if os.environ['AWESOMETTS_DEBUG_LOGGING'] == 'enable':
+        logging.basicConfig(format='%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', 
+                            datefmt='%Y%m%d-%H:%M:%S',
+                            stream=sys.stdout, 
+                            level=logging.DEBUG)
+    elif os.environ['AWESOMETTS_DEBUG_LOGGING'] == 'file':
+        filename = os.environ['AWESOMETTS_DEBUG_FILE']
+        logging.basicConfig(format='%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', 
+                            datefmt='%Y%m%d-%H:%M:%S',
+                            filename=filename, 
+                            level=logging.DEBUG)        
     logger = logging.getLogger('awesometts')
     logger.setLevel(logging.DEBUG)
 else:
