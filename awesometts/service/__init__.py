@@ -48,6 +48,7 @@ from .spanishdict import SpanishDict
 from .yandex import Yandex
 from .youdao import Youdao
 from .forvo import Forvo
+from .watson import Watson
 
 __all__ = [
     # common
@@ -78,4 +79,5 @@ __all__ = [
     'Yandex',
     'Youdao',
     'Forvo',
+    'Watson'
 ]

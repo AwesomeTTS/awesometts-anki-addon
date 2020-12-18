@@ -11,6 +11,7 @@ class Gender(Enum):
 
 
 class Language(Enum):
+    ar_AR = ("Arabic")
     ar_EG = ("Arabic (Egypt)")
     ar_SA = ("Arabic (Saudi Arabia)")
     bg_BG = ("Bulgarian")
@@ -29,6 +30,8 @@ class Language(Enum):
     en_US = ("English (US)")
     es_ES = ("Spanish (Spain)")
     es_MX = ("Spanish (Mexico)")
+    es_LA = ("Spanish (Latin America)")
+    es_US = ("Spanish (North America)")
     fi_FI = ("Finnish")
     fr_CA = ("French (Canada)")
     fr_CH = ("French (Switzerland)")
