@@ -154,7 +154,7 @@ class Watson(Service):
 
         base_url = 'https://api.us-south.text-to-speech.watson.cloud.ibm.com/instances/7f62cf20-2944-4d83-bd53-b6f11a64de9b'
         url_path = '/v1/synthesize'
-        constructed_url = base_url + url_path
+        constructed_url = base_url + url_path + f'?voice={voice_name}'
         self._logger.info(f'url: {constructed_url}')
         headers = {
             'Content-Type': 'application/json',
@@ -162,8 +162,7 @@ class Watson(Service):
         }
 
         data = {
-            'text': text,
-            'voice': voice_name
+            'text': text
         }
 
         self._logger.info(f'data: {data}')

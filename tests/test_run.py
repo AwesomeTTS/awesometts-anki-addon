@@ -584,9 +584,9 @@ class TestClass():
 
         # generate audio files for all these test cases, then run them through the speech recognition API to make sure the output is correct
         test_cases = [
-            {'voice': 'en-US_MichaelVoice', 'text_input': 'this is the first sentence', 'recognition_language':'en-US'}
-            #{'voice': 'Microsoft Server Speech Text to Speech Voice (fr-CH, Guillaume)', 'text_input': 'ravi de vous rencontrer', 'recognition_language':'fr-FR'},
-            #{'voice': 'Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)', 'text_input': '我试着每天都不去吃快餐', 'recognition_language':'zh-CN'},
+            {'voice': 'en-US_MichaelVoice', 'text_input': 'this is the first sentence', 'recognition_language':'en-US'},
+            {'voice': 'fr-FR_NicolasV3Voice', 'text_input': 'je vous passe le bonjour', 'recognition_language':'fr-FR'},
+            {'voice': 'zh-CN_LiNaVoice', 'text_input': '我试着每天都不去吃快餐', 'recognition_language':'zh-CN'},
         ]
 
-        self.run_service_testcases(svc_id, test_cases)                
+        self.run_service_testcases(svc_id, test_cases)
