@@ -8,7 +8,7 @@ https://cloud.ibm.com/docs/text-to-speech?topic=text-to-speech-gettingStarted
 import time
 import datetime
 import requests
-from xml.etree import ElementTree
+import json
 from .base import Service
 from .languages import Gender
 from .languages import Language
@@ -152,43 +152,29 @@ class Watson(Service):
         voice = self.get_voice_for_key(voice_key)
         voice_name = voice.get_key()
 
-        rate = options['speed']
-        pitch = options['pitch']
-
-        base_url = f'https://{region}.tts.speech.microsoft.com/'
-        url_path = 'cognitiveservices/v1'
+        base_url = 'https://api.us-south.text-to-speech.watson.cloud.ibm.com/instances/7f62cf20-2944-4d83-bd53-b6f11a64de9b'
+        url_path = '/v1/synthesize'
         constructed_url = base_url + url_path
+        self._logger.info(f'url: {constructed_url}')
         headers = {
-            'Authorization': 'Bearer ' + self.access_token,
-            'Content-Type': 'application/ssml+xml',
-            'X-Microsoft-OutputFormat': 'audio-24khz-96kbitrate-mono-mp3',
-            'User-Agent': 'anki-awesome-tts'
+            'Content-Type': 'application/json',
+            'Accept': 'audio/mp3'
         }
 
-        xml_body = ElementTree.Element('speak', version='1.0')
+        data = {
+            'text': text,
+            'voice': voice_name
+        }
 
-        xml_body.set('{http://www.w3.org/XML/1998/namespace}lang', language)
-        voice = ElementTree.SubElement(xml_body, 'voice')
-        voice.set('{http://www.w3.org/XML/1998/namespace}lang', language)
-        voice.set(
-            'name', voice_name)
+        self._logger.info(f'data: {data}')
+        response = requests.post(constructed_url, data=json.dumps(data), auth=('apikey', api_key), headers=headers)
 
-        prosody = ElementTree.SubElement(voice, 'prosody')
-        prosody.set('rate', rate)
-        prosody.set('pitch', pitch)
-
-        prosody.text = text
-        body = ElementTree.tostring(xml_body)
-
-        self._logger.info(f"xml request: {body}")
-
-        response = requests.post(constructed_url, headers=headers, data=body)
         if response.status_code == 200:
             with open(path, 'wb') as audio:
                 audio.write(response.content)
         else:
-            error_message = f"Status code: {response.status_code} reason: {response.reason} voice: [{voice_name}] language: [{language} " + \
-            f"subscription key: [{subscription_key}]] access token timestamp: [{self.access_token_timestamp}] access token: [{self.access_token}]"
+            self._logger.error(response.content)
+            error_message = f"Status code: {response.status_code} reason: {response.reason} voice: [{voice_name}] api key: [{api_key}]]"
             raise ValueError(error_message)
 
 

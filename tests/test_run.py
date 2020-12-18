@@ -562,3 +562,31 @@ class TestClass():
         ]
         # speech recognition not available for vietnamese
         self.run_service_testcases(svc_id, test_cases, [], False, True)
+
+    def test_watson(self):
+        # to run this test only:
+        # python -m pytest tests -rPP -k 'test_watson'
+
+        WATSON_SERVICES_KEY_ENVVAR_NAME = 'WATSON_SERVICES_KEY'
+        if WATSON_SERVICES_KEY_ENVVAR_NAME not in os.environ:
+            return
+
+        service_key = os.environ[WATSON_SERVICES_KEY_ENVVAR_NAME]
+        assert len(service_key) > 0
+
+        svc_id = 'Watson'
+
+        # add the google services API key in the config
+        config_snippet = {
+            'extras': {'watson': {'key': service_key}}
+        }
+        self.addon.config.update(config_snippet)
+
+        # generate audio files for all these test cases, then run them through the speech recognition API to make sure the output is correct
+        test_cases = [
+            {'voice': 'en-US_MichaelVoice', 'text_input': 'this is the first sentence', 'recognition_language':'en-US'}
+            #{'voice': 'Microsoft Server Speech Text to Speech Voice (fr-CH, Guillaume)', 'text_input': 'ravi de vous rencontrer', 'recognition_language':'fr-FR'},
+            #{'voice': 'Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)', 'text_input': '我试着每天都不去吃快餐', 'recognition_language':'zh-CN'},
+        ]
+
+        self.run_service_testcases(svc_id, test_cases)                
