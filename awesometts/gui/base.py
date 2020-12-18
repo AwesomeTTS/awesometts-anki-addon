@@ -297,7 +297,7 @@ class ServiceDialog(Dialog):
         dropdown.activated.connect(self._on_service_activated)
         dropdown.currentIndexChanged.connect(self._on_preset_reset)
 
-        urlLink="<a href=\"https://github.com/AwesomeTTS/awesometts-anki-addon/wiki/Current-Status-of-Services-and-Voices\">Current Status of Services and Voices</a>" 
+        urlLink="<a href=\"https://www.patreon.com/lucw\">Get API Keys for Premium Services (Patreon)</a>" 
         label=QtWidgets.QLabel()
         label.setText(urlLink)
         label.setOpenExternalLinks(True)
