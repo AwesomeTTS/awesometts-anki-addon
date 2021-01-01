@@ -368,7 +368,9 @@ class GoogleTTS(Service):
 
 
     def get_voice_list(self):
-        return [(voice.get_key(), voice.get_description()) for voice in self.get_voices()]
+        sorted_voices = self.get_voices()
+        sorted_voices.sort(key=lambda x: x.get_description())
+        return [(voice.get_key(), voice.get_description()) for voice in sorted_voices]
 
     def get_voice_for_key(self, key) -> GoogleVoice:
         voice = [voice for voice in self.get_voices() if voice.get_key() == key]
