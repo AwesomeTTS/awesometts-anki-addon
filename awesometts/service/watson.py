@@ -57,7 +57,9 @@ class Watson(Service):
         return "IBM Watson API"
 
     def extras(self):
-        return [dict(key='key', label="API Key", required=True)]
+        return [dict(key='key', label="API Key", required=True),
+            dict(key='url', label="API URL", required=True)
+        ]
 
     def get_voices(self) -> List[WatsonVoice]:
         # generated using tools/service_watson_voicelist.py
@@ -147,12 +149,13 @@ class Watson(Service):
         """Downloads from Azure API directly to an MP3."""
 
         api_key = options['key']
+        api_url = options['url']
 
         voice_key = options['voice']
         voice = self.get_voice_for_key(voice_key)
         voice_name = voice.get_key()
 
-        base_url = 'https://api.us-south.text-to-speech.watson.cloud.ibm.com/instances/7f62cf20-2944-4d83-bd53-b6f11a64de9b'
+        base_url = api_url
         url_path = '/v1/synthesize'
         constructed_url = base_url + url_path + f'?voice={voice_name}'
         self._logger.info(f'url: {constructed_url}')

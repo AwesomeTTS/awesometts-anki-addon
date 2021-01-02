@@ -571,14 +571,19 @@ class TestClass():
         if WATSON_SERVICES_KEY_ENVVAR_NAME not in os.environ:
             return
 
+        WATSON_SERVICES_URL_ENVVAR_NAME = 'WATSON_SERVICES_URL'
+        if WATSON_SERVICES_URL_ENVVAR_NAME not in os.environ:
+            return            
+
         service_key = os.environ[WATSON_SERVICES_KEY_ENVVAR_NAME]
+        service_url = os.environ[WATSON_SERVICES_URL_ENVVAR_NAME]
         assert len(service_key) > 0
 
         svc_id = 'Watson'
 
         # add the google services API key in the config
         config_snippet = {
-            'extras': {'watson': {'key': service_key}}
+            'extras': {'watson': {'key': service_key, 'url': service_url}}
         }
         self.addon.config.update(config_snippet)
 
