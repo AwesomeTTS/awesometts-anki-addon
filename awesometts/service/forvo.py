@@ -24,6 +24,7 @@ import json
 from .base import Service
 from .common import Trait
 import urllib
+import requests
 
 __all__ = ['Forvo']
 
@@ -749,26 +750,33 @@ class Forvo(Service):
             url = f'https://apicorporate.forvo.com/api2/v1.1/{api_key}/word-pronunciations/word/{encoded_text}/language/{encoded_language}/sex/{sex}/order/rate-desc/limit/1{country_code}'
 
         self._logger.debug(f'constructed URL: {url}')
-        
-        payload = self.net_stream(url)
-        
-        try:
-            data = json.loads(payload)
-        except ValueError:
-            raise ValueError("Unable to interpret the response from Forvo API.")
-            
-        self._logger.debug(f'received data: {data}')
-        if corporate_url:
-            items = data['data']['items']
+
+        # run request
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            # success
+            data = json.loads(response.content)
+            self._logger.debug(f'received data: {data}')
+            if corporate_url:
+                items = data['data']['items']
+            else:
+                items = data['items']
+            if len(items) == 0:
+                message = f"Pronunciation not found in Forvo for word [{text}], language={options['voice']}, sex={sex}, country={options['country']}"
+                raise IOError(message)
+            audio_url = items[0]['pathmp3']
+            self.net_download(
+                path,
+                audio_url,
+                require=dict(mime='audio/mpeg', size=512),
+            )            
         else:
-            items = data['items']
-        if len(items) == 0:
-            message = f"Pronunciation not found in Forvo for word [{text}], language={options['voice']}, sex={sex}, country={options['country']}"
-            raise IOError(message)
-        audio_url = items[0]['pathmp3']
-    
-        self.net_download(
-            path,
-            audio_url,
-            require=dict(mime='audio/mpeg', size=512),
-        )
+            data = json.loads(response.content)
+            error_text = str(data)
+            if len(data) >= 1:
+                error_text = data[0]
+            error_message = f"Status code: {response.status_code} error: {error_text} text: [{text}] voice: {options['voice']} gender: {sex}"
+            self._logger.error(error_message)
+            raise ValueError(error_message)
+        
