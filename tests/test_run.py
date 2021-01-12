@@ -281,6 +281,9 @@ class TestClass():
             {'voice': 'Microsoft Server Speech Text to Speech Voice (en-US, BenjaminRUS)', 'text_input': 'this is the first sentence', 'recognition_language':'en-US'},
             {'voice': 'Microsoft Server Speech Text to Speech Voice (fr-CH, Guillaume)', 'text_input': 'ravi de vous rencontrer', 'recognition_language':'fr-FR'},
             {'voice': 'Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)', 'text_input': '我试着每天都不去吃快餐', 'recognition_language':'zh-CN'},
+            {'voice': 'Microsoft Server Speech Text to Speech Voice (zh-TW, HsiaoChenNeural)', 'text_input': '我試著每天都不去吃快餐', 'recognition_language':'zh-TW'},
+            {'voice': 'Microsoft Server Speech Text to Speech Voice (zh-TW, HsiaoYuNeural)', 'text_input': '我試著每天都不去吃快餐', 'recognition_language':'zh-TW'},
+            {'voice': 'Microsoft Server Speech Text to Speech Voice (zh-TW, YunJheNeural)', 'text_input': '我試著每天都不去吃快餐', 'recognition_language':'zh-TW'},
         ]
 
         self.run_service_testcases(svc_id, test_cases)        
