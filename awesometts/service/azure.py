@@ -24,6 +24,7 @@ https://azure.microsoft.com/en-us/services/cognitive-services/text-to-speech/
 import time
 import datetime
 import requests
+import re
 from xml.etree import ElementTree
 from .base import Service
 from .languages import Gender
@@ -450,9 +451,14 @@ class Azure(Service):
         prosody.set('pitch', pitch)
 
         prosody.text = text
-        body = ElementTree.tostring(xml_body)
+        body_buffer = ElementTree.tostring(xml_body)
+        body = body_buffer.decode('utf-8')
+        
 
-        self._logger.info(f"xml request: {body}")
+        # perform ssml replacement
+        body = re.sub(r'pause([\d]+[^\s]+)', '<break time="\\1"/>', body)
+
+        self._logger.info(f"xml request: {body}, type: {type(body)}")
 
         response = requests.post(constructed_url, headers=headers, data=body)
         if response.status_code == 200:
