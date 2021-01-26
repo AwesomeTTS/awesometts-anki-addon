@@ -101,6 +101,11 @@ class AzureVoice(Voice):
     def get_language_code(self) -> str:
         return self.language_code
 
+    def get_voice_key(self):
+        return {
+            'name': self.name
+        }
+
     def get_description(self) -> str:
         display_name = self.display_name
         if self.display_name != self.local_name:
@@ -422,7 +427,6 @@ class Azure(Service):
 
         voice_key = options['voice']
         voice = self.get_voice_for_key(voice_key)
-        voice_name = voice.get_key()
 
         rate = options['speed']
         pitch = options['pitch']
@@ -434,14 +438,14 @@ class Azure(Service):
             data = {
                 'text': text,
                 'service': 'Azure',
-                'voice_key': {
-                    'name': voice_name
-                },
+                'voice_key': voice.get_voice_key(),
                 'options': {}
             }
+            self._logger.info(f'request: {data}')
             response = requests.post(self.languagetools.base_url + url_path, json=data, headers={'api_key': self.languagetools.get_api_key()})
 
             if response.status_code == 200:
+                self._logger.info('success, receiving audio')
                 with open(path, 'wb') as f:
                     f.write(response.content)
             else:
@@ -455,6 +459,7 @@ class Azure(Service):
             if self.token_refresh_required():
                 self.get_token(subscription_key, region)
 
+            voice_name = voice.get_key()
             language = voice.get_language_code()
 
             base_url = f'https://{region}.tts.speech.microsoft.com/'
