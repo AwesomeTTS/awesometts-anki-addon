@@ -133,7 +133,9 @@ class Azure(Service):
 
     def extras(self):
         """The Azure API requires an API key."""
-
+        if self.languagetools.use_plus_mode():
+            # plus mode, no need for an API key
+            return []
         return [dict(key='key', label="API Key", required=True)]
 
     def get_voices(self) -> List[AzureVoice]:
@@ -363,15 +365,10 @@ class Azure(Service):
         # make sure access token is requested when retrieving audio
         self.access_token = None
 
-        return [
+        result = [
             dict(key='voice',
                  label="Voice",
                  values=self.get_voice_list(),
-                 transform=lambda value: value),
-            dict(key='region',
-                 label='Region',
-                 values=REGIONS,
-                 default='eastus',
                  transform=lambda value: value),
             dict(key='speed',
                 label='Speed',
@@ -385,6 +382,15 @@ class Azure(Service):
                 transform=lambda value: value),                
             
         ]
+
+        if not self.languagetools.use_plus_mode():
+            result.append(dict(key='region',
+                 label='Region',
+                 values=REGIONS,
+                 default='eastus',
+                 transform=lambda value: value))
+            
+        return result
 
     def get_token(self, subscription_key, region):
         if len(subscription_key) == 0:

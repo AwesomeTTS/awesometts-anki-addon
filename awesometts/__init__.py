@@ -174,6 +174,8 @@ config = Config(
     ],
 )
 
+languagetools = LanguageTools(config['plus_api_key'])
+
 try:
     from aqt.sound import av_player
     from anki.sound import SoundOrVideoTag
@@ -247,7 +249,8 @@ router = Router(
                     lame_flags=lambda: config['lame_flags'],
                     normalize=to.normalized_ascii,
                     logger=logger,
-                    ecosystem=Bundle(web=WEB, agent=AGENT)),
+                    ecosystem=Bundle(web=WEB, agent=AGENT),
+                    languagetools=languagetools),
     ),
     cache_dir=paths.CACHE,
     temp_dir=join(paths.TEMP, '_awesometts_scratch_' + str(int(time()))),
@@ -290,7 +293,7 @@ addon = Bundle(
         fail=bundlefail,
     ),
     language=service.languages.Language,
-    languagetools=LanguageTools(config['plus_api_key']),
+    languagetools=languagetools,
     logger=logger,
     paths=Bundle(cache=paths.CACHE,
                  is_link=paths.ADDON_IS_LINKED),

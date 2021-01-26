@@ -508,6 +508,8 @@ class Configurator(Dialog):
         hor.addWidget(verify_button)
         ver.addLayout(hor)
 
+        ver.addWidget(Label('Please restart Anki after entering API key'))
+
         group = QtWidgets.QGroupBox("AwesomeTTS Plus")
         group.setLayout(ver)
         return group        
@@ -732,7 +734,6 @@ class Configurator(Dialog):
             button.setText('Key Valid')
             # store api key in configuration
             self._addon.config['plus_api_key'] = api_key
-            self._addon.languagetools.set_api_key(api_key)
         else:
             button.setEnabled(True)
             button.setText('Verify')

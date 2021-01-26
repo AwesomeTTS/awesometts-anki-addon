@@ -70,6 +70,7 @@ class Service(object, metaclass=abc.ABCMeta):
         'normalize',    # callable for standardizing string values
         '_temp_dir',    # for temporary scratch space
         'ecosystem',    # get information about web API, user agent
+        'languagetools' # communicate with cloud language tools backend
     ]
 
     # when getting CLI output, try using these decodings, in this order
@@ -130,7 +131,7 @@ class Service(object, metaclass=abc.ABCMeta):
     # e.g. TRAITS = [Trait.INTERNET, Trait.TRANSCODING]
     TRAITS = None
 
-    def __init__(self, temp_dir, lame_flags, normalize, logger, ecosystem):
+    def __init__(self, temp_dir, lame_flags, normalize, logger, ecosystem, languagetools):
         """
         Attempt to initialize the service, raising a exception if the
         service cannot be used. If the service needs to make any calls
@@ -164,6 +165,8 @@ class Service(object, metaclass=abc.ABCMeta):
         self.normalize = normalize
         self._temp_dir = temp_dir
         self.ecosystem = ecosystem
+        self.languagetools = languagetools
+
 
     @abc.abstractmethod
     def desc(self):

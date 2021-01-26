@@ -116,8 +116,14 @@ class Dialog(QtWidgets.QDialog):
         title = Label(self._title)
         title.setFont(self._FONT_TITLE)
 
-        version = Label("AwesomeTTS\nv" + self._addon.version)
-        version.setFont(self._FONT_INFO)
+        if len(self._addon.config['plus_api_key']) > 0:
+            version_str = f'AwesomeTTS <span style="color:#FF0000; font-weight: bold;">Plus</span>' +\
+                f'<br/>v{self._addon.version}'
+            version = Label(version_str)
+            version.setTextFormat(QtCore.Qt.RichText)
+        else:
+            version = Label("AwesomeTTS\nv" + self._addon.version)
+            version.setFont(self._FONT_INFO)
 
         layout = QtWidgets.QHBoxLayout()
         layout.addWidget(title)
@@ -298,14 +304,15 @@ class ServiceDialog(Dialog):
         dropdown.currentIndexChanged.connect(self._on_preset_reset)
 
         urlLink="<a href=\"https://www.patreon.com/lucw\">Get API Keys for Premium Services (Patreon)</a>" 
-        label=QtWidgets.QLabel()
-        label.setText(urlLink)
-        label.setOpenExternalLinks(True)
+        plus_mode_label=QtWidgets.QLabel()
+        plus_mode_label.setText(urlLink)
+        plus_mode_label.setOpenExternalLinks(True)
 
         hor = QtWidgets.QHBoxLayout()
         hor.addWidget(Label("Generate using"))
         hor.addWidget(dropdown)
-        hor.addWidget(label)
+        if not self._addon.languagetools.use_plus_mode():
+            hor.addWidget(plus_mode_label)
         hor.addStretch()
 
         header = Label("Configure Service")
