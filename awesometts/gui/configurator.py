@@ -497,6 +497,7 @@ class Configurator(Dialog):
         plus_api_key = QtWidgets.QLineEdit()
         plus_api_key.setObjectName('plus_api_key')
         plus_api_key.setPlaceholderText("enter your API Key")
+        plus_api_key.setText(self._addon.config['plus_api_key'])
         #ver.addWidget(plus_api_key)
 
         verify_button = QtWidgets.QPushButton()
@@ -731,6 +732,9 @@ class Configurator(Dialog):
         result = self._addon.languagetools.verify_api_key(api_key)
         if result['key_valid'] == True:
             button.setText('Key Valid')
+            # store api key in configuration
+            self._addon.config['plus_api_key'] = api_key
+            self._addon.languagetools.api_key_valid = True
         else:
             button.setEnabled(True)
             button.setText('Verify')
