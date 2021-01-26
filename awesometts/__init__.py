@@ -38,6 +38,7 @@ from .player import Player
 from .router import Router
 from .text import Sanitizer
 from .ttsplayer import register_tts_player
+from .languagetools import LanguageTools
 
 __all__ = ['browser_menus', 'cards_button', 'config_menu', 'editor_button',
            'reviewer_hooks', 'sound_tag_delays', 
@@ -143,6 +144,7 @@ config = Config(
          to.nullable_key, to.nullable_int),
         ('otf_only_revealed_cloze', 'integer', False, to.lax_bool, int),
         ('otf_remove_hints', 'integer', False, to.lax_bool, int),
+        ('plus_api_key', 'text', '', str, str),
         ('presets', 'text', {}, to.deserialized_dict, to.compact_json),
         ('spec_note_count', 'text', '', str, str),
         ('spec_note_count_wrap', 'integer', True, to.lax_bool, int),
@@ -288,6 +290,7 @@ addon = Bundle(
         fail=bundlefail,
     ),
     language=service.languages.Language,
+    languagetools=LanguageTools(),
     logger=logger,
     paths=Bundle(cache=paths.CACHE,
                  is_link=paths.ADDON_IS_LINKED),

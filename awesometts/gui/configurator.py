@@ -22,6 +22,7 @@ from locale import format as locale
 import os
 import os.path
 from sys import platform
+import aqt.utils
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
@@ -412,6 +413,7 @@ class Configurator(Dialog):
         layout.addWidget(self._ui_tabs_advanced_presets())
         layout.addWidget(self._ui_tabs_advanced_cache())
         layout.addWidget(self._ui_tabs_advanced_other())
+        layout.addWidget(self._ui_tabs_advanced_plus())
         layout.addStretch()
 
         tab = QtWidgets.QWidget()
@@ -479,7 +481,6 @@ class Configurator(Dialog):
         return group
 
     def _ui_tabs_advanced_other(self):
-        pass
 
         ver = QtWidgets.QVBoxLayout()
         ver.addWidget(Checkbox("Show AwesomeTTS widget on Deck Browser", 'homescreen_show'))
@@ -487,6 +488,30 @@ class Configurator(Dialog):
         group = QtWidgets.QGroupBox("Other")
         group.setLayout(ver)
         return group
+
+    def _ui_tabs_advanced_plus(self):
+
+        ver = QtWidgets.QVBoxLayout()
+        ver.addWidget(Label('Get your AwesomeTTS Plus Key'))
+
+        plus_api_key = QtWidgets.QLineEdit()
+        plus_api_key.setObjectName('plus_api_key')
+        plus_api_key.setPlaceholderText("enter your API Key")
+        #ver.addWidget(plus_api_key)
+
+        verify_button = QtWidgets.QPushButton()
+        verify_button.setObjectName('verify_plus_api_key')
+        verify_button.setText('Verify')
+        verify_button.clicked.connect(lambda: self._on_verify_plus_api_key(verify_button, plus_api_key))
+        
+        hor = QtWidgets.QHBoxLayout()
+        hor.addWidget(plus_api_key)
+        hor.addWidget(verify_button)
+        ver.addLayout(hor)
+
+        group = QtWidgets.QGroupBox("AwesomeTTS Plus")
+        group.setLayout(ver)
+        return group        
 
     # Factories ##############################################################
 
@@ -696,3 +721,18 @@ class Configurator(Dialog):
         button.setEnabled(False)
         self._addon.router.forget_failures()
         button.setText("forgot failures")
+
+    def _on_verify_plus_api_key(self, button, lineedit):
+        """Verify API key"""
+
+        button.setEnabled(False)
+        button.setText('Verifying..')
+        api_key = lineedit.text()
+        result = self._addon.languagetools.verify_api_key(api_key)
+        if result['key_valid'] == True:
+            button.setText('Key Valid')
+        else:
+            button.setEnabled(True)
+            button.setText('Verify')
+            aqt.utils.showCritical(result['msg'])
+
