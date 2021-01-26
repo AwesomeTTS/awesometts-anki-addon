@@ -290,7 +290,7 @@ addon = Bundle(
         fail=bundlefail,
     ),
     language=service.languages.Language,
-    languagetools=LanguageTools(),
+    languagetools=LanguageTools(config['plus_api_key']),
     logger=logger,
     paths=Bundle(cache=paths.CACHE,
                  is_link=paths.ADDON_IS_LINKED),

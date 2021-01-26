@@ -54,7 +54,7 @@ class Configurator(Dialog):
         'strip_note_brackets', 'strip_note_parens', 'strip_template_braces',
         'strip_template_brackets', 'strip_template_parens', 'sub_note_cloze',
         'sub_template_cloze', 'sul_note', 'sul_template', 'throttle_sleep',
-        'throttle_threshold',
+        'throttle_threshold', 'plus_api_key'
     ]
 
     _PROPERTY_WIDGETS = (Checkbox, QtWidgets.QComboBox, QtWidgets.QLineEdit,
@@ -497,8 +497,6 @@ class Configurator(Dialog):
         plus_api_key = QtWidgets.QLineEdit()
         plus_api_key.setObjectName('plus_api_key')
         plus_api_key.setPlaceholderText("enter your API Key")
-        plus_api_key.setText(self._addon.config['plus_api_key'])
-        #ver.addWidget(plus_api_key)
 
         verify_button = QtWidgets.QPushButton()
         verify_button.setObjectName('verify_plus_api_key')
@@ -734,7 +732,7 @@ class Configurator(Dialog):
             button.setText('Key Valid')
             # store api key in configuration
             self._addon.config['plus_api_key'] = api_key
-            self._addon.languagetools.api_key_valid = True
+            self._addon.languagetools.set_api_key(api_key)
         else:
             button.setEnabled(True)
             button.setText('Verify')
