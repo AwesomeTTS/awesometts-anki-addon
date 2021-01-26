@@ -9,8 +9,14 @@ class LanguageTools:
             self.base_url = os.environ['ANKI_LANGUAGE_TOOLS_BASE_URL']
         self.api_key = api_key
 
+    def get_base_url(self):
+        return self.base_url
+
     def set_api_key(self, api_key):
         self.api_key = api_key
+
+    def get_api_key(self):
+        return self.api_key
 
     def use_plus_mode(self):
         return len(self.api_key) > 0

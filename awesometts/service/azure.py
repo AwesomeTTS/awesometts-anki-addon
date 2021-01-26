@@ -420,54 +420,78 @@ class Azure(Service):
     def run(self, text, options, path):
         """Downloads from Azure API directly to an MP3."""
 
-        region = options['region']
-        subscription_key = options['key']
-        if self.token_refresh_required():
-            self.get_token(subscription_key, region)
-
         voice_key = options['voice']
         voice = self.get_voice_for_key(voice_key)
         voice_name = voice.get_key()
-        language = voice.get_language_code()
 
         rate = options['speed']
         pitch = options['pitch']
 
-        base_url = f'https://{region}.tts.speech.microsoft.com/'
-        url_path = 'cognitiveservices/v1'
-        constructed_url = base_url + url_path
-        headers = {
-            'Authorization': 'Bearer ' + self.access_token,
-            'Content-Type': 'application/ssml+xml',
-            'X-Microsoft-OutputFormat': 'audio-24khz-96kbitrate-mono-mp3',
-            'User-Agent': 'anki-awesome-tts'
-        }
+        if self.languagetools.use_plus_mode():
+            self._logger.info(f'using language tools API')
+            # query cloud language tools API
+            url_path = '/audio'
+            data = {
+                'text': text,
+                'service': 'Azure',
+                'voice_key': {
+                    'name': voice_name
+                },
+                'options': {}
+            }
+            response = requests.post(self.languagetools.base_url + url_path, json=data, headers={'api_key': self.languagetools.get_api_key()})
 
-        xml_body = ElementTree.Element('speak', version='1.0')
+            if response.status_code == 200:
+                with open(path, 'wb') as f:
+                    f.write(response.content)
+            else:
+                error_message = f"Status code: {response.status_code} ({response.content})"
+                raise ValueError(error_message)                
 
-        xml_body.set('{http://www.w3.org/XML/1998/namespace}lang', language)
-        voice = ElementTree.SubElement(xml_body, 'voice')
-        voice.set('{http://www.w3.org/XML/1998/namespace}lang', language)
-        voice.set(
-            'name', voice_name)
-
-        prosody = ElementTree.SubElement(voice, 'prosody')
-        prosody.set('rate', rate)
-        prosody.set('pitch', pitch)
-
-        prosody.text = text
-        body = ElementTree.tostring(xml_body)
-
-        self._logger.info(f"xml request: {body}")
-
-        response = requests.post(constructed_url, headers=headers, data=body)
-        if response.status_code == 200:
-            with open(path, 'wb') as audio:
-                audio.write(response.content)
         else:
-            error_message = f"Status code: {response.status_code} reason: {response.reason} voice: [{voice_name}] language: [{language} " + \
-            f"subscription key: [{subscription_key}]] access token timestamp: [{self.access_token_timestamp}] access token: [{self.access_token}]"
-            raise ValueError(error_message)
+
+            region = options['region']
+            subscription_key = options['key']
+            if self.token_refresh_required():
+                self.get_token(subscription_key, region)
+
+            language = voice.get_language_code()
+
+            base_url = f'https://{region}.tts.speech.microsoft.com/'
+            url_path = 'cognitiveservices/v1'
+            constructed_url = base_url + url_path
+            headers = {
+                'Authorization': 'Bearer ' + self.access_token,
+                'Content-Type': 'application/ssml+xml',
+                'X-Microsoft-OutputFormat': 'audio-24khz-96kbitrate-mono-mp3',
+                'User-Agent': 'anki-awesome-tts'
+            }
+
+            xml_body = ElementTree.Element('speak', version='1.0')
+
+            xml_body.set('{http://www.w3.org/XML/1998/namespace}lang', language)
+            voice = ElementTree.SubElement(xml_body, 'voice')
+            voice.set('{http://www.w3.org/XML/1998/namespace}lang', language)
+            voice.set(
+                'name', voice_name)
+
+            prosody = ElementTree.SubElement(voice, 'prosody')
+            prosody.set('rate', rate)
+            prosody.set('pitch', pitch)
+
+            prosody.text = text
+            body = ElementTree.tostring(xml_body)
+
+            self._logger.info(f"xml request: {body}")
+
+            response = requests.post(constructed_url, headers=headers, data=body)
+            if response.status_code == 200:
+                with open(path, 'wb') as audio:
+                    audio.write(response.content)
+            else:
+                error_message = f"Status code: {response.status_code} reason: {response.reason} voice: [{voice_name}] language: [{language} " + \
+                f"subscription key: [{subscription_key}]] access token timestamp: [{self.access_token_timestamp}] access token: [{self.access_token}]"
+                raise ValueError(error_message)
 
 
 
