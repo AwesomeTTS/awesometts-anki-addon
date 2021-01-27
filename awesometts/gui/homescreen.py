@@ -79,6 +79,11 @@ def makeDeckBrowserRenderContent(addon):
             light_dark_border_color = "#424242"
             light_dark_placeholder_color = "#757575"
 
+        awesometts_plus_tag = ''
+        if addon.languagetools.use_plus_mode():
+            awesometts_plus_tag= '<span style="font-size: 18px;">AwesomeTTS <span style="color:#FF0000; font-weight: bold;">Plus</span></span>'
+
+
         html_content = """
         <br/>
 
@@ -125,6 +130,7 @@ def makeDeckBrowserRenderContent(addon):
 
         </style>
         <div class="atts-frame-common atts-frame">
+        """ + awesometts_plus_tag + """
         <input id='speech-input' class="atts-common atts-text-input atts-common-background" placeholder="Pronounce with AwesomeTTS">
         <br/>
         <select name='preset' id='preset' class='atts-common atts-presets atts-common-background'>
