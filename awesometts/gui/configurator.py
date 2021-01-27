@@ -734,6 +734,7 @@ class Configurator(Dialog):
             button.setText('Key Valid')
             # store api key in configuration
             self._addon.config['plus_api_key'] = api_key
+            self._addon.languagetools.set_api_key(api_key)
         else:
             button.setEnabled(True)
             button.setText('Verify')

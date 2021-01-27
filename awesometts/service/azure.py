@@ -58,24 +58,6 @@ REGIONS = [
 ('uksouth', 'Europe, UK South'),
 ]
 
-SPEEDS = [
-    ('x-slow', 'Extra Slow'),
-    ('slow', 'Slow'),
-    ('medium', 'Medium'),
-    ('default', 'Default'),
-    ('fast', 'Fast'),
-    ('x-fast', 'Extra Fast')
-]
-
-PITCH = [
-    ('x-low', 'Extra Low'),
-    ('low', 'Low'),
-    ('medium', 'Medium'),
-    ('default', 'Default'),
-    ('high', 'High'),
-    ('x-high', 'Extra High')
-]
-
 class AzureVoice(Voice):
     # {'Name': 'Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)', 
     # 'DisplayName': 'Guy', 'LocalName': 'Guy', 'ShortName': 'en-US-GuyNeural',
@@ -375,16 +357,16 @@ class Azure(Service):
                  label="Voice",
                  values=self.get_voice_list(),
                  transform=lambda value: value),
-            dict(key='speed',
+            dict(key='azurespeed',
                 label='Speed',
-                values=SPEEDS,
-                default='default',
-                transform=lambda value: value),
-            dict(key='pitch',
+                values=(0.5, 3.0),
+                default=1.0,
+                transform=float),
+            dict(key='azurepitch',
                 label='Pitch',
-                values=PITCH,
-                default='default',
-                transform=lambda value: value),                
+                values=(-100, 100),
+                default=0,
+                transform=int),
             
         ]
 
@@ -428,8 +410,8 @@ class Azure(Service):
         voice_key = options['voice']
         voice = self.get_voice_for_key(voice_key)
 
-        rate = options['speed']
-        pitch = options['pitch']
+        rate = options['azurespeed']
+        pitch = options['azurepitch']
 
         if self.languagetools.use_plus_mode():
             self._logger.info(f'using language tools API')
@@ -439,7 +421,10 @@ class Azure(Service):
                 'text': text,
                 'service': 'Azure',
                 'voice_key': voice.get_voice_key(),
-                'options': {}
+                'options': {
+                    'pitch': pitch,
+                    'rate': rate
+                }
             }
             self._logger.info(f'request: {data}')
             response = requests.post(self.languagetools.base_url + url_path, json=data, headers={'api_key': self.languagetools.get_api_key()})
