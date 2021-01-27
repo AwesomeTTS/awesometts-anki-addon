@@ -492,7 +492,10 @@ class Configurator(Dialog):
     def _ui_tabs_advanced_plus(self):
 
         ver = QtWidgets.QVBoxLayout()
-        ver.addWidget(Label('Get your AwesomeTTS Plus Key'))
+        urlLink="<a href=\"https://www.patreon.com/lucw\">Get API Keys for Premium Services (Patreon)</a>" 
+        url_label = QtWidgets.QLabel(urlLink)
+        url_label.setOpenExternalLinks(True)
+        ver.addWidget(url_label)
 
         plus_api_key = QtWidgets.QLineEdit()
         plus_api_key.setObjectName('plus_api_key')
