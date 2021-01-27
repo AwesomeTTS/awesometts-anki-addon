@@ -642,6 +642,7 @@ GENDERS = [
 
 URL_API_CORPORATE = ('apicorporate', 'https://apicorporate.forvo.com/api2/v1.1/')
 URL_API_FREE = ('apifree', 'https://apifree.forvo.com/')
+URL_API_COMMERCIAL = ('apicommercial', 'https://apicommercial.forvo.com/')
 
 class Forvo(Service):
     """
@@ -714,7 +715,7 @@ class Forvo(Service):
             dict(
                 key='apiurl',
                 label='API URL',
-                values=[URL_API_FREE, URL_API_CORPORATE],
+                values=[URL_API_FREE, URL_API_COMMERCIAL, URL_API_CORPORATE],
                 default=URL_API_FREE,
                 transform=self.normalize_apiurl
             )
