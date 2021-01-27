@@ -3,7 +3,8 @@ import requests
 import json
 
 class LanguageTools:
-    def __init__(self, api_key):
+    def __init__(self, api_key, logger):
+        self.logger = logger
         self.base_url = 'https://cloud-language-tools-prod.anki.study'
         if 'ANKI_LANGUAGE_TOOLS_BASE_URL' in os.environ:
             self.base_url = os.environ['ANKI_LANGUAGE_TOOLS_BASE_URL']
@@ -27,3 +28,25 @@ class LanguageTools:
         })
         data = json.loads(response.content)
         return data
+
+    def generate_audio(self, source_text, service, voice_key, options, path):
+        # query cloud language tools API
+        url_path = '/audio'
+        full_url = self.base_url + url_path
+        data = {
+            'text': source_text,
+            'service': service,
+            'voice_key': voice_key,
+            'options': options
+        }
+        self.logger.info(f'request url: {full_url}, data: {data}')
+        response = requests.post(full_url, json=data, headers={'api_key': self.get_api_key()})
+
+        if response.status_code == 200:
+            self.logger.info('success, receiving audio')
+            with open(path, 'wb') as f:
+                f.write(response.content)
+        else:
+            error_message = f"Status code: {response.status_code} ({response.content})"
+            self.logger.error(error_message)
+            raise ValueError(error_message)        

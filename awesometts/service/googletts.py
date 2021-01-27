@@ -61,6 +61,12 @@ class GoogleVoice(Voice):
         value = f"{self.language.lang_name}, {self.gender.name}, {self.name}"
         return value
 
+    def get_voice_key(self):
+        return {
+            'language_code': self.google_language_code,
+            'name': self.name,
+            'ssml_gender': self.gender.name.upper()
+        }
 
 class GoogleTTS(Service):
     """
@@ -104,6 +110,9 @@ class GoogleTTS(Service):
     def extras(self):
         """The Google Cloud Text-to-Speech requires an API key."""
 
+        if self.languagetools.use_plus_mode():
+            # plus mode, no need for an API key
+            return []
         return [dict(key='key', label="API Key", required=True)]
 
     def get_voices(self) -> List[GoogleVoice]:
@@ -424,34 +433,44 @@ class GoogleTTS(Service):
 
         voice = self.get_voice_for_key(options['voice'])
 
-        payload = {
-            "audioConfig": {
-                "audioEncoding": "MP3",
-                "pitch": options['pitch'],
-                "speakingRate": options['speed'],
-            },
-            "input": {
-                "ssml": f"<speak>{text}</speak>"
-            },
-            "voice": {
-                "languageCode": self._languageCode(options['voice']),
-                "name": options['voice'],
+        if self.languagetools.use_plus_mode():
+            self._logger.info(f'using language tools API')
+            service = 'Google'
+            voice_key = voice.get_voice_key()
+            options = {
+                'pitch': options['pitch'],
+                'speaking_rate': options['speed']
             }
-        }
+            self.languagetools.generate_audio(text, service, voice_key, options, path)
+        else:
+            payload = {
+                "audioConfig": {
+                    "audioEncoding": "MP3",
+                    "pitch": options['pitch'],
+                    "speakingRate": options['speed'],
+                },
+                "input": {
+                    "ssml": f"<speak>{text}</speak>"
+                },
+                "voice": {
+                    "languageCode": self._languageCode(options['voice']),
+                    "name": options['voice'],
+                }
+            }
 
-        headers = {}
-        if sha1(options['key'].encode("utf-8")).hexdigest() == "8224a632410a845cbb4b20f9aef131b495f7ad7f":
-            headers['x-origin'] = 'https://explorer.apis.google.com'
+            headers = {}
+            if sha1(options['key'].encode("utf-8")).hexdigest() == "8224a632410a845cbb4b20f9aef131b495f7ad7f":
+                headers['x-origin'] = 'https://explorer.apis.google.com'
 
-        if options['profile'] != 'default':
-            payload["audioConfig"]["effectsProfileId"] = [options['profile']]
+            if options['profile'] != 'default':
+                payload["audioConfig"]["effectsProfileId"] = [options['profile']]
 
-        r = requests.post("https://texttospeech.googleapis.com/v1/text:synthesize?key={}".format(options['key']), headers=headers, json=payload)
-        r.raise_for_status()
+            r = requests.post("https://texttospeech.googleapis.com/v1/text:synthesize?key={}".format(options['key']), headers=headers, json=payload)
+            r.raise_for_status()
 
-        data = r.json()
-        encoded = data['audioContent']
-        audio_content = base64.b64decode(encoded)
+            data = r.json()
+            encoded = data['audioContent']
+            audio_content = base64.b64decode(encoded)
 
-        with open(path, 'wb') as response_output:
-            response_output.write(audio_content)
+            with open(path, 'wb') as response_output:
+                response_output.write(audio_content)

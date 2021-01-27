@@ -415,28 +415,13 @@ class Azure(Service):
 
         if self.languagetools.use_plus_mode():
             self._logger.info(f'using language tools API')
-            # query cloud language tools API
-            url_path = '/audio'
-            data = {
-                'text': text,
-                'service': 'Azure',
-                'voice_key': voice.get_voice_key(),
-                'options': {
-                    'pitch': pitch,
-                    'rate': rate
-                }
+            service = 'Azure'
+            voice_key = voice.get_voice_key()
+            options = {
+                'pitch': pitch,
+                'rate': rate
             }
-            self._logger.info(f'request: {data}')
-            response = requests.post(self.languagetools.base_url + url_path, json=data, headers={'api_key': self.languagetools.get_api_key()})
-
-            if response.status_code == 200:
-                self._logger.info('success, receiving audio')
-                with open(path, 'wb') as f:
-                    f.write(response.content)
-            else:
-                error_message = f"Status code: {response.status_code} ({response.content})"
-                raise ValueError(error_message)                
-
+            self.languagetools.generate_audio(text, service, voice_key, options, path)
         else:
 
             region = options['region']
