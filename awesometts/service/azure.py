@@ -451,8 +451,8 @@ class Azure(Service):
                 'name', voice_name)
 
             prosody = ElementTree.SubElement(voice, 'prosody')
-            prosody.set('rate', rate)
-            prosody.set('pitch', pitch)
+            prosody.set('rate', f'{rate:0.1f}')
+            prosody.set('pitch', f'{pitch:+.0f}Hz')
 
             prosody.text = text
             body = ElementTree.tostring(xml_body)
