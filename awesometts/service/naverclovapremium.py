@@ -90,6 +90,9 @@ class NaverClovaPremium(Service):
 
     def extras(self):
         """The Azure API requires an API key."""
+        if self.languagetools.use_plus_mode():
+            # plus mode, no need for an API key
+            return []        
 
         return [dict(key='clientid', label="API Client Id", required=True),
             dict(key='clientsecret', label="API Client Secret", required=True)]
@@ -136,6 +139,11 @@ class NaverClovaPremium(Service):
         voice_list.sort(key=lambda x: x[1])
         return voice_list
 
+    def get_voice_for_key(self, key) -> NaverVoice:
+        voice = [voice for voice in self.get_voices() if voice.get_key() == key]
+        assert(len(voice) == 1)
+        return voice[0]
+
     def options(self):
 
         return [
@@ -162,29 +170,44 @@ class NaverClovaPremium(Service):
 
     def run(self, text, options, path):
         """Downloads from Naver Clova API directly to an MP3."""
-
-        client_id = options['clientid']
-        client_secret = options['clientsecret']
-        encText = urllib.parse.quote(text)
-        voice = options['voice']
+        
+        voice_key = options['voice']
+        voice = self.get_voice_for_key(voice_key)
+        
         speed = options['speed']
-        pitch = options['pitch']
+        pitch = options['pitch']        
 
-        data = f"speaker={voice}&speed={speed}&pitch={pitch}&text={encText}"
-        url = 'https://naveropenapi.apigw.ntruss.com/tts-premium/v1/tts'
-        self._logger.debug(f"url: {url}, data: {data}")
-        request = urllib.request.Request(url)
-        request.add_header("X-NCP-APIGW-API-KEY-ID",client_id)
-        request.add_header("X-NCP-APIGW-API-KEY",client_secret)
-        response = urllib.request.urlopen(request, data=data.encode('utf-8'))
-        rescode = response.getcode()
-        if(rescode==200):
-            self._logger.debug("successful response")
-            response_body = response.read()
-            with open(path, 'wb') as f:
-                f.write(response_body)
+        if self.languagetools.use_plus_mode():
+            self._logger.info(f'using language tools API')
+            service = 'Naver'
+            voice_key = voice.get_voice_key()
+            options = {
+                'pitch': pitch,
+                'speed': speed
+            }
+            self.languagetools.generate_audio(text, service, voice_key, options, path)        
         else:
-            error_message = f"Status code: {rescode}"
-            self._logger.error(error_message)            
-            raise ValueError(error_message)            
+            client_id = options['clientid']
+            client_secret = options['clientsecret']
+            encText = urllib.parse.quote(text)
+            voice = options['voice']
+
+
+            data = f"speaker={voice.name}&speed={speed}&pitch={pitch}&text={encText}"
+            url = 'https://naveropenapi.apigw.ntruss.com/tts-premium/v1/tts'
+            self._logger.debug(f"url: {url}, data: {data}")
+            request = urllib.request.Request(url)
+            request.add_header("X-NCP-APIGW-API-KEY-ID",client_id)
+            request.add_header("X-NCP-APIGW-API-KEY",client_secret)
+            response = urllib.request.urlopen(request, data=data.encode('utf-8'))
+            rescode = response.getcode()
+            if(rescode==200):
+                self._logger.debug("successful response")
+                response_body = response.read()
+                with open(path, 'wb') as f:
+                    f.write(response_body)
+            else:
+                error_message = f"Status code: {rescode}"
+                self._logger.error(error_message)            
+                raise ValueError(error_message)            
 
