@@ -190,8 +190,6 @@ class NaverClovaPremium(Service):
             client_id = options['clientid']
             client_secret = options['clientsecret']
             encText = urllib.parse.quote(text)
-            voice = options['voice']
-
 
             data = f"speaker={voice.name}&speed={speed}&pitch={pitch}&text={encText}"
             url = 'https://naveropenapi.apigw.ntruss.com/tts-premium/v1/tts'
