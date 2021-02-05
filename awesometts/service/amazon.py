@@ -63,17 +63,17 @@ class Amazon(Service):
         return []
 
     def get_voices(self) -> List[AmazonVoice]:
-        # generated using tools/service_azure_voicelist.py
+        # generated using cloud language tools
         return [
             AmazonVoice(Language.nl_NL, Gender.Female, 'Lotte', 'Lotte', 'standard'),
             AmazonVoice(Language.ru_RU, Gender.Male, 'Maxim', 'Maxim', 'standard'),
             AmazonVoice(Language.en_US, Gender.Female, 'Salli', 'Salli', 'neural'),
-            AmazonVoice(Language.en_GB_WLS, Gender.Male, 'Geraint', 'Geraint', 'standard'),
+            # AmazonVoice(Language.en_GB_WLS, Gender.Male, 'Geraint', 'Geraint', 'standard'),
             AmazonVoice(Language.es_US, Gender.Male, 'Miguel', 'Miguel', 'standard'),
             AmazonVoice(Language.de_DE, Gender.Female, 'Marlene', 'Marlene', 'standard'),
             AmazonVoice(Language.it_IT, Gender.Male, 'Giorgio', 'Giorgio', 'standard'),
             AmazonVoice(Language.pt_PT, Gender.Female, 'Inês', 'Ines', 'standard'),
-            AmazonVoice(Language.ar_XA, Gender.Female, 'Zeina', 'Zeina', 'standard'),
+            AmazonVoice(Language.ar_AR, Gender.Female, 'Zeina', 'Zeina', 'standard'),
             AmazonVoice(Language.zh_CN, Gender.Female, 'Zhiyu', 'Zhiyu', 'standard'),
             AmazonVoice(Language.cy_GB, Gender.Female, 'Gwyneth', 'Gwyneth', 'standard'),
             AmazonVoice(Language.is_IS, Gender.Male, 'Karl', 'Karl', 'standard'),
@@ -130,7 +130,7 @@ class Amazon(Service):
         ]
 
 
-    def get_voice_for_key(self, key) -> AzureVoice:
+    def get_voice_for_key(self, key) -> AmazonVoice:
         voice = [voice for voice in self.get_voices() if voice.get_key() == key]
         assert(len(voice) == 1)
         return voice[0]
@@ -167,7 +167,6 @@ class Amazon(Service):
 
     
     def run(self, text, options, path):
-        """Downloads from Azure API directly to an MP3."""
 
         if not self.languagetools.use_plus_mode():
             raise ValueError(f'Amazon is only available on AwesomeTTS Plus')
