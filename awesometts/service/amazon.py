@@ -137,7 +137,9 @@ class Amazon(Service):
 
 
     def get_voice_list(self):
-        return [(voice.get_key(), voice.get_description()) for voice in self.get_voices()]
+        voice_list = [(voice.get_key(), voice.get_description()) for voice in self.get_voices()]
+        voice_list.sort(key=lambda x: x[1])
+        return voice_list
 
     def options(self):
         """Provides access to voice only."""
