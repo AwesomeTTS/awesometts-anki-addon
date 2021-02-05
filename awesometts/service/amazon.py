@@ -56,7 +56,7 @@ class Amazon(Service):
     def desc(self):
         """Returns name with a voice count."""
 
-        return "Amazon AWS Polly (%d voices)" % len(VOICE_LIST)
+        return "Amazon AWS Polly (%d voices)" % len(self.get_voices())
 
     def extras(self):
         # no api key required, but this service is only usable with Language Tools
