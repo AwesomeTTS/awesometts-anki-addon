@@ -663,7 +663,10 @@ class Forvo(Service):
     def extras(self):
         """The Forvo API requires an API key."""
 
-        return [dict(key='key', label="API Key", required=True)]
+        return [
+            dict(key='key', label="API Key", required=True),
+            dict(key='preferreduser', label="Preferred User", required=False)
+        ]
 
     def normalize_sex(self, input):
         self._logger.debug(f'normalize_sex called with {input}')
@@ -734,25 +737,31 @@ class Forvo(Service):
         encoded_text = urllib.parse.quote(text)
         encoded_language = urllib.parse.quote(options['voice'])
         sex = options['sex']
+        preferred_user = options['preferreduser']
 
         country_code = ''
         if options['country'] != 'ANY':
             # user selected a particular country
             country_code = f"/country/{options['country']}"
 
+        username_param = ''
+        if preferred_user != None and len(preferred_user) > 0:
+            username_param = f"/username/{preferred_user}"
+
+        sex_param = ''
+        if sex != 'any':
+            sex_param = f"/sex/{sex}"
+
         url_base = 'apifree.forvo.com'
         if options['apiurl'] == URL_API_COMMERCIAL[0]:
             url_base = 'apicommercial.forvo.com'
 
-        if sex == 'any':
-            url = f'https://{url_base}/key/{api_key}/format/json/action/word-pronunciations/word/{encoded_text}/language/{encoded_language}/order/rate-desc/limit/1{country_code}'
-        else:
-            url = f'https://{url_base}/key/{api_key}/format/json/action/word-pronunciations/word/{encoded_text}/language/{encoded_language}/sex/{sex}/order/rate-desc/limit/1{country_code}'
+        url = f'https://{url_base}/key/{api_key}/format/json/action/word-pronunciations/word/{encoded_text}/language/{encoded_language}{sex_param}{username_param}/order/rate-desc/limit/1{country_code}'
 
         corporate_url = False
         if options['apiurl'] == URL_API_CORPORATE[0]:
             corporate_url = True
-            url = f'https://apicorporate.forvo.com/api2/v1.1/{api_key}/word-pronunciations/word/{encoded_text}/language/{encoded_language}/sex/{sex}/order/rate-desc/limit/1{country_code}'
+            url = f'https://apicorporate.forvo.com/api2/v1.1/{api_key}/word-pronunciations/word/{encoded_text}/language/{encoded_language}{sex_param}/order/rate-desc/limit/1{country_code}'
 
         self._logger.debug(f'constructed URL: {url}')
 
