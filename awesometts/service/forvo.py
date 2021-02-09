@@ -693,9 +693,13 @@ class Forvo(Service):
             return input            
 
     def get_preferred_users(self):
-        return [
+        default = [
             PREFERRED_USER_DEFAULT
         ]
+        preferred_users = self.config['service_forvo_preferred_users'].split(',')
+        preferred_users = [x.strip() for x in preferred_users]
+        users_array = [(x, x) for x in preferred_users]
+        return default + users_array
 
     def options(self):
         """Provides access to voice only."""
