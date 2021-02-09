@@ -68,7 +68,7 @@ class Amazon(Service):
             AmazonVoice(Language.nl_NL, Gender.Female, 'Lotte', 'Lotte', 'standard'),
             AmazonVoice(Language.ru_RU, Gender.Male, 'Maxim', 'Maxim', 'standard'),
             AmazonVoice(Language.en_US, Gender.Female, 'Salli', 'Salli', 'neural'),
-            # AmazonVoice(Language.en_GB_WLS, Gender.Male, 'Geraint', 'Geraint', 'standard'),
+            AmazonVoice(Language.en_GB_WLS, Gender.Male, 'Geraint', 'Geraint', 'standard'),
             AmazonVoice(Language.es_US, Gender.Male, 'Miguel', 'Miguel', 'standard'),
             AmazonVoice(Language.de_DE, Gender.Female, 'Marlene', 'Marlene', 'standard'),
             AmazonVoice(Language.it_IT, Gender.Male, 'Giorgio', 'Giorgio', 'standard'),

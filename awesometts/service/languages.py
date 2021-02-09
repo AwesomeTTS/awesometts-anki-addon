@@ -27,6 +27,7 @@ class Language(Enum):
     en_AU = ("English (Australia)")
     en_CA = ("English (Canada)")
     en_GB = ("English (UK)")
+    en_GB_WLS = ("English (Welsh)")
     en_IE = ("English (Ireland)")
     en_IN = ("English (India)")
     en_US = ("English (US)")
