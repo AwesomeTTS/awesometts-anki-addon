@@ -85,7 +85,7 @@ class TestClass():
         using default (or first available) options. To expose a specific
         value of an option for testing purposes only, use test_default.
         """
-        require_key = ['Baidu', 'Baidu Speech', 'iSpeech', 'Google Cloud Text-to-Speech', 'Microsoft Azure', 'Forvo', 'FptAi Vietnamese', 'Naver Clova', 'Naver Clova Premium', 'IBM Watson']
+        require_key = ['Baidu', 'Baidu Speech', 'iSpeech', 'Google Cloud Text-to-Speech', 'Microsoft Azure', 'Forvo', 'FptAi Vietnamese', 'Naver Clova', 'Naver Clova Premium', 'IBM Watson', 'Amazon']
         # in an attempt to get continuous integration running again, a number of services had to be disabled. 
         # we'll have to revisit this when we get a baseline of working tests
 
@@ -348,6 +348,7 @@ class TestClass():
 
         self.run_service_testcases(svc_id, test_cases, extra_option_keys=['clientid', 'clientsecret'])
 
+    @pytest.mark.skip(reason="2021/02/09 need to either re-enable on naver clova, or delete")
     def test_naverclovapremium(self):
         # test Naver Clova Premium service
         # to run this test only:
