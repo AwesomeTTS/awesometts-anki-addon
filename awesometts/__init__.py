@@ -146,6 +146,7 @@ config = Config(
         ('otf_remove_hints', 'integer', False, to.lax_bool, int),
         ('plus_api_key', 'text', '', str, str),
         ('presets', 'text', {}, to.deserialized_dict, to.compact_json),
+        ('service_forvo_preferred_users', 'text', '', str, str),
         ('spec_note_count', 'text', '', str, str),
         ('spec_note_count_wrap', 'integer', True, to.lax_bool, int),
         ('spec_note_ellipsize', 'text', '', str, str),

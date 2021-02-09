@@ -54,7 +54,7 @@ class Configurator(Dialog):
         'strip_note_brackets', 'strip_note_parens', 'strip_template_braces',
         'strip_template_brackets', 'strip_template_parens', 'sub_note_cloze',
         'sub_template_cloze', 'sul_note', 'sul_template', 'throttle_sleep',
-        'throttle_threshold', 'plus_api_key'
+        'throttle_threshold', 'plus_api_key', 'service_forvo_preferred_users'
     ]
 
     _PROPERTY_WIDGETS = (Checkbox, QtWidgets.QComboBox, QtWidgets.QLineEdit,
@@ -93,6 +93,7 @@ class Configurator(Dialog):
                 (self._ui_tabs_text, 'editclear', "Text"),
                 (self._ui_tabs_mp3gen, 'document-new', "MP3s"),
                 (self._ui_tabs_windows, 'kpersonalizer', "Windows"),
+                (self._ui_tabs_services, 'rating', "Services"),
                 (self._ui_tabs_advanced, 'configure', "Advanced"),
         ]:
             if use_icons:
@@ -405,6 +406,32 @@ class Configurator(Dialog):
         tab = QtWidgets.QWidget()
         tab.setLayout(vert)
         return tab
+
+    def _ui_tabs_services(self):
+        """Returns the "Services" tab."""
+
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(self._ui_tabs_services_forvo())
+        layout.addStretch()
+
+        tab = QtWidgets.QWidget()
+        tab.setLayout(layout)
+        return tab
+
+    def _ui_tabs_services_forvo(self):
+
+        ver = QtWidgets.QVBoxLayout()
+        url_label = QtWidgets.QLabel("Preferred Users (Enter a comma-separated list of preferred Forvo users)")
+        ver.addWidget(url_label)
+
+        forvo_preferred_users = QtWidgets.QLineEdit()
+        forvo_preferred_users.setObjectName('service_forvo_preferred_users')
+        forvo_preferred_users.setPlaceholderText("Enter preferred Forvo users, comma-separated")
+        ver.addWidget(forvo_preferred_users)
+
+        group = QtWidgets.QGroupBox("Forvo")
+        group.setLayout(ver)
+        return group
 
     def _ui_tabs_advanced(self):
         """Returns the "Advanced" tab."""

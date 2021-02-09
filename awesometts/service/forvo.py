@@ -640,6 +640,9 @@ GENDERS = [
     ('any', 'Any')
 ]
 
+PREFERRED_USER_DEFAULT_KEY = 'any'
+PREFERRED_USER_DEFAULT = (PREFERRED_USER_DEFAULT_KEY, "Any")
+
 URL_API_CORPORATE = ('apicorporate', 'https://apicorporate.forvo.com/api2/v1.1/')
 URL_API_FREE = ('apifree', 'https://apifree.forvo.com/')
 URL_API_COMMERCIAL = ('apicommercial', 'https://apicommercial.forvo.com/')
@@ -664,8 +667,7 @@ class Forvo(Service):
         """The Forvo API requires an API key."""
 
         return [
-            dict(key='key', label="API Key", required=True),
-            dict(key='preferreduser', label="Preferred User", required=False)
+            dict(key='key', label="API Key", required=True)
         ]
 
     def normalize_sex(self, input):
@@ -690,6 +692,11 @@ class Forvo(Service):
         else:
             return input            
 
+    def get_preferred_users(self):
+        return [
+            PREFERRED_USER_DEFAULT
+        ]
+
     def options(self):
         """Provides access to voice only."""
 
@@ -705,7 +712,7 @@ class Forvo(Service):
                 key='sex',
                 label="Sex",
                 values=GENDERS,
-                default=('m', 'Male'),
+                default=('any', 'Any'),
                 transform=self.normalize_sex
             ),
             dict(
@@ -715,6 +722,13 @@ class Forvo(Service):
                 default=('ANY', 'Any (pick best rated pronunciation)'),
                 transform=self.normalize_country
             ),
+            dict(
+                key='preferreduser',
+                label="Preferred User",
+                values=self.get_preferred_users(),
+                default=PREFERRED_USER_DEFAULT,
+                transform=self.normalize
+            ),            
             dict(
                 key='apiurl',
                 label='API URL',
@@ -745,7 +759,7 @@ class Forvo(Service):
             country_code = f"/country/{options['country']}"
 
         username_param = ''
-        if preferred_user != None and len(preferred_user) > 0:
+        if preferred_user != PREFERRED_USER_DEFAULT_KEY:
             username_param = f"/username/{preferred_user}"
 
         sex_param = ''
