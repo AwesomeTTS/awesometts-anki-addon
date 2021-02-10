@@ -382,6 +382,7 @@ class TestClass():
 
         self.run_service_testcases(svc_id, test_cases, extra_option_keys=['clientid', 'clientsecret'])
 
+    @pytest.mark.skip(reason="2021/02/11 service broken")
     def test_youdao(self):
         # python -m pytest tests -s -k 'test_youdao'
 
