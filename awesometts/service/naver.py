@@ -16,26 +16,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""NAVER Translate"""
+"""Naver Papago"""
 
 from .base import Service
 from .common import Trait
 
 import base64
+import hashlib
+import hmac
 import json
+import time
+import uuid
+
 
 __all__ = ['Naver']
 
-
-CNDIC_ENDPOINT = 'http://tts.cndic.naver.com/tts/mp3ttsV1.cgi'
-CNDIC_CONFIG = [
-    ('enc', 0),
-    ('pitch', 100),
-    ('speed', 80),
-    ('text_fmt', 0),
-    ('volume', 100),
-    ('wrapper', 0),
-]
 
 TRANSLATE_ENDPOINT = 'https://papago.naver.com/apis/tts/'
 TRANSLATE_MKID = TRANSLATE_ENDPOINT + 'makeID'
@@ -43,97 +38,140 @@ TRANSLATE_MKID = TRANSLATE_ENDPOINT + 'makeID'
 VOICE_CODES = [
     ('ko', (
         "Korean",
-        False,
         [
-            ('speaker', 'mijin'),
+            ('alpha', 0),
+            ('pitch', 0),
+            ('speaker', 'kyuri'),
+            ('speed', 0),
         ],
     )),
 
     ('en', (
         "English",
-        False,
         [
+            ('alpha', 0),
+            ('pitch', 0),
             ('speaker', 'clara'),
+            ('speed', 0),
         ],
     )),
 
     ('ja', (
         "Japanese",
-        False,
         [
             ('alpha', 0),
             ('pitch', 0),
             ('speaker', 'yuri'),
-            ('speed', 2),
+            ('speed', 0),
         ],
     )),
 
-    ('zh', (
-        "Chinese",
-        True,
+    ('zh-CN', (
+        "Chinese - Simplified",
         [
-            ('spk_id', 250),
+            ('alpha', 0),
+            ('pitch', 0),
+            ('speaker', 'meimei'),
+            ('speed', 0),
+        ],
+    )),
+
+    ('zh-TW', (
+        "Chinese - Traditional",
+        [
+            ('alpha', 0),
+            ('pitch', 0),
+            ('speaker', 'chiahua'),
+            ('speed', 0),
+        ],
+    )),
+
+    ('es', (
+        "Spanish",
+        [
+            ('alpha', 0),
+            ('pitch', 0),
+            ('speaker', 'carmen'),
+            ('speed', 0),
+        ],
+    )),
+
+    ('fr', (
+        "French",
+        [
+            ('alpha', 0),
+            ('pitch', 0),
+            ('speaker', 'roxane'),
+            ('speed', 0),
+        ],
+    )),
+
+    ('de', (
+        "German",
+        [
+            ('alpha', 0),
+            ('pitch', 0),
+            ('speaker', 'lena'),
+            ('speed', 0),
+        ],
+    )),
+
+    ('ru', (
+        "Russian",
+        [
+            ('alpha', 0),
+            ('pitch', 0),
+            ('speaker', 'vera'),
+            ('speed', 0),
+        ],
+    )),
+
+    ('th', (
+        "Thai",
+        [
+            ('alpha', 0),
+            ('pitch', 0),
+            ('speaker', 'somsi'),
+            ('speed', 0),
         ],
     )),
 ]
 
 VOICE_LOOKUP = dict(VOICE_CODES)
+HMAC_KEY = 'v1.5.4_5e97b423d4'
+UUID = str(uuid.uuid4())
 
 
-def _quote_all(input_string,
-               *args, **kwargs):  # pylint:disable=unused-argument
-    """NAVER Translate needs every character quoted."""
-    return ''.join('%%%x' % ord(char) for char in input_string)
+# This function implements function I(a,t) found at
+# https://papago.naver.com/main.87cbe57a9fc46d3db5c1.chunk.js
+
+def _generate_headers():
+    timestamp = str(int(time.time()))
+    msg = UUID + '\n' + TRANSLATE_MKID + '\n' + timestamp
+    signature = hmac.new(bytes(HMAC_KEY, 'ascii'), bytes(msg, 'ascii'),
+                         hashlib.md5).digest()
+    signature = base64.b64encode(signature).decode()
+    auth = 'PPG ' + UUID + ':' + signature
+
+    return {'Authorization': auth, 'timestamp': timestamp,
+            'Content-Type': 'application/x-www-form-urlencoded'}
 
 
-# These functions implement the obfuscation functions found at
-# https://papago.naver.com/main.7909bf415016e805e81b.chunk.js under
-# "obfuscate.ts".
-
-def _swap(input_str, index):
-    return input_str[index:] + input_str[0:index]
-
-def _scramble(input_str):
-    output_str = ''
-    for c in input_str:
-        ci = c.lower()
-        if ci >= 'a' and ci <= 'm':
-            output_str += chr(ord(c) + 13)
-        elif ci >= 'n' and ci <= 'z':
-            output_str += chr(ord(c) - 13)
-        else:
-            output_str += c
-    return output_str
-
-def _generate_data(input_str):
-    extra = len(input_str) % 6
-
-    if extra > 0:
-        padded_str = input_str + ('a' * (6 - extra))
-    else:
-        padded_str = input_str
-    
-    base64ed = base64.b64encode(padded_str.encode('utf-8')).decode('utf-8')
-
-    header = 'a'
-    output = header + _swap(base64ed, ord(header[0]) % (len(base64ed) - 2) + 1)
-
-    return _scramble(output)
 
 
 class Naver(Service):
-    """Provides a Service implementation for NAVER Translate."""
+    """Provides a Service implementation for Naver Papago."""
 
     __slots__ = []
 
-    NAME = "NAVER Translate"
+    NAME = "Naver Papago"
 
     TRAITS = [Trait.INTERNET]
 
     def desc(self):
         """Returns a static description."""
 
-        return "NAVER Translate (%d voices)" % len(VOICE_CODES)
+        return "Naver Papago (%d voices)" % len(VOICE_CODES)
 
     def options(self):
         """Returns an option to select the voice."""
@@ -143,8 +181,8 @@ class Naver(Service):
                 key='voice',
                 label="Voice",
                 values=[(key, description)
-                        for key, (description, _, _) in VOICE_CODES],
-                transform=lambda str: self.normalize(str)[0:2],
+                        for key, (description, _) in VOICE_CODES],
+                transform=lambda value: value,
                 default='ko',
                 test_default='en'
             ),
@@ -153,73 +191,50 @@ class Naver(Service):
     def run(self, text, options, path):
         """Downloads from Internet directly to an MP3."""
 
-        _, is_cndic_api, config = VOICE_LOOKUP[options['voice']]
+        _, config = VOICE_LOOKUP[options['voice']]
 
-        if is_cndic_api:
-            self.net_download(
-                path,
+        def process_subtext(output_mp3, subtext):
+            params = dict(
+                config +
                 [
-                    (
-                        CNDIC_ENDPOINT,
-                        dict(
-                            CNDIC_CONFIG +
-                            config +
-                            [
-                                ('text', subtext),
-                            ]
-                        )
-                    )
-                    for subtext in self.util_split(text, 250)
-                ],
-                require=dict(mime='audio/mpeg', size=256),
-                custom_quoter=dict(text=_quote_all),
+                    ('text', subtext),
+                ]
+            )
+            resp = self.net_stream(
+                (
+                    TRANSLATE_MKID,
+                    params
+                ),
+                method='POST',
+                custom_headers=_generate_headers()
             )
 
+            sound_id = json.loads(resp)['id']
+
+            self.net_download(
+                output_mp3,
+                (
+                    TRANSLATE_ENDPOINT + sound_id,
+                    dict()
+                ),
+                require=dict(mime='audio/mpeg', size=256),
+            )
+
+        subtexts = self.util_split(text, 1000)
+
+        if len(subtexts) == 1:
+            process_subtext(path, subtexts[0])
+
         else:
-            def process_subtext(output_mp3, subtext):
-                param_str = json.dumps(dict(
-                    config +
-                    [
-                        ('text', subtext),
-                    ]
-                ))
-                resp = self.net_stream(
-                    (
-                        TRANSLATE_MKID,
-                        {
-                            'data': _generate_data(param_str)
-                        }
-                    ),
-                    method='POST',
-                )
+            try:
+                output_mp3s = []
 
-                sound_id = json.loads(resp)['id']
+                for subtext in subtexts:
+                    output_mp3 = self.path_temp('mp3')
+                    output_mp3s.append(output_mp3)
+                    process_subtext(output_mp3, subtext)
 
-                self.net_download(
-                    output_mp3,
-                    (
-                        TRANSLATE_ENDPOINT + sound_id,
-                        dict()
-                    ),
-                    require=dict(mime='audio/mpeg', size=256),
-                    custom_quoter=dict(text=_quote_all),
-                )
+                self.util_merge(output_mp3s, path)
 
-            subtexts = self.util_split(text, 250)
-
-            if len(subtexts) == 1:
-                process_subtext(path, subtexts[0])
-
-            else:
-                try:
-                    output_mp3s = []
-
-                    for subtext in subtexts:
-                        output_mp3 = self.path_temp('mp3')
-                        output_mp3s.append(output_mp3)
-                        process_subtext(output_mp3, subtext)
-
-                    self.util_merge(output_mp3s, path)
-
-                finally:
-                    self.path_unlink(output_mp3s)
+            finally:
+                self.path_unlink(output_mp3s)
