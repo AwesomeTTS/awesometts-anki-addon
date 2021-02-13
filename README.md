@@ -5,7 +5,7 @@
 AwesomeTTS makes it easy for language-learners and other students to add
 speech to their personal [Anki](https://apps.ankiweb.net) card decks.
 
-![AwesomeTTS Screenshot](https://raw.githubusercontent.com/AwesomeTTS/awesometts-anki-addon/master/screenshots/awesometts_add_azure_mandarin.jpg)
+![AwesomeTTS Screenshot](https://res.cloudinary.com/photozzap/image/upload/v1613176396/anki_graphics/AwesomeTTS_ankiweb_graphic_1.jpg)
 
 ## Installing
 
