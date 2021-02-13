@@ -76,9 +76,13 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
     def __call__(self, text):
         """Apply the initialized rules against the text and return."""
 
+        self._logger.debug(f'input text: [{text}]')
+
         applied = []
 
         for rule in self._rules:
+            self._logger.debug(f'evaluating rule: {rule}')
+
             if not text:
                 self._log(applied + ["early exit"], '')
                 return ''
@@ -246,7 +250,11 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
         before each one.
         """
 
+        self._logger.debug(f'running _rule_custom_sub')
+
         for rule in rules:
+            self._logger.debug(f'evaluating {rule}')
+
             text = self._rule_whitespace(self._rule_ellipses(text))
             if not text:
                 return ''
