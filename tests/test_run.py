@@ -289,7 +289,6 @@ class TestClass():
         self.run_service_testcases(svc_id, test_cases)        
 
 
-    @pytest.mark.skip(reason="2020/08/04 Naver is broken https://github.com/AwesomeTTS/awesometts-anki-addon/issues/117")
     def test_naver(self):
         # test Naver Translate service
         # to run this test only:
