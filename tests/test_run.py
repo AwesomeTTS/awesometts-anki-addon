@@ -401,6 +401,33 @@ class TestClass():
         svc_id = 'Oxford'
         test_cases = [
             {'voice': 'en', 'text_input': 'successful', 'recognition_language':'en-US'},
+            {'voice': 'en', 'text_input': 'baby buggy', 'recognition_language':'en-US'},
+            {'voice': 'en-GB', 'text_input': 'devastated', 'recognition_language':'en-US'},
+            {'voice': 'en-US', 'text_input': 'devastated', 'recognition_language':'en-US'},
+            {'voice': 'en-GB', 'text_input': 'first time', 'recognition_language':'en-US'},
+            {'voice': 'en-US', 'text_input': 'first time', 'recognition_language':'en-US'},
+            {'voice': 'en-GB', 'text_input': 'vice versa', 'recognition_language':'en-US'},
+            {'voice': 'en-US', 'text_input': 'vice versa', 'recognition_language':'en-US'},
+
+            {'voice': 'en-GB', 'text_input': 'hairdryer', 'expected_output': 'hair dryer', 'recognition_language':'en-US'},
+            {'voice': 'en-US', 'text_input': 'hairdryer', 'expected_output': 'hair dryer', 'recognition_language':'en-US'},
+
+            # detected as "set up" , but it works
+            # {'voice': 'en-GB', 'text_input': 'fed up', 'recognition_language':'en-GB'},
+            # {'voice': 'en-US', 'text_input': 'fed up', 'recognition_language':'en-US'},            
+
+            {'voice': 'en-GB', 'text_input': 'climate change', 'recognition_language':'en-US'},
+            {'voice': 'en-US', 'text_input': 'climate change', 'recognition_language':'en-US'},            
+
+            {'voice': 'en-GB', 'text_input': 'sea level', 'recognition_language':'en-US'},
+            {'voice': 'en-US', 'text_input': 'sea level', 'recognition_language':'en-US'},
+
+            {'voice': 'en-GB', 'text_input': 'terrified', 'recognition_language':'en-US'},
+            {'voice': 'en-US', 'text_input': 'terrified', 'recognition_language':'en-US'},
+
+            {'voice': 'en-GB', 'text_input': 'worn out', 'recognition_language':'en-GB'},
+            {'voice': 'en-US', 'text_input': 'worn out', 'recognition_language':'en-US'},
+
         ]
         self.run_service_testcases(svc_id, test_cases)        
 

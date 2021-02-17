@@ -39,6 +39,15 @@ RE_DISCARD = re.compile(r'[^-.\s\w]+', re.UNICODE)
 
 class OxfordLister(HTMLParser):
     """Accumulate all found MP3s into `sounds` member."""
+    def __init__(self, logger, lang):
+        HTMLParser.__init__(self)
+        self.lang = lang
+        self._logger = logger
+        wanted_class_map = { 
+            'en-GB': 'sound audio_play_button pron-uk icon-audio',
+            'en-US': 'sound audio_play_button pron-us icon-audio',
+        }
+        self.wanted_tag_class = wanted_class_map[lang]
 
     def reset(self):
         HTMLParser.reset(self)
@@ -46,13 +55,13 @@ class OxfordLister(HTMLParser):
         self.prev_tag = ""
 
     def handle_starttag(self, tag, attrs):
-        if tag == "audio" and self.prev_tag == "a":
-            snd = [v for k, v in attrs if k == "src"]
-            if snd:
-                self.sounds.extend(snd)
-        if tag == "a" and ("class", "speaker") in attrs:
-            self.prev_tag = tag
-
+        if tag == "div" and len(attrs) > 0 and attrs[0] == ('class', self.wanted_tag_class):
+            # data-src-mp3
+            if len(attrs) > 1:
+                (attr_name, attr_value) = attrs[1]
+                if attr_name == 'data-src-mp3':
+                    self.sounds.append(attr_value)
+                    self._logger.debug(f'found mp3 link: {attr_value}')
 
 class Oxford(Service):
     """
@@ -135,13 +144,16 @@ class Oxford(Service):
             raise IOError("Input text is too long for the Oxford Dictionary")
 
         from urllib.parse import quote
-        dict_url = 'https://en.oxforddictionaries.com/definition/%s%s' % (
-            'us/' if options['voice'] == 'en-US' else '',
-            quote(text.encode('utf-8'))
-        )
+
+
+        # note: british english and american english pronunciations are on the same page
+        language_path = 'english'
+        dict_url = f"https://www.oxfordlearnersdictionaries.com/definition/{language_path}/{quote(text.encode('utf-8'))}"
+        self._logger.debug(f'retrieving url {dict_url}')
 
         try:
             html_payload = self.net_stream(dict_url, allow_redirects=options['fuzzy'])
+            self._logger.debug(f'retrieved url {dict_url} successfully')
         except IOError as io_error:
             if getattr(io_error, 'code', None) == 404:
                 raise IOError(
@@ -161,7 +173,7 @@ class Oxford(Service):
                 )
             raise error
 
-        parser = OxfordLister()
+        parser = OxfordLister(self._logger, options['voice'])
         parser.feed(html_payload.decode('utf-8'))
         parser.close()
 
