@@ -763,7 +763,7 @@ class EditorGenerator(ServiceDialog):
 
         for origin in [
                 lambda: from_note(web.selectedText()),
-                lambda: from_note(exec_javascript()),
+                # lambda: from_note(exec_javascript()), # seems to go into infinite loop waiting for js callback, disable for now
                 lambda: try_clipboard('html'),
                 lambda: try_clipboard('text'),
         ]:
