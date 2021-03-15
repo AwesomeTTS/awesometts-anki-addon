@@ -303,7 +303,7 @@ class ServiceDialog(Dialog):
         dropdown.activated.connect(self._on_service_activated)
         dropdown.currentIndexChanged.connect(self._on_preset_reset)
 
-        urlLink="<a href=\"https://www.patreon.com/lucw\">Get API Keys for Premium Services (Patreon)</a>" 
+        urlLink="<a href=\"https://languagetools.anki.study/awesometts-plus\">AwesomeTTS Plus: 600+ Premium Voices</a>" 
         plus_mode_label=QtWidgets.QLabel()
         plus_mode_label.setText(urlLink)
         plus_mode_label.setOpenExternalLinks(True)

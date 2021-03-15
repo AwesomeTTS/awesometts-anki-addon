@@ -519,7 +519,7 @@ class Configurator(Dialog):
     def _ui_tabs_advanced_plus(self):
 
         ver = QtWidgets.QVBoxLayout()
-        urlLink="<a href=\"https://www.patreon.com/lucw\">Get API Keys for Premium Services (Patreon)</a>" 
+        urlLink="<a href=\"https://languagetools.anki.study/awesometts-plus\">AwesomeTTS Plus: 600+ Premium Voices</a>" 
         url_label = QtWidgets.QLabel(urlLink)
         url_label.setOpenExternalLinks(True)
         ver.addWidget(url_label)
