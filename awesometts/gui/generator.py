@@ -745,18 +745,19 @@ class EditorGenerator(ServiceDialog):
 
         def js_callback(val):
             self.callback_message = val
+            self.javascript_is_ready = True
 
         def exec_javascript():
-            self.callback_message = None
+            self.javascript_is_ready = False
 
             web.page().runJavaScript(
                     # for jQuery, this needs to be html() instead of text() as
                     # $('<div>hi<br>there</div>').text() yields "hithere"
                     # whereas if we have the original HTML, we can convert the
                     # line break tag into whitespace during input sanitization
-                    '$("#f%d").html()' % editor.currentField, js_callback)
+                    'getCurrentField().fieldHTML', js_callback)
 
-            while self.callback_message is None:
+            while not self.javascript_is_ready:
                 app.instance().processEvents()
 
             return self.callback_message
