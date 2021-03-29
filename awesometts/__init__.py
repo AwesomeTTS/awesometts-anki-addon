@@ -86,6 +86,9 @@ AGENT = 'AwesomeTTS/%s (Anki %s; PyQt %s; %s)' % (VERSION, anki.version,
 
 if 'AWESOMETTS_DEBUG_LOGGING' in os.environ:
     import logging 
+    import io
+    # on windows, some special characters can't be printed, replace them with ?
+    sys.stdout = io.TextIOWrapper(sys.stdout.detach(), sys.stdout.encoding, 'replace')
     if os.environ['AWESOMETTS_DEBUG_LOGGING'] == 'enable':
         logging.basicConfig(format='%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', 
                             datefmt='%Y%m%d-%H:%M:%S',
