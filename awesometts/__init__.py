@@ -41,7 +41,7 @@ from .ttsplayer import register_tts_player
 from .languagetools import LanguageTools
 
 __all__ = ['browser_menus', 'cards_button', 'config_menu', 'editor_button',
-           'reviewer_hooks', 'sound_tag_delays', 
+           'reviewer_hooks', 
            'window_shortcuts']
 
 
@@ -743,19 +743,6 @@ def reviewer_hooks():
     anki.hooks.addHook('Reviewer.contextMenuEvent',
                        lambda reviewer, menu:
                        on_context_menu(reviewer.web, menu))
-
-
-def sound_tag_delays():
-    """
-    Enables support for the following sound delay configuration options:
-
-    - delay_questions_stored_ours (AwesomeTTS MP3s on questions)
-    - delay_questions_stored_theirs (non-AwesomeTTS MP3s on questions)
-    - delay_answers_stored_ours (AwesomeTTS MP3s on answers)
-    - delay_answers_stored_theirs (non-AwesomeTTS MP3s on answers)
-    """
-
-    anki.sound.play = player.native_wrapper
 
 
 def temp_files():

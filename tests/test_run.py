@@ -66,7 +66,6 @@ class TestClass():
         awesometts.config_menu()       # provides access to configuration dialog
         awesometts.editor_button()     # single audio clip generator button
         awesometts.reviewer_hooks()    # on-the-fly playback/shortcuts, context menus
-        awesometts.sound_tag_delays()  # delayed playing of stored [sound]s in review
         awesometts.temp_files()        # remove temporary files upon session exit
         awesometts.window_shortcuts()  # enable/update shortcuts for add-on windows
         # if we didn't hit any exceptions at this point, declare success

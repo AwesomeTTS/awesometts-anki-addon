@@ -46,94 +46,11 @@ class Player(object):
     def preview(self, path):
         """Play path with no delay, from preview button."""
 
-        self._insert_blanks(0, "preview mode", path)
         self._anki.native(path)
 
     def menu_click(self, path):
         """Play path with no delay, from context menu."""
 
-        self._insert_blanks(0, "context menu", path)
         self._anki.native(path)
 
-    def native_wrapper(self, path):
-        """
-        Provides a function that can be used as a wrapper around the
-        native Anki playback interface. This is used in order to impose
-        playback delays on [sound] tags while in review mode.
-        """
 
-        if self._anki.mw.state != 'review':
-            self._insert_blanks(0, "wrapped, non-review", path)
-
-        elif next((True
-                   for frame in inspect.stack()
-                   if frame[3] in self.native_wrapper.BLACKLISTED_FRAMES),
-                  False):
-            self._insert_blanks(0, "wrapped, blacklisted caller", path)
-
-        elif self._anki.mw.reviewer.state == 'question':
-            if RE_FILENAMES.search(path):
-                self._insert_blanks(
-                    self._config['delay_questions_stored_ours'],
-                    "wrapped, AwesomeTTS sound on question side",
-                    path,
-                )
-
-            else:
-                self._insert_blanks(
-                    self._config['delay_questions_stored_theirs'],
-                    "wrapped, non-AwesomeTTS sound on question side",
-                    path,
-                )
-
-        elif self._anki.mw.reviewer.state == 'answer':
-            if RE_FILENAMES.search(path):
-                self._insert_blanks(
-                    self._config['delay_answers_stored_ours'],
-                    "wrapped, AwesomeTTS sound on answer side",
-                    path,
-                )
-
-            else:
-                self._insert_blanks(
-                    self._config['delay_answers_stored_theirs'],
-                    "wrapped, non-AwesomeTTS sound on answer side",
-                    path,
-                )
-
-        else:
-            self._insert_blanks(0, "wrapped, unknown review state", path)
-
-        self._anki.native(path)
-
-    native_wrapper.BLACKLISTED_FRAMES = [
-        'addMedia',     # if the user adds media in review
-        'replayAudio',  # if the user strikes R or F5
-    ]
-
-    def _insert_blanks(self, seconds, reason, path):
-        """
-        Insert silence of the given seconds, unless Anki's queue has
-        items in it already.
-        """
-
-        try:
-            from aqt.sound import av_player
-            playQueue = av_player._enqueued
-        except ImportError:
-            if self._anki.sound.mpvManager is not None:
-                playQueue = self._anki.sound.mpvManager.get_property("playlist-count")
-            else:
-                playQueue = self._anki.sound.mplayerQueue
-
-        if playQueue:
-            if self._logger:
-                self._logger.debug("Ignoring %d-second delay (%s) because of "
-                                   "queue: %s", seconds, reason, path)
-            return
-
-        if self._logger:
-            self._logger.debug("Need %d-second delay (%s): %s",
-                               seconds, reason, path)
-        for _ in range(seconds):
-            self._anki.native(self._blank)
