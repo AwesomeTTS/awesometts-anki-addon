@@ -767,8 +767,10 @@ class Forvo(Service):
             }
             if sex != 'any':
                 voice_key['gender'] = sex
+            if preferred_user != PREFERRED_USER_DEFAULT_KEY:
+                voice_key['preferred_user'] = preferred_user
 
-            self.languagetools.generate_audio(text, service, voice_key, options, path)
+            self.languagetools.generate_audio(text, service, voice_key, {}, path)
         else:
 
             api_key = options['key']
