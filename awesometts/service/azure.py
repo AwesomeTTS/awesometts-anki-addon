@@ -177,6 +177,8 @@ class Azure(Service):
             AzureVoice(Language.nl_NL, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (nl-NL, FennaNeural)', 'Fenna','Fenna', 'nl-NL-FennaNeural', 'Neural', 'nl-NL'),
             AzureVoice(Language.nl_NL, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (nl-NL, MaartenNeural)', 'Maarten','Maarten', 'nl-NL-MaartenNeural', 'Neural', 'nl-NL'),
             AzureVoice(Language.nl_NL, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (nl-NL, HannaRUS)', 'Hanna','Hanna', 'nl-NL-HannaRUS', 'Standard', 'nl-NL'),
+            AzureVoice(Language.nl_BE, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (nl-BE, ArnaudNeural)', 'Arnaud','Arnaud', 'nl-BE-ArnaudNeural', 'Neural', 'nl-BE'),
+            AzureVoice(Language.nl_BE, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (nl-BE, DenaNeural)', 'Dena','Dena', 'nl-BE-DenaNeural', 'Neural', 'nl-BE'),
             AzureVoice(Language.en_AU, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-AU, NatashaNeural)', 'Natasha','Natasha', 'en-AU-NatashaNeural', 'Neural', 'en-AU'),
             AzureVoice(Language.en_AU, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-AU, WilliamNeural)', 'William','William', 'en-AU-WilliamNeural', 'Neural', 'en-AU'),
             AzureVoice(Language.en_AU, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-AU, Catherine)', 'Catherine','Catherine', 'en-AU-Catherine', 'Standard', 'en-AU'),
@@ -193,6 +195,8 @@ class Azure(Service):
             AzureVoice(Language.en_IE, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-IE, ConnorNeural)', 'Connor','Connor', 'en-IE-ConnorNeural', 'Neural', 'en-IE'),
             AzureVoice(Language.en_IE, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-IE, EmilyNeural)', 'Emily','Emily', 'en-IE-EmilyNeural', 'Neural', 'en-IE'),
             AzureVoice(Language.en_IE, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-IE, Sean)', 'Sean','Sean', 'en-IE-Sean', 'Standard', 'en-IE'),
+            AzureVoice(Language.en_PH, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-PH, JamesNeural)', 'James','James', 'en-PH-JamesNeural', 'Neural', 'en-PH'),
+            AzureVoice(Language.en_PH, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-PH, RosaNeural)', 'Rosa','Rosa', 'en-PH-RosaNeural', 'Neural', 'en-PH'),
             AzureVoice(Language.en_GB, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-GB, MiaNeural)', 'Mia','Mia', 'en-GB-MiaNeural', 'Neural', 'en-GB'),
             AzureVoice(Language.en_GB, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (en-GB, LibbyNeural)', 'Libby','Libby', 'en-GB-LibbyNeural', 'Neural', 'en-GB'),
             AzureVoice(Language.en_GB, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (en-GB, RyanNeural)', 'Ryan','Ryan', 'en-GB-RyanNeural', 'Neural', 'en-GB'),
@@ -212,7 +216,10 @@ class Azure(Service):
             AzureVoice(Language.fi_FI, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (fi-FI, HarriNeural)', 'Harri','Harri', 'fi-FI-HarriNeural', 'Neural', 'fi-FI'),
             AzureVoice(Language.fi_FI, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fi-FI, NooraNeural)', 'Noora','Noora', 'fi-FI-NooraNeural', 'Neural', 'fi-FI'),
             AzureVoice(Language.fi_FI, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fi-FI, HeidiRUS)', 'Heidi','Heidi', 'fi-FI-HeidiRUS', 'Standard', 'fi-FI'),
+            AzureVoice(Language.fr_BE, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fr-BE, CharlineNeural)', 'Charline','Charline', 'fr-BE-CharlineNeural', 'Neural', 'fr-BE'),
+            AzureVoice(Language.fr_BE, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (fr-BE, GerardNeural)', 'Gerard','Gerard', 'fr-BE-GerardNeural', 'Neural', 'fr-BE'),
             AzureVoice(Language.fr_CA, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fr-CA, SylvieNeural)', 'Sylvie','Sylvie', 'fr-CA-SylvieNeural', 'Neural', 'fr-CA'),
+            AzureVoice(Language.fr_CA, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (fr-CA, AntoineNeural)', 'Antoine','Antoine', 'fr-CA-AntoineNeural', 'Neural', 'fr-CA'),
             AzureVoice(Language.fr_CA, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (fr-CA, JeanNeural)', 'Jean','Jean', 'fr-CA-JeanNeural', 'Neural', 'fr-CA'),
             AzureVoice(Language.fr_CA, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fr-CA, Caroline)', 'Caroline','Caroline', 'fr-CA-Caroline', 'Standard', 'fr-CA'),
             AzureVoice(Language.fr_CA, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (fr-CA, HarmonieRUS)', 'Harmonie','Harmonie', 'fr-CA-HarmonieRUS', 'Standard', 'fr-CA'),
@@ -331,9 +338,15 @@ class Azure(Service):
             AzureVoice(Language.tr_TR, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (tr-TR, AhmetNeural)', 'Ahmet','Ahmet', 'tr-TR-AhmetNeural', 'Neural', 'tr-TR'),
             AzureVoice(Language.tr_TR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (tr-TR, EmelNeural)', 'Emel','Emel', 'tr-TR-EmelNeural', 'Neural', 'tr-TR'),
             AzureVoice(Language.tr_TR, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (tr-TR, SedaRUS)', 'Seda','Seda', 'tr-TR-SedaRUS', 'Standard', 'tr-TR'),
+            AzureVoice(Language.uk_UA, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (uk-UA, OstapNeural)', 'Ostap','Остап', 'uk-UA-OstapNeural', 'Neural', 'uk-UA'),
+            AzureVoice(Language.uk_UA, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (uk-UA, PolinaNeural)', 'Polina','Поліна', 'uk-UA-PolinaNeural', 'Neural', 'uk-UA'),
+            AzureVoice(Language.ur_PK, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (ur-PK, AsadNeural)', 'Asad','اسد', 'ur-PK-AsadNeural', 'Neural', 'ur-PK'),
+            AzureVoice(Language.ur_PK, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (ur-PK, UzmaNeural)', 'Uzma','عظمیٰ', 'ur-PK-UzmaNeural', 'Neural', 'ur-PK'),
             AzureVoice(Language.vi_VN, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (vi-VN, HoaiMyNeural)', 'HoaiMy','Hoài My', 'vi-VN-HoaiMyNeural', 'Neural', 'vi-VN'),
             AzureVoice(Language.vi_VN, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (vi-VN, NamMinhNeural)', 'NamMinh','Nam Minh', 'vi-VN-NamMinhNeural', 'Neural', 'vi-VN'),
-            AzureVoice(Language.vi_VN, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (vi-VN, An)', 'An','An', 'vi-VN-An', 'Standard', 'vi-VN')
+            AzureVoice(Language.vi_VN, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (vi-VN, An)', 'An','An', 'vi-VN-An', 'Standard', 'vi-VN'),
+            AzureVoice(Language.cy_GB, Gender.Male, 'Microsoft Server Speech Text to Speech Voice (cy-GB, AledNeural)', 'Aled','Aled', 'cy-GB-AledNeural', 'Neural', 'cy-GB'),
+            AzureVoice(Language.cy_GB, Gender.Female, 'Microsoft Server Speech Text to Speech Voice (cy-GB, NiaNeural)', 'Nia','Nia', 'cy-GB-NiaNeural', 'Neural', 'cy-GB')
         ]
 
 
