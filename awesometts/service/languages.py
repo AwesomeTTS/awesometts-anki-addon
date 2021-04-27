@@ -89,14 +89,6 @@ class Language(Enum):
 class Voice(abc.ABC):
         
     @abc.abstractmethod
-    def get_gender(self) -> Gender:
-        pass
-
-    @abc.abstractmethod
-    def get_language(self) -> Language:
-        pass
-
-    @abc.abstractmethod
     def get_key(self) -> str:
         pass
 
