@@ -373,6 +373,10 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
         """Removes text within parentheses."""
         return _aux_within(text, '(', ')')
 
+    def _rule_ruby_tags(self, text):
+        self._logger.debug(f'processing ruby tags')
+        return text
+
 
 def _aux_within(text, begin_char, end_char):
     """

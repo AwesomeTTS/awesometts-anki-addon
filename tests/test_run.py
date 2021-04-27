@@ -82,6 +82,13 @@ class TestClass():
         
         assert self.addon.strip.from_note('blabla&nbsp;') == 'blabla'
 
+    def test_sanitizer_furigana(self):
+        # python -m pytest tests -rPP -k 'test_sanitizer_furigana'
+
+        input_text = '<ruby title="東京(とうきょう)"><rb>東京</rb><rt>とうきょう</rt></ruby>&nbsp;<br>'
+        assert self.addon.strip.from_note(input_text) == '東京'
+        assert self.addon.strip.from_template(input_text) == '東京'
+
     def test_services(self):
         # python -m pytest tests -rPP -k 'test_services'
         """Tests all services (except services which require an API key) using a single word.

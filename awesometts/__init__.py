@@ -165,6 +165,7 @@ config = Config(
         ('strip_template_braces', 'integer', False, to.lax_bool, int),
         ('strip_template_brackets', 'integer', False, to.lax_bool, int),
         ('strip_template_parens', 'integer', False, to.lax_bool, int),
+        ('strip_ruby_tags', 'integer', True, to.lax_bool, int),
         ('sub_note_cloze', 'text', 'anki', str, str),
         ('sub_template_cloze', 'text', 'anki', str, str),
         ('sul_note', 'text', [], to.substitution_list, to.substitution_json),
@@ -316,6 +317,7 @@ addon = Bundle(
         # prepopulating a modal input based on some note field, where cloze
         # placeholders are still in their unprocessed state)
         from_note=Sanitizer([
+            ('ruby_tags', 'strip_ruby_tags'),
             ('clozes_braced', 'sub_note_cloze'),
             ('newline_ellipsize', 'ellip_note_newlines'),
             'html',
@@ -335,6 +337,7 @@ addon = Bundle(
 
         # clean up fields coming from templates (on the fly TTS)
         from_template=Sanitizer([
+            ('ruby_tags', 'strip_ruby_tags'),
             ('clozes_rendered', 'sub_template_cloze'),
             ('clozes_revealed', 'otf_only_revealed_cloze'),
             'hint_links',
