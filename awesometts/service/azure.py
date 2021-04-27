@@ -196,11 +196,12 @@ class Azure(Service):
             self._logger.info(f'using language tools API')
             service = 'Azure'
             voice_key = voice.get_voice_key()
+            language = voice.get_language_code()
             options = {
                 'pitch': pitch,
                 'rate': rate
             }
-            self.languagetools.generate_audio(text, service, voice_key, options, path)
+            self.languagetools.generate_audio_v2(text, service, 'batch', language, 'n/a', voice_key, options, path)
         else:
 
             region = options['region']
