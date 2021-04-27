@@ -89,6 +89,83 @@ class TestClass():
         assert self.addon.strip.from_note(input_text) == '東京'
         assert self.addon.strip.from_template(input_text) == '東京'
 
+        input_text = """
+<ruby title="東京(とうきょう)">
+   <rb>東京</rb>
+   <rt>とうきょう</rt>
+</ruby>
+（とうきょう、
+<ruby title="英(えい)">
+   <rb>英</rb>
+   <rt>えい</rt>
+</ruby>
+:Tokyo）は、
+<ruby title="日本(にっぽん)">
+   <rb>日本</rb>
+   <rt>にっぽん</rt>
+</ruby>
+の
+<ruby title="地名(ちめい)">
+   <rb>地名</rb>
+   <rt>ちめい</rt>
+</ruby>
+。
+<ruby title="関東平野(かんとうへいや)">
+   <rb>関東平野</rb>
+   <rt>かんとうへいや</rt>
+</ruby>
+の
+<ruby title="南部(なんぶ)">
+   <rb>南部</rb>
+   <rt>なんぶ</rt>
+</ruby>
+に
+<ruby title="位置(いち)">
+   <rb>位置</rb>
+   <rt>いち</rt>
+</ruby>
+し、
+<ruby title="東京(とうきょう)">
+   <rb>東京</rb>
+   <rt>とうきょう</rt>
+</ruby>
+&nbsp;
+<ruby title="湾(わん)">
+   <rb>湾</rb>
+   <rt>わん</rt>
+</ruby>
+に
+<ruby title="面(めん)">
+   <rb>面</rb>
+   <rt>めん</rt>
+</ruby>
+する
+<ruby title="都市(とし)">
+   <rb>都市</rb>
+   <rt>とし</rt>
+</ruby>
+。
+<ruby title="日本(にっぽん)">
+   <rb>日本</rb>
+   <rt>にっぽん</rt>
+</ruby>
+の
+<ruby title="首都(しゅと)">
+   <rb>首都</rb>
+   <rt>しゅと</rt>
+</ruby>
+&nbsp;
+<ruby title="機能(きのう)">
+   <rb>機能</rb>
+   <rt>きのう</rt>
+</ruby>
+がある
+        """
+        expected_output = '東京 （とうきょう、 英 :Tokyo）は、 日本 の 地名 。 関東平野 の 南部 に 位置 し、 東京 湾 に 面 する 都市 。 日本 の 首都 機能 がある' 
+        assert self.addon.strip.from_note(input_text) == expected_output
+        assert self.addon.strip.from_template(input_text) == expected_output   
+
+
     def test_services(self):
         # python -m pytest tests -rPP -k 'test_services'
         """Tests all services (except services which require an API key) using a single word.
