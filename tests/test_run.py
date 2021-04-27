@@ -76,6 +76,11 @@ class TestClass():
     def test_gui(self):
         pass
 
+    
+    def test_sanitizer(self):
+        # python -m pytest tests -rPP -k 'test_sanitizer'
+        
+        assert self.addon.strip.from_note('blabla&nbsp;') == 'blabla'
 
     def test_services(self):
         # python -m pytest tests -rPP -k 'test_services'
