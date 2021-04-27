@@ -374,8 +374,9 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
         return _aux_within(text, '(', ')')
 
     def _rule_ruby_tags(self, text):
+        self._logger.debug(f'looking for ruby tags')
         if 'ruby' in text:
-            self._logger.debug(f'processing ruby tags')            
+            self._logger.debug(f'found ruby tags, processing')
             soup = BeautifulSoup(text, features="html.parser")
             rt_tags = soup.find_all('rt')
             for rt_tag in rt_tags:

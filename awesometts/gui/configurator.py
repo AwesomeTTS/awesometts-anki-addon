@@ -54,7 +54,8 @@ class Configurator(Dialog):
         'strip_note_brackets', 'strip_note_parens', 'strip_template_braces',
         'strip_template_brackets', 'strip_template_parens', 'sub_note_cloze',
         'sub_template_cloze', 'sul_note', 'sul_template', 'throttle_sleep',
-        'throttle_threshold', 'plus_api_key', 'service_forvo_preferred_users'
+        'throttle_threshold', 'plus_api_key', 'service_forvo_preferred_users',
+        'strip_ruby_tags'
     ]
 
     _PROPERTY_WIDGETS = (Checkbox, QtWidgets.QComboBox, QtWidgets.QLineEdit,
@@ -199,6 +200,10 @@ class Configurator(Dialog):
         layout.addWidget(Checkbox(
             "Convert any newline(s) in input into an ellipsis",
             infix.join(['ellip', 'newlines'])
+        ))
+
+        layout.addWidget(Checkbox(
+            "Process Ruby/Furigana tags", 'strip_ruby_tags'
         ))
 
         hor = QtWidgets.QHBoxLayout()

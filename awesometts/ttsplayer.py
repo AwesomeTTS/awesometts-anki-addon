@@ -53,7 +53,7 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         language = voice.lang
         language_human = self._addon.language[language].lang_name
         
-        self._addon.logger.debug(f"playing back for language {language}, text: {tag.field_text}")
+        self._addon.logger.debug(f"playing back for language {language}, tag: {tag} text: {tag.field_text}")
 
         # is the field blank?
         if not tag.field_text.strip():
