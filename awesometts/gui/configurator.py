@@ -202,9 +202,10 @@ class Configurator(Dialog):
             infix.join(['ellip', 'newlines'])
         ))
 
-        layout.addWidget(Checkbox(
-            "Process Ruby/Furigana tags", 'strip_ruby_tags'
-        ))
+        if not template_options:
+            layout.addWidget(Checkbox(
+                "Process Ruby/Furigana tags", 'strip_ruby_tags'
+            ))
 
         hor = QtWidgets.QHBoxLayout()
         hor.addWidget(Label("Strip off text within:"))
