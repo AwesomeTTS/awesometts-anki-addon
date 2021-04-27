@@ -8,6 +8,7 @@ from pytest import raises
 import magic # to verify file types
 import os
 import sys
+sys._pytest_mode = True
 import time
 
 class Success(Exception):
@@ -226,7 +227,7 @@ class TestClass():
     def test_google_cloud_tts(self):
         # test google cloud text-to-speech service
         # to run this test only:
-        # python -m pytest tests -k 'test_google_cloud_tts'
+        # python -m pytest tests -rPP -k 'test_google_cloud_tts'
         # requires an API key , which should be set on the travis CI build
 
         GOOGLE_CLOUD_TTS_KEY_ENVVAR = 'GOOGLE_SERVICES_KEY'
