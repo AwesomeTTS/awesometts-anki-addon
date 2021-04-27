@@ -98,7 +98,7 @@ class Azure(Service):
     def desc(self):
         """Returns name with a voice count."""
 
-        return "Microft Azure API (%d voices)" % len(VOICE_LIST)
+        return "Microft Azure API (%d voices)" % len(self.get_voices())
 
     def extras(self):
         """The Azure API requires an API key."""
