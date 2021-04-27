@@ -178,7 +178,7 @@ config = Config(
     ],
 )
 
-languagetools = LanguageTools(config['plus_api_key'], logger)
+languagetools = LanguageTools(config['plus_api_key'], logger, VERSION)
 
 try:
     from aqt.sound import av_player

@@ -3,12 +3,13 @@ import requests
 import json
 
 class LanguageTools:
-    def __init__(self, api_key, logger):
+    def __init__(self, api_key, logger, client_version):
         self.logger = logger
         self.base_url = 'https://cloud-language-tools-prod.anki.study'
         if 'ANKI_LANGUAGE_TOOLS_BASE_URL' in os.environ:
             self.base_url = os.environ['ANKI_LANGUAGE_TOOLS_BASE_URL']
         self.api_key = api_key
+        self.client_version = client_version
 
     def get_base_url(self):
         return self.base_url
@@ -65,7 +66,7 @@ class LanguageTools:
             'options': options
         }
         self.logger.info(f'request url: {full_url}, data: {data}')
-        response = requests.post(full_url, json=data, headers={'api_key': self.get_api_key(), 'client': 'awesometts'})
+        response = requests.post(full_url, json=data, headers={'api_key': self.get_api_key(), 'client': 'awesometts', 'client_version': self.client_version})
 
         if response.status_code == 200:
             self.logger.info('success, receiving audio')
