@@ -95,3 +95,21 @@ class Voice(abc.ABC):
     @abc.abstractmethod
     def get_description(self) -> str:
         pass
+
+class StandardVoice(Voice):
+    def __init__(self, voice_data):
+        self.language_code = voice_data['language_code']
+        self.voice_key = voice_data['voice_key']
+        self.voice_description = voice_data['voice_description']
+
+    def get_key(self) -> str:
+        return self.voice_key['name']
+
+    def get_language_code(self) -> str:
+        return self.language_code
+
+    def get_voice_key(self):
+        return self.voice_key
+
+    def get_description(self) -> str:
+        return self.voice_description    
