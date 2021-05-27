@@ -146,6 +146,8 @@ UUID = str(uuid.uuid4())
 
 # This function implements function I(a,t) found at
 # https://papago.naver.com/main.87cbe57a9fc46d3db5c1.chunk.js
+# 2021/05/27 update:
+# HMAC_KEY has changed, and the timestamp is now in milliseconds
 
 def _compute_token(timestamp, uuid_str):
     msg = uuid_str + '\n' + TRANSLATE_MKID + '\n' + timestamp
@@ -160,9 +162,6 @@ def _generate_headers():
     timestamp_milliseconds = timestamp_seconds_float * 1000.0
     timestamp_str = str(int(timestamp_milliseconds))
     auth = _compute_token(timestamp_str, UUID)
-
-    # auth='PPG 15b4b888-3839-46e2-926e-05612601d92b:9CTJD16jlIY7BTHzy/bcKw=='
-    # timestamp='1622099405030'
 
     return {'authorization': auth, 
             'timestamp': timestamp_str,
@@ -239,6 +238,9 @@ class Naver(Service):
         response_data = response.json()
         sound_id = response_data['id']
         self._logger.info(f'retrieved sound_id successfully: {sound_id}')
+
+        # actually retrieve sound file
+        # ============================
 
         final_url = TRANSLATE_ENDPOINT + sound_id
         self._logger.info(f'final_url: {final_url}')
