@@ -28,6 +28,7 @@ import json
 import time
 import uuid
 import requests
+import datetime
 
 
 __all__ = ['Naver']
@@ -155,14 +156,16 @@ def _compute_token(timestamp, uuid_str):
     return auth
 
 def _generate_headers():
-    timestamp = str(int(time.time()))
-    auth = _compute_token(timestamp, UUID)
+    timestamp_seconds_float = datetime.datetime.now().timestamp()
+    timestamp_milliseconds = timestamp_seconds_float * 1000.0
+    timestamp_str = str(int(timestamp_milliseconds))
+    auth = _compute_token(timestamp_str, UUID)
 
-    auth='PPG 15b4b888-3839-46e2-926e-05612601d92b:EJtsd2OuKOVnYscou0007Q=='
-    timestamp='1622098478535'
+    # auth='PPG 15b4b888-3839-46e2-926e-05612601d92b:9CTJD16jlIY7BTHzy/bcKw=='
+    # timestamp='1622099405030'
 
     return {'authorization': auth, 
-            'timestamp': timestamp,
+            'timestamp': timestamp_str,
             'Content-Type': 'application/x-www-form-urlencoded',
             'Host': 'papago.naver.com',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0',
