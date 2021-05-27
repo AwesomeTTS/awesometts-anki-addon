@@ -146,13 +146,17 @@ UUID = str(uuid.uuid4())
 # This function implements function I(a,t) found at
 # https://papago.naver.com/main.87cbe57a9fc46d3db5c1.chunk.js
 
-def _generate_headers():
-    timestamp = str(int(time.time()))
-    msg = UUID + '\n' + TRANSLATE_MKID + '\n' + timestamp
+def _compute_token(timestamp, uuid_str):
+    msg = uuid_str + '\n' + TRANSLATE_MKID + '\n' + timestamp
     signature = hmac.new(bytes(HMAC_KEY, 'ascii'), bytes(msg, 'ascii'),
                          hashlib.md5).digest()
     signature = base64.b64encode(signature).decode()
-    auth = 'PPG ' + UUID + ':' + signature
+    auth = 'PPG ' + uuid_str + ':' + signature
+    return auth
+
+def _generate_headers():
+    timestamp = str(int(time.time()))
+    auth = _compute_token(timestamp, UUID)
 
     auth='PPG 15b4b888-3839-46e2-926e-05612601d92b:EJtsd2OuKOVnYscou0007Q=='
     timestamp='1622098478535'

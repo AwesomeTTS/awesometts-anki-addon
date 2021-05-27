@@ -385,26 +385,12 @@ class TestClass():
         # python -m pytest tests -s -rPP -k 'test_naver_authentication'
         # authorization PPG 15b4b888-3839-46e2-926e-05612601d92b:WycavKi+pfyeTJyyHIctmg==
 
-        TRANSLATE_ENDPOINT = 'https://papago.naver.com/apis/tts/'
-        TRANSLATE_MKID = TRANSLATE_ENDPOINT + 'makeID'
-
-        timestamp = 1622036563926
-
-        HMAC_KEY = 'v1.5.6_97f6918302'
-        UUID = str(uuid.uuid4())
-
-        def generate_headers(timestamp):
-            msg = UUID + '\n' + TRANSLATE_MKID + '\n' + str(timestamp)
-            signature = hmac.new(bytes(HMAC_KEY, 'ascii'), bytes(msg, 'ascii'),
-                                hashlib.md5).digest()
-            signature = base64.b64encode(signature).decode()
-            auth = 'PPG ' + UUID + ':' + signature
-
-            return {'Authorization': auth, 'timestamp': timestamp,
-                    'Content-Type': 'application/x-www-form-urlencoded'}        
-
-        headers = generate_headers(timestamp)
-        print(headers)
+        from awesometts import service
+        uuid_str = '15b4b888-3839-46e2-926e-05612601d92b'
+        timestamp='1622098478535'
+        expected_auth_token = 'PPG 15b4b888-3839-46e2-926e-05612601d92b:EJtsd2OuKOVnYscou0007Q=='
+        actual_auth_token = service.naver._compute_token(timestamp, uuid_str)
+        assert expected_auth_token == actual_auth_token
 
 
     def test_naver_papago(self):
