@@ -10,6 +10,10 @@ import os
 import sys
 sys._pytest_mode = True
 import time
+import base64
+import hashlib
+import uuid
+import hmac
 
 class Success(Exception):
     pass
@@ -377,11 +381,36 @@ class TestClass():
 
         self.run_service_testcases(svc_id, test_cases)        
 
+    def test_naver_authentication(self):
+        # python -m pytest tests -s -rPP -k 'test_naver_authentication'
+        # authorization PPG 15b4b888-3839-46e2-926e-05612601d92b:WycavKi+pfyeTJyyHIctmg==
 
-    def test_naver(self):
+        TRANSLATE_ENDPOINT = 'https://papago.naver.com/apis/tts/'
+        TRANSLATE_MKID = TRANSLATE_ENDPOINT + 'makeID'
+
+        timestamp = 1622036563926
+
+        HMAC_KEY = 'v1.5.6_97f6918302'
+        UUID = str(uuid.uuid4())
+
+        def generate_headers(timestamp):
+            msg = UUID + '\n' + TRANSLATE_MKID + '\n' + str(timestamp)
+            signature = hmac.new(bytes(HMAC_KEY, 'ascii'), bytes(msg, 'ascii'),
+                                hashlib.md5).digest()
+            signature = base64.b64encode(signature).decode()
+            auth = 'PPG ' + UUID + ':' + signature
+
+            return {'Authorization': auth, 'timestamp': timestamp,
+                    'Content-Type': 'application/x-www-form-urlencoded'}        
+
+        headers = generate_headers(timestamp)
+        print(headers)
+
+
+    def test_naver_papago(self):
         # test Naver Translate service
         # to run this test only:
-        # python -m pytest tests -s -k 'test_naver'
+        # python -m pytest tests -s -rPP -k 'test_naver_papago'
 
         svc_id = 'Naver'
 

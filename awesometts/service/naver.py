@@ -27,6 +27,7 @@ import hmac
 import json
 import time
 import uuid
+import requests
 
 
 __all__ = ['Naver']
@@ -138,7 +139,7 @@ VOICE_CODES = [
 ]
 
 VOICE_LOOKUP = dict(VOICE_CODES)
-HMAC_KEY = 'v1.5.4_5e97b423d4'
+HMAC_KEY = 'v1.5.6_97f6918302'
 UUID = str(uuid.uuid4())
 
 
@@ -153,8 +154,26 @@ def _generate_headers():
     signature = base64.b64encode(signature).decode()
     auth = 'PPG ' + UUID + ':' + signature
 
-    return {'Authorization': auth, 'timestamp': timestamp,
-            'Content-Type': 'application/x-www-form-urlencoded'}
+    auth='PPG 15b4b888-3839-46e2-926e-05612601d92b:EJtsd2OuKOVnYscou0007Q=='
+    timestamp='1622098478535'
+
+    return {'authorization': auth, 
+            'timestamp': timestamp,
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Host': 'papago.naver.com',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0',
+            'Accept': 'application/json',
+            'Accept-Language': 'en-US',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Content-Length': '64',
+            'Origin': 'https://papago.naver.com',
+            'Referer': 'https://papago.naver.com/',
+            'Connection': 'keep-alive',
+            'Pragma': 'no-cache',
+            'Cache-Control': 'no-cache',
+            'TE': 'Trailers'
+    }
 
 
 
@@ -188,53 +207,40 @@ class Naver(Service):
             ),
         ]
 
+
     def run(self, text, options, path):
         """Downloads from Internet directly to an MP3."""
 
         _, config = VOICE_LOOKUP[options['voice']]
 
-        def process_subtext(output_mp3, subtext):
-            params = dict(
-                config +
-                [
-                    ('text', subtext),
-                ]
-            )
-            resp = self.net_stream(
-                (
-                    TRANSLATE_MKID,
-                    params
-                ),
-                method='POST',
-                custom_headers=_generate_headers()
-            )
+        # first, make a POST request to retrieve ID of the sound
+        # ======================================================
 
-            sound_id = json.loads(resp)['id']
+        url = TRANSLATE_MKID
+        params = dict(
+            config +
+            [
+                ('text', text),
+            ]
+        )        
+        headers = _generate_headers()
+        self._logger.info(f'executing POST request on {url} with headers={headers}, data={params}')
+        response = requests.post(url, headers=headers, data=params)
+        if response.status_code != 200:
+            raise Exception(f'got status_code {response.status_code} from {url}: {response.content} ')
 
-            self.net_download(
-                output_mp3,
-                (
-                    TRANSLATE_ENDPOINT + sound_id,
-                    dict()
-                ),
-                require=dict(mime='audio/mpeg', size=256),
-            )
+        response_data = response.json()
+        sound_id = response_data['id']
+        self._logger.info(f'retrieved sound_id successfully: {sound_id}')
 
-        subtexts = self.util_split(text, 1000)
+        final_url = TRANSLATE_ENDPOINT + sound_id
+        self._logger.info(f'final_url: {final_url}')
 
-        if len(subtexts) == 1:
-            process_subtext(path, subtexts[0])
-
-        else:
-            try:
-                output_mp3s = []
-
-                for subtext in subtexts:
-                    output_mp3 = self.path_temp('mp3')
-                    output_mp3s.append(output_mp3)
-                    process_subtext(output_mp3, subtext)
-
-                self.util_merge(output_mp3s, path)
-
-            finally:
-                self.path_unlink(output_mp3s)
+        self.net_download(
+            path,
+            (
+                final_url,
+                dict()
+            ),
+            require=dict(mime='audio/mpeg', size=256),
+        )
