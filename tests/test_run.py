@@ -387,8 +387,8 @@ class TestClass():
 
         from awesometts import service
         uuid_str = '15b4b888-3839-46e2-926e-05612601d92b'
-        timestamp='1622098478535'
-        expected_auth_token = 'PPG 15b4b888-3839-46e2-926e-05612601d92b:EJtsd2OuKOVnYscou0007Q=='
+        timestamp='1622361455630'
+        expected_auth_token = 'PPG 15b4b888-3839-46e2-926e-05612601d92b:9QoS318BWyr2z2k/fCfORg=='
         actual_auth_token = service.naver._compute_token(timestamp, uuid_str)
         assert expected_auth_token == actual_auth_token
 
