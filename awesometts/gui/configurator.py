@@ -538,10 +538,16 @@ class Configurator(Dialog):
         verify_button.setObjectName('verify_plus_api_key')
         verify_button.setText('Verify')
         verify_button.clicked.connect(lambda: self._on_verify_plus_api_key(verify_button, plus_api_key))
+
+        account_info_button = QtWidgets.QPushButton()
+        account_info_button.setObjectName('plus_account_info')
+        account_info_button.setText('Account Info')
+        account_info_button.clicked.connect(lambda: self._on_plus_account_info(plus_api_key, self))
         
         hor = QtWidgets.QHBoxLayout()
         hor.addWidget(plus_api_key)
         hor.addWidget(verify_button)
+        hor.addWidget(account_info_button)
         ver.addLayout(hor)
 
         ver.addWidget(Label('Please restart Anki after entering API key'))
@@ -776,3 +782,10 @@ class Configurator(Dialog):
             button.setText('Verify')
             aqt.utils.showCritical(result['msg'])
 
+    def _on_plus_account_info(self, lineedit, parent_dialog):
+        """Load account info"""
+
+        api_key = lineedit.text()
+        data = self._addon.languagetools.account_info(api_key)
+
+        print(data)

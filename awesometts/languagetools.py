@@ -29,6 +29,11 @@ class LanguageTools:
         })
         data = json.loads(response.content)
         return data
+    
+    def account_info(self, api_key):
+        response = requests.get(self.base_url + '/account', headers={'api_key': self.get_api_key()})
+        data = json.loads(response.content)
+        return data
 
     def generate_audio(self, source_text, service, voice_key, options, path):
         # query cloud language tools API
