@@ -786,6 +786,13 @@ class Configurator(Dialog):
         """Load account info"""
 
         api_key = lineedit.text()
+        if len(api_key) == 0:
+            aqt.utils.showCritical('Please enter AwesomeTTS Plus API Key', parent=parent_dialog, title='AwesomeTTS Plus Account Info')
+            return
         data = self._addon.languagetools.account_info(api_key)
+        lines = []
+        for key, value in data.items():
+            lines.append(f'<b>{key}</b>: {value}')
+        account_info_str = '<br/>'.join(lines)
+        aqt.utils.showInfo(account_info_str, parent=parent_dialog, title='AwesomeTTS Plus Account Info', textFormat='rich')
 
-        print(data)
