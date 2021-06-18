@@ -230,13 +230,17 @@ class Azure(Service):
             voice.set(
                 'name', voice_name)
 
-            prosody = ElementTree.SubElement(voice, 'prosody')
-            prosody.set('rate', f'{rate:0.1f}')
-            prosody.set('pitch', f'{pitch:+.0f}Hz')
 
-            prosody.text = text
+            # build the prosody element using string templates
+            prosody_xml = f"""<prosody rate="{rate:0.1f}" pitch="{pitch:+.0f}Hz" >{text}</prosody>"""
+            self._logger.info(f"prosody_xml: {prosody_xml}")
+
+            prosody_element = ElementTree.fromstring(prosody_xml)
+
+            voice.append(prosody_element)
+
+            # log the xml
             body = ElementTree.tostring(xml_body)
-
             self._logger.info(f"xml request: {body}")
 
             response = requests.post(constructed_url, headers=headers, data=body)
