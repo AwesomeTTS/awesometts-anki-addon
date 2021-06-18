@@ -25,6 +25,8 @@ import os
 import sys
 from time import time
 
+import PyQt5
+
 from PyQt5.QtCore import PYQT_VERSION_STR, Qt
 from PyQt5.QtGui import QKeySequence
 
@@ -564,6 +566,26 @@ def config_menu():
         sequence=sequences['configurator'],
         parent=aqt.mw.form.menuTools,
     )
+
+    # setup AwesomeTTS resources menu
+    resources_menu = PyQt5.QtWidgets.QMenu('AwesomeTTS Resources', aqt.mw)
+    
+    links = [
+        {'name': """What's New / Updates""", 'url_path': 'updates'},
+        {'name': 'Getting Started with AwesomeTTS', 'url_path': 'tutorials/awesometts-getting-started'},
+        {'name': 'Batch Audio Generation', 'url_path': 'tutorials/awesometts-batch-generation'},
+        {'name': 'On the fly Audio', 'url_path': 'tutorials/awesometts-on-the-fly-tts'},
+        {'name': 'All Tutorials', 'url_path': 'tutorials'},
+        {'name': 'Get Access to All Voices / All Services', 'url_path': 'awesometts-plus'},
+    ]    
+    for link in links:
+        action = PyQt5.QtWidgets.QAction(link['name'], aqt.mw)
+        url_path = link['url_path']
+        url = f'https://languagetools.anki.study/{url_path}?utm_campaign=atts_resources&utm_source=awesometts&utm_medium=addon'
+        action.triggered.connect(lambda: PyQt5.QtGui.QDesktopServices.openUrl(PyQt5.QtCore.QUrl(url)))
+        resources_menu.addAction(action)
+    # and add it to the tools menu
+    aqt.mw.form.menuTools.addMenu(resources_menu)
 
 
 def editor_button():
