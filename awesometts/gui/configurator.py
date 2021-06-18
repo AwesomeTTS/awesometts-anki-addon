@@ -525,7 +525,7 @@ class Configurator(Dialog):
     def _ui_tabs_advanced_plus(self):
 
         ver = QtWidgets.QVBoxLayout()
-        urlLink="<a href=\"https://languagetools.anki.study/awesometts-plus\">AwesomeTTS Plus: 600+ Premium Voices</a>" 
+        urlLink="<a href=\"https://languagetools.anki.study/awesometts-plus?utm_campaign=atts_settings&utm_source=awesometts&utm_medium=addon\">700+ High Quality TTS voices - free trial</a>" 
         url_label = QtWidgets.QLabel(urlLink)
         url_label.setOpenExternalLinks(True)
         ver.addWidget(url_label)

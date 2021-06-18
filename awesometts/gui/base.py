@@ -149,45 +149,26 @@ class Dialog(QtWidgets.QDialog):
     def _ui_buttons(self):
         """
         Returns a horizontal row of standard dialog buttons, with "OK"
-        and "Cancel". If the subclass implements help_request() or
-        help_menu(), a "Help" button will also be shown.
-
-        Subclasses must call this method explicitly, at a location of
-        their choice. Once called, accept(), reject(), and optionally
-        help_request() become wired to the appropriate signals.
+        and "Cancel", and "Help", which links to AwesomeTTS Tutorials
         """
 
         buttons = QtWidgets.QDialogButtonBox()
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
+        buttons.helpRequested.connect(self.open_tutorials)
 
-        has_help_menu = callable(getattr(self, 'help_menu', None))
-        has_help_request = callable(getattr(self, 'help_request', None))
-
-        if has_help_menu or has_help_request:
-            if has_help_request:
-                buttons.helpRequested.connect(self.help_request)
-
-            buttons.setStandardButtons(
-                QtWidgets.QDialogButtonBox.Help |
-                QtWidgets.QDialogButtonBox.Cancel |
-                QtWidgets.QDialogButtonBox.Ok
-            )
-
-        else:
-            buttons.setStandardButtons(
-                QtWidgets.QDialogButtonBox.Cancel |
-                QtWidgets.QDialogButtonBox.Ok
-            )
+        buttons.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Help |
+            QtWidgets.QDialogButtonBox.Cancel |
+            QtWidgets.QDialogButtonBox.Ok
+        )
 
         for btn in buttons.buttons():
             if buttons.buttonRole(btn) == QtWidgets.QDialogButtonBox.AcceptRole:
                 btn.setObjectName('okay')
             elif buttons.buttonRole(btn) == QtWidgets.QDialogButtonBox.RejectRole:
                 btn.setObjectName('cancel')
-            elif (buttons.buttonRole(btn) == QtWidgets.QDialogButtonBox.HelpRole
-                  and has_help_menu):
-                btn.setMenu(self.help_menu(btn))
+
 
         return buttons
 
@@ -202,6 +183,11 @@ class Dialog(QtWidgets.QDialog):
         super(Dialog, self).show(*args, **kwargs)
 
     # Auxiliary ##############################################################
+
+    def open_tutorials(self):
+        url = 'https://languagetools.anki.study/tutorials?utm_campaign=atts_help&utm_source=awesometts&utm_medium=addon'
+        self._addon.logger.debug("Launching %s", url)
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
 
     def _launch_link(self, path):
         """
@@ -303,7 +289,7 @@ class ServiceDialog(Dialog):
         dropdown.activated.connect(self._on_service_activated)
         dropdown.currentIndexChanged.connect(self._on_preset_reset)
 
-        urlLink="<a href=\"https://languagetools.anki.study/awesometts-plus\">AwesomeTTS Plus: 600+ Premium Voices</a>" 
+        urlLink="<a href=\"https://languagetools.anki.study/awesometts-plus?utm_campaign=atts_services&utm_source=awesometts&utm_medium=addon\">700+ High Quality TTS voices - free trial</a>"
         plus_mode_label=QtWidgets.QLabel()
         plus_mode_label.setText(urlLink)
         plus_mode_label.setOpenExternalLinks(True)
