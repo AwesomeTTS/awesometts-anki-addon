@@ -581,6 +581,7 @@ def config_menu():
         {'name': 'Batch Audio Generation', 'url_path': 'tutorials/awesometts-batch-generation'},
         {'name': 'On the fly Audio', 'url_path': 'tutorials/awesometts-on-the-fly-tts'},
         {'name': 'All Tutorials', 'url_path': 'tutorials'},
+        {'name': 'Listen to Voice Samples', 'url_path': 'languages'},
         {'name': 'Get Access to All Voices / All Services', 'url_path': 'awesometts-plus'},
     ]    
     for link in links:
