@@ -570,6 +570,11 @@ def config_menu():
     # setup AwesomeTTS resources menu
     resources_menu = PyQt5.QtWidgets.QMenu('AwesomeTTS Resources', aqt.mw)
     
+    def open_url_lambda(url):
+        def open_url():
+            PyQt5.QtGui.QDesktopServices.openUrl(PyQt5.QtCore.QUrl(url))
+        return open_url
+
     links = [
         {'name': """What's New / Updates""", 'url_path': 'updates'},
         {'name': 'Getting Started with AwesomeTTS', 'url_path': 'tutorials/awesometts-getting-started'},
@@ -582,7 +587,7 @@ def config_menu():
         action = PyQt5.QtWidgets.QAction(link['name'], aqt.mw)
         url_path = link['url_path']
         url = f'https://languagetools.anki.study/{url_path}?utm_campaign=atts_resources&utm_source=awesometts&utm_medium=addon'
-        action.triggered.connect(lambda: PyQt5.QtGui.QDesktopServices.openUrl(PyQt5.QtCore.QUrl(url)))
+        action.triggered.connect(open_url_lambda(url))
         resources_menu.addAction(action)
     # and add it to the tools menu
     aqt.mw.form.menuTools.addMenu(resources_menu)
