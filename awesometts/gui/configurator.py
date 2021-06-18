@@ -650,13 +650,6 @@ class Configurator(Dialog):
 
         super(Configurator, self).accept()
 
-    def help_request(self):
-        """Launch browser to the URL for the user's current tab."""
-
-        tabs = self.findChild(QtWidgets.QTabWidget)
-        self._launch_link('wiki/' +
-                          tabs.tabText(tabs.currentIndex()).lower())
-
     def keyPressEvent(self, key_event):  # from PyQt5, pylint:disable=C0103
         """Assign new combo for shortcut buttons undergoing changes."""
 

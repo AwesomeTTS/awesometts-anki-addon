@@ -189,16 +189,6 @@ class Dialog(QtWidgets.QDialog):
         self._addon.logger.debug("Launching %s", url)
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
 
-    def _launch_link(self, path):
-        """
-        Opens a URL on the AwesomeTTS website with the given path.
-        """
-
-        url = '/wiki/'.join([self._addon.web, path])
-        self._addon.logger.debug("Launching %s", url)
-        QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
-
-
 class ServiceDialog(Dialog):
     """
     Base used for all service-related dialog windows (e.g. single file
@@ -424,28 +414,6 @@ class ServiceDialog(Dialog):
 
         super(ServiceDialog, self).show(*args, **kwargs)
 
-    def help_menu(self, owner):
-        """
-        Returns a menu that can be attached to the Help button.
-        """
-
-        menu = QtWidgets.QMenu(owner)
-
-        help_svc = QtWidgets.QAction(menu)
-        help_svc.triggered \
-            .connect(lambda: self._launch_link('services/' + self._svc_id))
-        help_svc.setObjectName('help_svc')
-
-        try:
-            menu.addAction(
-                self.HELP_USAGE_DESC,
-                lambda: self._launch_link(self.HELP_USAGE_SLUG),
-            )
-        except AttributeError:
-            pass
-
-
-        return menu
 
     def _on_service_activated(self, idx, initial=False, use_options=None):
         """

@@ -103,11 +103,6 @@ class Groups(Dialog):
 
         super(Groups, self).show(*args, **kwargs)
 
-    def help_request(self):
-        """Launch browser to the documentation for groups."""
-
-        self._launch_link('usage/groups')
-
     def _on_group_activated(self, idx):
         """Show the correct panel for the selected group."""
 

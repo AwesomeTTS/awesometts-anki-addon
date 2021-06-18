@@ -149,14 +149,6 @@ class BrowserStripper(Dialog):
 
         super(BrowserStripper, self).show(*args, **kwargs)
 
-    def help_request(self):
-        """
-        Launch the web browser pointed at the subsection of the Browser
-        page about stripping sounds.
-        """
-
-        self._launch_link('usage/removing')
-
     def accept(self):
         """
         Iterates over the selected notes and scans the checked fields
