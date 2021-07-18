@@ -239,7 +239,10 @@ class Oddcast(Service):
     def desc(self):
         """Returns name with a voice count."""
 
-        return "Oddcast Demo (%d voices)" % len(VOICES)
+        return """NOTICE: Oddcast has asked us to remove this service, and instead provide the
+VocalWare service which has the same voices, but requires an API key. After AwesomeTTS
+1.46, the Oddcast service will be removed.
+"""
 
     def options(self):
         """Provides access to voice only."""
