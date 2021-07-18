@@ -192,6 +192,8 @@ class Azure(Service):
         rate = options['azurespeed']
         pitch = options['azurepitch']
 
+        sleep_time = self.config.get('service_azure_sleep_time', 0)
+
         if self.languagetools.use_plus_mode():
             self._logger.info(f'using language tools API')
             service = 'Azure'
@@ -252,5 +254,7 @@ class Azure(Service):
                 f"subscription key: [{subscription_key}]] access token timestamp: [{self.access_token_timestamp}] access token: [{self.access_token}]"
                 raise ValueError(error_message)
 
+            self._logger.debug(f'sleeping for {sleep_time} seconds')
+            time.sleep(sleep_time)
 
 

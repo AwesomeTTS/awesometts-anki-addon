@@ -55,6 +55,7 @@ class Configurator(Dialog):
         'strip_template_brackets', 'strip_template_parens', 'sub_note_cloze',
         'sub_template_cloze', 'sul_note', 'sul_template', 'throttle_sleep',
         'throttle_threshold', 'plus_api_key', 'service_forvo_preferred_users',
+        'service_azure_sleep_time',
         'strip_ruby_tags'
     ]
 
@@ -418,6 +419,7 @@ class Configurator(Dialog):
 
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self._ui_tabs_services_forvo())
+        layout.addWidget(self._ui_tabs_services_azure())
         layout.addStretch()
 
         tab = QtWidgets.QWidget()
@@ -436,6 +438,24 @@ class Configurator(Dialog):
         ver.addWidget(forvo_preferred_users)
 
         group = QtWidgets.QGroupBox("Forvo")
+        group.setLayout(ver)
+        return group
+
+    def _ui_tabs_services_azure(self):
+
+        ver = QtWidgets.QVBoxLayout()
+        url_label = QtWidgets.QLabel("Sleep between each request (for free API keys)")
+        ver.addWidget(url_label)
+        
+        
+        azure_sleep_time = QtWidgets.QSpinBox()
+        azure_sleep_time.setObjectName('service_azure_sleep_time')
+        azure_sleep_time.setRange(0, 10)
+        azure_sleep_time.setSuffix(" seconds")
+
+        ver.addWidget(azure_sleep_time)
+
+        group = QtWidgets.QGroupBox("Azure")
         group.setLayout(ver)
         return group
 
