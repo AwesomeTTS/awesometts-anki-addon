@@ -237,6 +237,7 @@ router = Router(
             ('yandex', service.Yandex),
             ('youdao', service.Youdao),
             ('forvo', service.Forvo),
+            ('vocalware', service.VocalWare),
             ('watson', service.Watson)
         ],
         dead=dict(

@@ -49,6 +49,7 @@ from .spanishdict import SpanishDict
 from .yandex import Yandex
 from .youdao import Youdao
 from .forvo import Forvo
+from .vocalware import VocalWare
 from .watson import Watson
 
 __all__ = [
@@ -81,5 +82,6 @@ __all__ = [
     'Yandex',
     'Youdao',
     'Forvo',
+    'VocalWare',
     'Watson'
 ]
