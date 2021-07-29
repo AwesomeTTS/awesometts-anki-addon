@@ -282,28 +282,8 @@ VocalWare service which has the same voices, but requires an API key. After Awes
     def run(self, text, options, path):
         """Downloads from Oddcast directly to an MP3."""
 
-        eng_id, lang_id, vo_id, _, _, _ = VOICES[options['voice']]
+        raise ValueError(
+f"""on 2021/06/16, the OddCast team asked us to remove the Oddcast service from AwesomeTTS. Starting with AwesomeTTS 1.47, Oddcast will not be available anymore.
+As a substitute, you may sign up for the VocalWare service which is the commercial version of OddCast, but requires a subscription.
+Please email awesometts@airpost.net if you have any questions.""")
 
-        from hashlib import md5
-
-        def get_md5(subtext):
-            """Generates the filename."""
-
-            return md5(
-                (
-                    f'<engineID>{eng_id}</engineID><voiceID>{vo_id}</voiceID>'
-                    f'<langID>{lang_id}</langID><ext>mp3</ext>{subtext}'
-                ).encode()
-            ).hexdigest()
-
-        self.net_download(
-            path,
-            [
-                ('http://cache-a.oddcast.com/c_fs/%s.mp3' % get_md5(subtext),
-                 dict(engine=eng_id, language=lang_id, voice=vo_id,
-                      text=subtext, useUTF8=1))
-                for subtext in self.util_split(text, 180)  # see site maxlength
-            ],
-            require=dict(mime='audio/mpeg', size=256),
-            add_padding=True,
-        )
