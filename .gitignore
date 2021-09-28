@@ -11,3 +11,4 @@ __pycache__/
 .vscode/
 
 /awesometts/.cache/
+/user_files/cache/
