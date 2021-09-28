@@ -43,15 +43,17 @@ ADDON_IS_LINKED = os.path.islink(ADDON)
 
 BLANK = os.path.join(ADDON, 'blank.mp3')
 
-CACHE = os.path.join(ADDON, '.cache')
-
 ICONS = os.path.join(ADDON, 'gui/icons')
-
-os.makedirs(CACHE, exist_ok=True)
 
 ROOT = os.path.dirname(ADDON)
 
-CONFIG = os.path.join(ROOT, 'user_files', 'config.db')
+USER_FILES = os.path.join(ROOT, 'user_files')
+
+# mp3 file cache
+CACHE = os.path.join(USER_FILES, 'cache')
+os.makedirs(CACHE, exist_ok=True)
+
+CONFIG = os.path.join(USER_FILES, 'config.db')
 
 LOG = os.path.join(ADDON, 'addon.log')
 
