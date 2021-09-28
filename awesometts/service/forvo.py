@@ -770,7 +770,7 @@ class Forvo(Service):
             if preferred_user != PREFERRED_USER_DEFAULT_KEY:
                 voice_key['preferred_user'] = preferred_user
 
-            self.languagetools.generate_audio(text, service, voice_key, {}, path)
+            self.languagetools.generate_audio_v2(text, service, 'batch', language_code, 'n/a', voice_key, {}, path)
         else:
 
             api_key = options['key']
