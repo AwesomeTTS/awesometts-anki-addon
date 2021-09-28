@@ -802,7 +802,7 @@ class Forvo(Service):
             if options['apiurl'] == URL_API_COMMERCIAL[0]:
                 url_base = 'apicommercial.forvo.com'
 
-            url = f'https://{url_base}/key/{api_key}/format/json/action/word-pronunciations/word/{encoded_text}/language/{encoded_language}{sex_param}{username_param}/order/rate-desc/limit/1{country_code}'
+            url = f'https://{url_base}/key/{api_key}/format/json/action/word-pronunciations/word/{encoded_text}/language/{encoded_language}{sex_param}{username_param}/order/rate-desc/limit/10{country_code}'
 
             corporate_url = False
             if options['apiurl'] == URL_API_CORPORATE[0]:
@@ -828,6 +828,10 @@ class Forvo(Service):
                     message = f"Pronunciation not found in Forvo for word [{text}], language={options['voice']}, sex={sex}, country={options['country']}"
                     raise IOError(message)
                 audio_url = items[0]['pathmp3']
+                for item in items:
+                    if item['word'] == text:
+                        audio_url = item['pathmp3']
+                        break
                 self.net_download(
                     path,
                     audio_url,
