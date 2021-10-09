@@ -5,7 +5,7 @@ import json
 class LanguageTools:
     def __init__(self, api_key, logger, client_version):
         self.logger = logger
-        self.base_url = 'https://cloud-language-tools-prod.anki.study'
+        self.base_url = 'https://cloud-language-tools-tts-prod.anki.study'
         if 'ANKI_LANGUAGE_TOOLS_BASE_URL' in os.environ:
             self.base_url = os.environ['ANKI_LANGUAGE_TOOLS_BASE_URL']
         self.api_key = api_key
