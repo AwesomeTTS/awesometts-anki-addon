@@ -561,7 +561,7 @@ class Configurator(Dialog):
 
         account_info_button = QtWidgets.QPushButton()
         account_info_button.setObjectName('plus_account_info')
-        account_info_button.setText('Account Info')
+        account_info_button.setText('Account Info / Plan')
         account_info_button.clicked.connect(lambda: self._on_plus_account_info(plus_api_key, self))
         
         hor = QtWidgets.QHBoxLayout()
@@ -805,7 +805,12 @@ class Configurator(Dialog):
         data = self._addon.languagetools.account_info(api_key)
         lines = []
         for key, value in data.items():
-            lines.append(f'<b>{key}</b>: {value}')
+            html = f'<b>{key}</b>: {value}'
+            if key == 'update_url':
+                html = f"""<br/><a href='{value}'>Upgrade / Downgrade / Payment Info</a>"""
+            if key == 'cancel_url':
+                html = f"""<br/><a href='{value}'>Cancel Plan</a>"""
+            lines.append(html)
         account_info_str = '<br/>'.join(lines)
         aqt.utils.showInfo(account_info_str, parent=parent_dialog, title='AwesomeTTS Plus Account Info', textFormat='rich')
 
