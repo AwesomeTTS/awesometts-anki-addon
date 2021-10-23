@@ -749,6 +749,14 @@ class Forvo(Service):
 
         return result
 
+    def get_language_code_from_forvo_lang(self, forvo_lang):
+        forvo_language_id_map = {
+            'zh': 'zh_cn',
+            'ind': 'id_',
+            'pt': 'pt_pt'
+        }
+        return forvo_language_id_map.get(forvo_lang, forvo_lang)
+
     def run(self, text, options, path):
         self._logger.debug(f'running Forvo on text=[{text}], options={options}')
 
@@ -757,12 +765,12 @@ class Forvo(Service):
 
             sex = options['sex']
             country_code = options['country']
-            language_code = options['voice']
+            forvo_language_code = options['voice']
             preferred_user = options['preferreduser']
 
             service = 'Forvo'
             voice_key = {
-                'language_code': language_code,
+                'language_code': forvo_language_code,
                 'country_code': country_code
             }
             if sex != 'any':
@@ -770,7 +778,8 @@ class Forvo(Service):
             if preferred_user != PREFERRED_USER_DEFAULT_KEY:
                 voice_key['preferred_user'] = preferred_user
 
-            self.languagetools.generate_audio_v2(text, service, 'batch', language_code, 'n/a', voice_key, {}, path)
+            languagetools_language_code = self.get_language_code_from_forvo_lang(forvo_language_code)
+            self.languagetools.generate_audio_v2(text, service, 'batch', languagetools_language_code, 'n/a', voice_key, {}, path)
         else:
 
             api_key = options['key']
