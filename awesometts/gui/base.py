@@ -292,15 +292,12 @@ class ServiceDialog(Dialog):
             return open_url        
         plus_mode_button.pressed.connect(open_url_lambda(plus_mode_url))
 
-        # urlLink="<a href=\"https://languagetools.anki.study/awesometts-plus?utm_campaign=atts_services&utm_source=awesometts&utm_medium=addon\">700+ High Quality TTS voices - free trial</a>"
         plus_mode_description=QtWidgets.QLabel()
         font_small = QtGui.QFont()
         font_small.setPointSize(8)
         description_text = '<i>1100+ High quality TTS voices<br/>Free Trial Available. Signup in 5mn.</i>'
         plus_mode_description.setText(description_text)
         plus_mode_description.setFont(font_small)
-        # plus_mode_label.setOpenExternalLinks(True)
-
 
 
         hor = QtWidgets.QHBoxLayout()
