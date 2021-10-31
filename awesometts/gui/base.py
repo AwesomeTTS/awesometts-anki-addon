@@ -279,16 +279,36 @@ class ServiceDialog(Dialog):
         dropdown.activated.connect(self._on_service_activated)
         dropdown.currentIndexChanged.connect(self._on_preset_reset)
 
-        urlLink="<a href=\"https://languagetools.anki.study/awesometts-plus?utm_campaign=atts_services&utm_source=awesometts&utm_medium=addon\">700+ High Quality TTS voices - free trial</a>"
-        plus_mode_label=QtWidgets.QLabel()
-        plus_mode_label.setText(urlLink)
-        plus_mode_label.setOpenExternalLinks(True)
+        plus_mode_url = 'https://languagetools.anki.study/awesometts-plus?utm_campaign=atts_services&utm_source=awesometts&utm_medium=addon'
+        plus_mode_label = 'Get All Voices'
+        plus_mode_button = QtWidgets.QPushButton(plus_mode_label) 
+        plus_mode_button.setStyleSheet('background-color: #69F0AE;')
+        font_large = QtGui.QFont()
+        font_large.setBold(True)
+        plus_mode_button.setFont(font_large)
+        def open_url_lambda(url):
+            def open_url():
+                QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
+            return open_url        
+        plus_mode_button.pressed.connect(open_url_lambda(plus_mode_url))
+
+        # urlLink="<a href=\"https://languagetools.anki.study/awesometts-plus?utm_campaign=atts_services&utm_source=awesometts&utm_medium=addon\">700+ High Quality TTS voices - free trial</a>"
+        plus_mode_description=QtWidgets.QLabel()
+        font_small = QtGui.QFont()
+        font_small.setPointSize(8)
+        description_text = '<i>1100+ High quality TTS voices<br/>Free Trial Available. Signup in 5mn.</i>'
+        plus_mode_description.setText(description_text)
+        plus_mode_description.setFont(font_small)
+        # plus_mode_label.setOpenExternalLinks(True)
+
+
 
         hor = QtWidgets.QHBoxLayout()
         hor.addWidget(Label("Generate using"))
         hor.addWidget(dropdown)
         if not self._addon.languagetools.use_plus_mode():
-            hor.addWidget(plus_mode_label)
+            hor.addWidget(plus_mode_button)
+            hor.addWidget(plus_mode_description)
         hor.addStretch()
 
         header = Label("Configure Service")
