@@ -41,6 +41,7 @@ from .router import Router
 from .text import Sanitizer
 from .ttsplayer import register_tts_player
 from .languagetools import LanguageTools
+from .version import AWESOMETTS_VERSION
 
 __all__ = ['browser_menus', 'cards_button', 'config_menu', 'editor_button',
            'reviewer_hooks', 
@@ -75,7 +76,7 @@ def get_platform_info():
 
     return "%s %s; %s" % (implementation, python_version, system_description)
 
-VERSION = '1.53.0'
+VERSION = AWESOMETTS_VERSION
 
 WEB = 'https://github.com/AwesomeTTS/awesometts-anki-addon'
 
