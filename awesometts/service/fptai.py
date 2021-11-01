@@ -117,7 +117,7 @@ class FptAi(Service):
             # make request first, then we'll have a result URL
             headers = {
                 'api_key': options['key'],
-                'voice': options['voice'],
+                'voice': options['voice']['voice_id'],
                 'Cache-Control': 'no-cache',
                 'format': 'mp3',
                 'speed': str(options['speed'])

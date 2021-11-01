@@ -667,7 +667,7 @@ class TestClass():
                     async_variable=False
                 )
 
-    @pytest.mark.skip(reason="2020/12/18 timeouts, need to see if I can buy an upgraded capacity")
+    # @pytest.mark.skip(reason="2020/12/18 timeouts, need to see if I can buy an upgraded capacity")
     def test_ftpai(self):
         # python -m pytest tests -rPP -k 'test_ftpai'
         svc_id = 'fptai'
