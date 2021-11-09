@@ -56,6 +56,7 @@ REGIONS = [
 ('northeurope', 'Europe, North Europe'),
 ('westeurope', 'Europe, West Europe'),
 ('francecentral', 'Europe, France Central'),
+('switzerlandnorth', 'Europe, Switzerland North'),
 ('uksouth', 'Europe, UK South'),
 ]
 
