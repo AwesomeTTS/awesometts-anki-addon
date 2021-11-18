@@ -225,26 +225,11 @@ class Azure(Service):
                 'User-Agent': 'anki-awesome-tts'
             }
 
-            xml_body = ElementTree.Element('speak', version='1.0')
-
-            xml_body.set('{http://www.w3.org/XML/1998/namespace}lang', language)
-            voice = ElementTree.SubElement(xml_body, 'voice')
-            voice.set('{http://www.w3.org/XML/1998/namespace}lang', language)
-            voice.set(
-                'name', voice_name)
-
-
-            # build the prosody element using string templates
-            prosody_xml = f"""<prosody rate="{rate:0.1f}" pitch="{pitch:+.0f}Hz" >{text}</prosody>"""
-            self._logger.info(f"prosody_xml: {prosody_xml}")
-
-            prosody_element = ElementTree.fromstring(prosody_xml)
-
-            voice.append(prosody_element)
-
-            # log the xml
-            body = ElementTree.tostring(xml_body)
-            self._logger.info(f"xml request: {body}")
+            ssml_str = f"""<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">
+<voice name="{voice_name}"><prosody rate="{rate:0.1f}" pitch="{pitch:+.0f}Hz" >{text}</prosody></voice>
+</speak>""".replace('\n', '')
+            
+            body = ssml_str.encode(encoding='utf-8')
 
             response = requests.post(constructed_url, headers=headers, data=body)
             if response.status_code == 200:
