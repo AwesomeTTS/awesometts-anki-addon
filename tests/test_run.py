@@ -181,7 +181,8 @@ class TestClass():
 
         # enable the sub_xml_entities option
         config_snippet = {
-            'sub_xml_entities': True
+            'sub_note_xml_entities': True,
+            'sub_template_xml_entities': True,
         }
         self.addon.config.update(config_snippet)
 

@@ -56,7 +56,8 @@ class Configurator(Dialog):
         'sub_template_cloze', 'sul_note', 'sul_template', 'throttle_sleep',
         'throttle_threshold', 'plus_api_key', 'service_forvo_preferred_users',
         'service_azure_sleep_time',
-        'strip_ruby_tags'
+        'strip_ruby_tags',
+        'sub_note_xml_entities', 'sub_template_xml_entities'
     ]
 
     _PROPERTY_WIDGETS = (Checkbox, QtWidgets.QComboBox, QtWidgets.QLineEdit,
@@ -207,6 +208,21 @@ class Configurator(Dialog):
             layout.addWidget(Checkbox(
                 "Process Ruby/Furigana tags", 'strip_ruby_tags'
             ))
+            layout.addWidget(Checkbox(
+                """Escape HTML special characters like <,>,&&. 
+    This may be necessary for technical content, 
+    such as medical flashcards.""", 
+                'sub_note_xml_entities'
+            ))            
+        else:
+            layout.addWidget(Checkbox(
+                """Escape HTML special characters like <,>,&&. 
+    This may be necessary for technical content, 
+    such as medical flashcards.""", 
+                'sub_template_xml_entities'
+            ))                        
+
+
 
         hor = QtWidgets.QHBoxLayout()
         hor.addWidget(Label("Strip off text within:"))

@@ -172,7 +172,8 @@ config = Config(
         ('strip_ruby_tags', 'integer', True, to.lax_bool, int),
         ('sub_note_cloze', 'text', 'anki', str, str),
         ('sub_template_cloze', 'text', 'anki', str, str),
-        ('sub_xml_entities', 'integer', False, to.lax_bool, int),
+        ('sub_note_xml_entities', 'integer', False, to.lax_bool, int),
+        ('sub_template_xml_entities', 'integer', False, to.lax_bool, int),
         ('sul_note', 'text', [], to.substitution_list, to.substitution_json),
         ('sul_template', 'text', [], to.substitution_list,
          to.substitution_json),
@@ -339,7 +340,7 @@ addon = Bundle(
             ('custom_sub', 'sul_note'),
             'ellipses',
             'whitespace',
-            ('xml_entities', 'sub_xml_entities')
+            ('xml_entities', 'sub_note_xml_entities')
         ], config=config, logger=logger),
 
         # clean up fields coming from templates (on the fly TTS)
@@ -351,7 +352,7 @@ addon = Bundle(
             ('hint_content', 'otf_remove_hints'),
             ('newline_ellipsize', 'ellip_template_newlines'),
             'html',
-            ('xml_entities', 'sub_xml_entities'),
+            ('xml_entities', 'sub_template_xml_entities'),
         ] + STRIP_TEMPLATE_POSTHTML, config=config, logger=logger),
 
         # for cleaning up text from unknown sources (e.g. system clipboard);
@@ -383,11 +384,15 @@ addon = Bundle(
             ('custom_sub', 'sul_template'),
             'ellipses',
             'whitespace',
-            ('xml_entities', 'sub_xml_entities')
+            ('xml_entities', 'sub_note_xml_entities')
         ], config=config, logger=logger),
 
         # for direct user input (e.g. previews, EditorGenerator insertion)
-        from_user=Sanitizer(rules=['ellipses', 'whitespace'], logger=logger),
+        from_user=Sanitizer(rules=[
+            'ellipses', 
+            'whitespace',
+            ('xml_entities', 'sub_note_xml_entities')
+        ], config=config, logger=logger),
 
         # target sounds specifically
         sounds=Bundle(
