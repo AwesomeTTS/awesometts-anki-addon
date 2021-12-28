@@ -21,8 +21,6 @@ __all__ = ['CereProc']
 class CereProc(Service):
 
     __slots__ = [
-        'access_token',
-        'access_token_timestamp'
     ]
 
     NAME = "CereProc"
@@ -55,7 +53,6 @@ class CereProc(Service):
         assert(len(voice) == 1)
         return voice[0]
 
-
     def get_voice_list(self):
         voice_list = self.get_voices()
         sorted_voice_data = sorted(voice_list, key=lambda x: x.get_description())
@@ -63,9 +60,6 @@ class CereProc(Service):
 
     def options(self):
         """Provides access to voice only."""
-
-        # make sure access token is requested when retrieving audio
-        self.access_token = None
 
         return [
             dict(key='voice',
