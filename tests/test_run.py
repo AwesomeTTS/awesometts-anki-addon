@@ -89,6 +89,12 @@ class TestClass():
     def test_sanitizer_furigana(self):
         # python -m pytest tests -rPP -k 'test_sanitizer_furigana'
 
+        # enable the strip_ruby_tags option
+        config_snippet = {
+            'strip_ruby_tags': True
+        }
+        self.addon.config.update(config_snippet)
+
         input_text = '<ruby title="東京(とうきょう)"><rb>東京</rb><rt>とうきょう</rt></ruby>&nbsp;<br>'
         assert self.addon.strip.from_note(input_text) == '東京'
         assert self.addon.strip.from_template(input_text) == '東京'
