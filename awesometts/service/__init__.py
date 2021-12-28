@@ -26,6 +26,7 @@ from .amazon import Amazon
 from .azure import Azure
 from .baidu import Baidu
 from .cambridge import Cambridge
+from .cereproc import CereProc
 from .collins import Collins
 from .duden import Duden
 from .ekho import Ekho
@@ -60,6 +61,7 @@ __all__ = [
     'Amazon',
     'Azure',
     'Baidu',
+    'CereProc',
     'Collins',
     'Duden',
     'Ekho',

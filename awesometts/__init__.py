@@ -218,6 +218,7 @@ router = Router(
             ('azure', service.Azure),
             ('baidu', service.Baidu),
             ('cambridge', service.Cambridge),
+            ('cereproc', service.CereProc),
             ('collins', service.Collins),
             ('duden', service.Duden),
             ('ekho', service.Ekho),
