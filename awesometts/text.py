@@ -24,6 +24,7 @@ import re
 from io import StringIO
 
 from bs4 import BeautifulSoup
+import html
 import anki
 
 clozeReg = r"(?si)\{\{(?P<tag>c)%s::(?P<content>.*?)(::(?P<hint>.*?))?\}\}"
@@ -384,6 +385,9 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
                 rt_tag.string = ''
             return str(soup)
         return text
+
+    def _rule_xml_entities(self, text):
+        return html.escape(text)
 
 
 def _aux_within(text, begin_char, end_char):
