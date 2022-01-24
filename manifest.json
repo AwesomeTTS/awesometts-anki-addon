@@ -1,4 +1,8 @@
 {
     "package": "awesometts",
     "name": "AwesomeTTS"
+    "ankiweb_id": "1436550454",
+    "author": "AwesomeTTS",
+    "version": "v1.57.0",
+    "homepage": "https://github.com/AwesomeTTS/awesometts-anki-addon"
 }
