@@ -191,6 +191,16 @@ class TestClass():
         assert self.addon.strip.from_note(input_text) == expected_output
         assert self.addon.strip.from_template(input_text) == expected_output
 
+        input_text = 'for patients > 60'
+        expected_output = 'for patients &gt; 60'
+        assert self.addon.strip.from_note(input_text) == expected_output
+        assert self.addon.strip.from_template(input_text) == expected_output        
+
+        input_text = 'M&A'
+        expected_output = 'M&amp;A'
+        assert self.addon.strip.from_note(input_text) == expected_output
+        assert self.addon.strip.from_template(input_text) == expected_output                
+
     def test_services(self):
         # python -m pytest tests -rPP -k 'test_services'
         """Tests all services (except services which require an API key) using a single word.

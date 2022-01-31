@@ -387,7 +387,16 @@ class Sanitizer(object):  # call only, pylint:disable=too-few-public-methods
         return text
 
     def _rule_xml_entities(self, text):
-        return html.escape(text)
+        # not all html entities should be replaced, so we can maintain a map here
+        SSML_CONVERSION_MAP ={
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '，': ',', # chinese comma
+        }
+        for pattern, replace in SSML_CONVERSION_MAP.items():
+            text = text.replace(pattern, replace)        
+        return text
 
 
 def _aux_within(text, begin_char, end_char):
