@@ -219,6 +219,8 @@ class Button(QtWidgets.QPushButton, _QtConnector, AbstractButton):
 
         self.setShortcut(sequence)
         self.setToolTip(self.tooltip_text(tooltip, sequence))
+        self.setDefault(False)
+        self.setAutoDefault(False)
 
         if style:
             self.setStyle(style)
