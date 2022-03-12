@@ -26,6 +26,7 @@ use with AwesomeTTS.
 import inspect
 
 import aqt.qt
+import pprint
 
 from ..paths import ICONS
 from .common import Label, Note, ICON
@@ -343,7 +344,7 @@ class ServiceDialog(Dialog):
 
         save = aqt.qt.QPushButton("Save")
         save.setObjectName('presets_save')
-        save.setFixedWidth(save.fontMetrics().width(save.text()) + 20)
+        # save.setFixedWidth(save.fontMetrics().width(save.text()) + 20)
         save.setToolTip("Remember the selected service and its input\n"
                         "settings so that you can quickly access it later.")
         save.clicked.connect(self._on_preset_save)
@@ -597,6 +598,10 @@ class ServiceDialog(Dialog):
                         self._addon.config['last_options'].get(svc_id, {}))
         vinputs = widget.findChildren(self._OPTIONS_WIDGETS)
 
+        pprint.pprint(vinputs)
+
+        if len(vinputs) != len(options):
+            raise Exception(f'len(vinputs): {len(vinputs)} len(options): {len(options)}')
         assert len(vinputs) == len(options)
 
         for i, opt in enumerate(options):

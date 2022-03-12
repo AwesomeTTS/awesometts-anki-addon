@@ -689,7 +689,7 @@ class EditorGenerator(ServiceDialog):
         text.setTabChangesFocus(True)
         text.keyPressEvent = lambda key_event: \
             self.accept() if (
-                key_event.modifiers() & aqt.qt.Qt.ControlModifier and
+                key_event.modifiers() & aqt.qt.Qt.KeyboardModifier.ControlModifier and
                 key_event.key() in [aqt.qt.Qt.Key_Return, aqt.qt.Qt.Key_Enter]
             ) \
             else aqt.qt.QTextEdit.keyPressEvent(text, key_event)

@@ -417,7 +417,7 @@ class Configurator(Dialog):
             "you use math equations and LaTeX with Anki using the %(native)s "
             "E/M/T keystrokes, you may want to reassign or unbind the "
             "shortcut for generating in the note editor." %
-            dict(native=key_combo_desc(aqt.qt.Qt.ControlModifier |
+            dict(native=key_combo_desc(aqt.qt.Qt.KeyboardModifier.ControlModifier |
                                        aqt.qt.Qt.Key_T))
         ))
         vert.addWidget(Note("Editor and browser shortcuts will take effect "

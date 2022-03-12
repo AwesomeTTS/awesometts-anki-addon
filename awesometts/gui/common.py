@@ -64,8 +64,8 @@ def key_event_combo(event):
                      if modifiers & flag)
 
 
-key_event_combo.MOD_FLAGS = [aqt.qt.Qt.AltModifier,aqt.qt.Qt.ControlModifier,
-                            aqt.qt.Qt.MetaModifier,aqt.qt.Qt.ShiftModifier]
+key_event_combo.MOD_FLAGS = [aqt.qt.Qt.KeyboardModifier.AltModifier,aqt.qt.Qt.KeyboardModifier.ControlModifier,
+                            aqt.qt.Qt.KeyboardModifier.MetaModifier,aqt.qt.Qt.KeyboardModifier.ShiftModifier]
 
 key_event_combo.BLACKLIST = [
    aqt.qt.Qt.Key_Alt,aqt.qt.Qt.Key_AltGr,aqt.qt.Qt.Key_Backspace,aqt.qt.Qt.Key_Backtab,
