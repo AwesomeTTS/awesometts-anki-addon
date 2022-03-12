@@ -134,7 +134,7 @@ class Dialog(aqt.qt.QDialog):
 
         return layout
 
-    def _ui_divider(self, orientation_style=aqt.qt.QFrame.VLine):
+    def _ui_divider(self, orientation_style=aqt.qt.QFrame.Shape.VLine):
         """
         Returns a divider.
 
@@ -372,7 +372,7 @@ class ServiceDialog(Dialog):
         text = aqt.qt.QLineEdit()
         text.keyPressEvent = lambda key_event: (
             self._on_preview()
-            if key_event.key() in [aqt.qt.Qt.Key_Enter, aqt.qt.Qt.Key_Return]
+            if key_event.key() in [aqt.qt.Qt.Key.Key_Enter, aqt.qt.Qt.Key.Key_Return]
             else aqt.qt.QLineEdit.keyPressEvent(text, key_event)
         )
         text.setObjectName('text')

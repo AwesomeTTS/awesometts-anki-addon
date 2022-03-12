@@ -68,19 +68,19 @@ key_event_combo.MOD_FLAGS = [aqt.qt.Qt.KeyboardModifier.AltModifier,aqt.qt.Qt.Ke
                             aqt.qt.Qt.KeyboardModifier.MetaModifier,aqt.qt.Qt.KeyboardModifier.ShiftModifier]
 
 key_event_combo.BLACKLIST = [
-   aqt.qt.Qt.Key_Alt,aqt.qt.Qt.Key_AltGr,aqt.qt.Qt.Key_Backspace,aqt.qt.Qt.Key_Backtab,
-   aqt.qt.Qt.Key_CapsLock,aqt.qt.Qt.Key_Control,aqt.qt.Qt.Key_Dead_Abovedot,
-   aqt.qt.Qt.Key_Dead_Abovering,aqt.qt.Qt.Key_Dead_Acute,aqt.qt.Qt.Key_Dead_Belowdot,
-   aqt.qt.Qt.Key_Dead_Breve,aqt.qt.Qt.Key_Dead_Caron,aqt.qt.Qt.Key_Dead_Cedilla,
-   aqt.qt.Qt.Key_Dead_Circumflex,aqt.qt.Qt.Key_Dead_Diaeresis,aqt.qt.Qt.Key_Dead_Doubleacute,
-   aqt.qt.Qt.Key_Dead_Grave,aqt.qt.Qt.Key_Dead_Hook,aqt.qt.Qt.Key_Dead_Horn,aqt.qt.Qt.Key_Dead_Iota,
-   aqt.qt.Qt.Key_Dead_Macron,aqt.qt.Qt.Key_Dead_Ogonek,aqt.qt.Qt.Key_Dead_Semivoiced_Sound,
-   aqt.qt.Qt.Key_Dead_Tilde,aqt.qt.Qt.Key_Dead_Voiced_Sound,aqt.qt.Qt.Key_Delete,aqt.qt.Qt.Key_Down,
-   aqt.qt.Qt.Key_End,aqt.qt.Qt.Key_Enter,aqt.qt.Qt.Key_Equal,aqt.qt.Qt.Key_Escape,aqt.qt.Qt.Key_Home,
-   aqt.qt.Qt.Key_Insert,aqt.qt.Qt.Key_Left,aqt.qt.Qt.Key_Menu,aqt.qt.Qt.Key_Meta,aqt.qt.Qt.Key_Minus,
-   aqt.qt.Qt.Key_Mode_switch,aqt.qt.Qt.Key_NumLock,aqt.qt.Qt.Key_PageDown,aqt.qt.Qt.Key_PageUp,
-   aqt.qt.Qt.Key_Plus,aqt.qt.Qt.Key_Return,aqt.qt.Qt.Key_Right,aqt.qt.Qt.Key_ScrollLock,aqt.qt.Qt.Key_Shift,
-   aqt.qt.Qt.Key_Space,aqt.qt.Qt.Key_Tab,aqt.qt.Qt.Key_Underscore,aqt.qt.Qt.Key_Up,
+   aqt.qt.Qt.Key.Key_Alt,aqt.qt.Qt.Key.Key_AltGr,aqt.qt.Qt.Key.Key_Backspace,aqt.qt.Qt.Key.Key_Backtab,
+   aqt.qt.Qt.Key.Key_CapsLock,aqt.qt.Qt.Key.Key_Control,aqt.qt.Qt.Key.Key_Dead_Abovedot,
+   aqt.qt.Qt.Key.Key_Dead_Abovering,aqt.qt.Qt.Key.Key_Dead_Acute,aqt.qt.Qt.Key.Key_Dead_Belowdot,
+   aqt.qt.Qt.Key.Key_Dead_Breve,aqt.qt.Qt.Key.Key_Dead_Caron,aqt.qt.Qt.Key.Key_Dead_Cedilla,
+   aqt.qt.Qt.Key.Key_Dead_Circumflex,aqt.qt.Qt.Key.Key_Dead_Diaeresis,aqt.qt.Qt.Key.Key_Dead_Doubleacute,
+   aqt.qt.Qt.Key.Key_Dead_Grave,aqt.qt.Qt.Key.Key_Dead_Hook,aqt.qt.Qt.Key.Key_Dead_Horn,aqt.qt.Qt.Key.Key_Dead_Iota,
+   aqt.qt.Qt.Key.Key_Dead_Macron,aqt.qt.Qt.Key.Key_Dead_Ogonek,aqt.qt.Qt.Key.Key_Dead_Semivoiced_Sound,
+   aqt.qt.Qt.Key.Key_Dead_Tilde,aqt.qt.Qt.Key.Key_Dead_Voiced_Sound,aqt.qt.Qt.Key.Key_Delete,aqt.qt.Qt.Key.Key_Down,
+   aqt.qt.Qt.Key.Key_End,aqt.qt.Qt.Key.Key_Enter,aqt.qt.Qt.Key.Key_Equal,aqt.qt.Qt.Key.Key_Escape,aqt.qt.Qt.Key.Key_Home,
+   aqt.qt.Qt.Key.Key_Insert,aqt.qt.Qt.Key.Key_Left,aqt.qt.Qt.Key.Key_Menu,aqt.qt.Qt.Key.Key_Meta,aqt.qt.Qt.Key.Key_Minus,
+   aqt.qt.Qt.Key.Key_Mode_switch,aqt.qt.Qt.Key.Key_NumLock,aqt.qt.Qt.Key.Key_PageDown,aqt.qt.Qt.Key.Key_PageUp,
+   aqt.qt.Qt.Key.Key_Plus,aqt.qt.Qt.Key.Key_Return,aqt.qt.Qt.Key.Key_Right,aqt.qt.Qt.Key.Key_ScrollLock,aqt.qt.Qt.Key.Key_Shift,
+   aqt.qt.Qt.Key.Key_Space,aqt.qt.Qt.Key.Key_Tab,aqt.qt.Qt.Key.Key_Underscore,aqt.qt.Qt.Key.Key_Up,
 ]
 
 

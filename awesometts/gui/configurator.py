@@ -418,7 +418,7 @@ class Configurator(Dialog):
             "E/M/T keystrokes, you may want to reassign or unbind the "
             "shortcut for generating in the note editor." %
             dict(native=key_combo_desc(aqt.qt.Qt.KeyboardModifier.ControlModifier |
-                                       aqt.qt.Qt.Key_T))
+                                       aqt.qt.Qt.Key.Key_T))
         ))
         vert.addWidget(Note("Editor and browser shortcuts will take effect "
                             "the next time you open those windows."))
@@ -698,13 +698,13 @@ class Configurator(Dialog):
 
         key = key_event.key()
 
-        if key == aqt.qt.Qt.Key_Escape:
+        if key == aqt.qt.Qt.Key.Key_Escape:
             for button in buttons:
                 button.atts_pending = False
                 button.setText(key_combo_desc(button.atts_value))
             return
 
-        if key in [aqt.qt.Qt.Key_Backspace, aqt.qt.Qt.Key_Delete]:
+        if key in [aqt.qt.Qt.Key.Key_Backspace, aqt.qt.Qt.Key.Key_Delete]:
             combo = None
         else:
             combo = key_event_combo(key_event)
@@ -722,7 +722,7 @@ class Configurator(Dialog):
         if not buttons:
             return super(Configurator, self).keyReleaseEvent(key_event)
 
-        elif key_event.key() in [aqt.qt.Qt.Key_Enter, aqt.qt.Qt.Key_Return]:
+        elif key_event.key() in [aqt.qt.Qt.Key.Key_Enter, aqt.qt.Qt.Key.Key_Return]:
             # need to ignore and eat key release on enter/return so that user
             # can activate the button without immediately deactivating it
             return

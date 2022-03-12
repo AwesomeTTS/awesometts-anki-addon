@@ -201,7 +201,7 @@ class _SubRuleDelegate(_Delegate):
     def setEditorData(self, editor, index):  # pylint:disable=C0103
         """Populate controls and focus the first edit box."""
 
-        rule = index.data(aqt.qt.Qt.EditRole)
+        rule = index.data(aqt.qt.Qt.ItemDataRole.EditRole)
 
         edits = editor.findChildren(aqt.qt.QLineEdit)
         edits[0].setText(rule['input'])
@@ -293,7 +293,7 @@ class _GroupPresetDelegate(_Delegate):
         """Changes the preset in the dropdown."""
 
         dropdown = editor.findChild(aqt.qt.QComboBox)
-        value = index.data(aqt.qt.Qt.EditRole)
+        value = index.data(aqt.qt.Qt.ItemDataRole.EditRole)
         dropdown.setCurrentIndex(dropdown.findText(value) if value else 0)
 
         aqt.qt.QTimer.singleShot(0, dropdown.setFocus)
@@ -317,8 +317,8 @@ class _ListModel(aqt.qt.QAbstractListModel):  # pylint:disable=R0904
         """Always return same item flags."""
         return self.flags.LIST_ITEM
 
-    flags.LIST_ITEM = (aqt.qt.Qt.ItemIsSelectable | aqt.qt.Qt.ItemIsEditable |
-                       aqt.qt.Qt.ItemIsEnabled)
+    flags.LIST_ITEM = (aqt.qt.Qt.ItemFlag.ItemIsSelectable | aqt.qt.Qt.ItemFlag.ItemIsEditable |
+                       aqt.qt.Qt.ItemFlag.ItemIsEnabled)
 
     def rowCount(self,          # pylint:disable=invalid-name
                  parent=None):  # pylint:disable=unused-argument
@@ -364,7 +364,7 @@ class _ListModel(aqt.qt.QAbstractListModel):  # pylint:disable=R0904
         return True
 
     def setData(self, index, value,        # pylint:disable=C0103
-                role=aqt.qt.Qt.EditRole):  # pylint:disable=W0613
+                role=aqt.qt.Qt.ItemDataRole.EditRole):  # pylint:disable=W0613
         """Update the new value into the raw list."""
 
         self.raw_data[index.row()] = value
@@ -378,10 +378,10 @@ class _SubListModel(_ListModel):  # pylint:disable=R0904
         super(_SubListModel, self).__init__(*args, **kwargs)
         self.raw_data = [dict(obj) for obj in self.raw_data]  # deep copy
 
-    def data(self, index, role=aqt.qt.Qt.DisplayRole):
+    def data(self, index, role=aqt.qt.Qt.ItemDataRole.DisplayRole):
         """Return display or edit data for the indexed rule."""
 
-        if role == aqt.qt.Qt.DisplayRole:
+        if role == aqt.qt.Qt.ItemDataRole.DisplayRole:
             rule = self.raw_data[index.row()]
             if not rule['input']:
                 return "empty match pattern"
@@ -402,7 +402,7 @@ class _SubListModel(_ListModel):  # pylint:disable=R0904
             ])
             return "match " + text + " and " + action + "\n(" + attr + ")"
 
-        elif role == aqt.qt.Qt.EditRole:
+        elif role == aqt.qt.Qt.ItemDataRole.EditRole:
             return self.raw_data[index.row()]
 
     def insertRow(self, row=None, parent=None):  # pylint:disable=C0103
@@ -428,15 +428,15 @@ class _GroupListModel(_ListModel):  # pylint:disable=R0904
         super(_GroupListModel, self).__init__(*args, **kwargs)
         self._presets = presets
 
-    def data(self, index, role=aqt.qt.Qt.DisplayRole):
+    def data(self, index, role=aqt.qt.Qt.ItemDataRole.DisplayRole):
         """Return display or edit data for the indexed preset."""
 
         preset = self.raw_data[index.row()]
-        if role == aqt.qt.Qt.DisplayRole:
+        if role == aqt.qt.Qt.ItemDataRole.DisplayRole:
             return ("(not selected)" if not preset
                     else preset if preset in self._presets
                     else preset + " [deleted]")
-        elif role == aqt.qt.Qt.EditRole:
+        elif role == aqt.qt.Qt.ItemDataRole.EditRole:
             return preset
 
     def insertRow(self, row=None, parent=None):  # pylint:disable=C0103
