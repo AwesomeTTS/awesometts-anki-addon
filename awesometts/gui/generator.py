@@ -855,7 +855,7 @@ class _Progress(Dialog):
         self.setMinimumWidth(500)
 
         status = Note("Please wait...")
-        status.setAlignment(aqt.qt.Qt.AlignCenter)
+        status.setAlignment(aqt.qt.Qt.AlignmentFlag.AlignCenter)
         status.setObjectName('status')
 
         progress_bar = aqt.qt.QProgressBar()
@@ -863,7 +863,7 @@ class _Progress(Dialog):
         progress_bar.setObjectName('bar')
 
         detail = Note("")
-        detail.setAlignment(aqt.qt.Qt.AlignCenter)
+        detail.setAlignment(aqt.qt.Qt.AlignmentFlag.AlignCenter)
         detail.setFixedHeight(100)
         detail.setFont(self._FONT_INFO)
         detail.setObjectName('detail')
@@ -889,8 +889,8 @@ class _Progress(Dialog):
         buttons = aqt.qt.QDialogButtonBox()
         buttons.setObjectName('buttons')
         buttons.rejected.connect(self.reject)
-        buttons.setStandardButtons(aqt.qt.QDialogButtonBox.Cancel)
-        buttons.button(aqt.qt.QDialogButtonBox.Cancel).setAutoDefault(False)
+        buttons.setStandardButtons(aqt.qt.QDialogButtonBox.StandardButton.Cancel)
+        buttons.button(aqt.qt.QDialogButtonBox.StandardButton.Cancel).setAutoDefault(False)
 
         return buttons
 
