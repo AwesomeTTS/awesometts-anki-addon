@@ -164,10 +164,13 @@ class Configurator(Dialog):
         group.setFlat(True)
         group.setLayout(layout)
 
-        _, top, right, bottom = layout.getContentsMargins()
-        layout.setContentsMargins(0, top, right, bottom)
-        _, top, right, bottom = group.getContentsMargins()
-        group.setContentsMargins(0, top, right, bottom)
+        layout_margins = layout.contentsMargins()
+        layout_margins.setLeft(0)
+        layout.setContentsMargins(layout_margins)
+        groupbox_margins = group.contentsMargins()
+        groupbox_margins.setLeft(0)
+        group.setContentsMargins(groupbox_margins)
+
         return group
 
     def _ui_tabs_text_mode_simple(self, infix, cloze_description,

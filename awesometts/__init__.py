@@ -827,7 +827,7 @@ def window_shortcuts():
     def on_sequence_change(new_config):
         """Update sequences on configuration changes."""
         for key, sequence in sequences.items():
-            new_sequence = QKeySequence(new_config['launch_' + key] or None)
+            new_sequence = aqt.qt.QKeySequence(new_config['launch_' + key] or None)
             sequence.swap(new_sequence)
 
         try:
