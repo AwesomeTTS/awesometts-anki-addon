@@ -159,9 +159,9 @@ class Dialog(aqt.qt.QDialog):
         buttons.helpRequested.connect(self.open_tutorials)
 
         buttons.setStandardButtons(
-            aqt.qt.QDialogButtonBox.Help |
-            aqt.qt.QDialogButtonBox.Cancel |
-            aqt.qt.QDialogButtonBox.Ok
+            aqt.qt.QDialogButtonBox.StandardButton.Help |
+            aqt.qt.QDialogButtonBox.StandardButton.Cancel |
+            aqt.qt.QDialogButtonBox.StandardButton.Ok
         )
 
         for btn in buttons.buttons():

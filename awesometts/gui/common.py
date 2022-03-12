@@ -90,7 +90,7 @@ def key_combo_desc(combo):
     human-readable description.
     """
 
-    return aqt.qt.QKeySequence(combo).toString(aqt.qt.QKeySequence.NativeText) \
+    return aqt.qt.QKeySequence(combo).toString(aqt.qt.QKeySequence.SequenceFormat.NativeText) \
         if combo else "unassigned"
 
 
