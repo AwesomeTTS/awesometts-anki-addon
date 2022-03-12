@@ -327,8 +327,8 @@ class ServiceDialog(Dialog):
 
         dropdown = aqt.qt.QComboBox()
         dropdown.setObjectName('presets_dropdown')
-        dropdown.setSizePolicy(aqt.qt.QSizePolicy.MinimumExpanding,
-                               aqt.qt.QSizePolicy.Preferred)
+        dropdown.setSizePolicy(aqt.qt.QSizePolicy.Policy.MinimumExpanding,
+                               aqt.qt.QSizePolicy.Policy.Preferred)
         dropdown.activated.connect(self._on_preset_activated)
 
         delete = aqt.qt.QPushButton(aqt.qt.QIcon(f'{ICONS}/editdelete.png'), "")
@@ -580,7 +580,7 @@ class ServiceDialog(Dialog):
         note = Note(self._addon.router.get_desc(svc_id))
         note.setFont(self._FONT_INFO)
 
-        panel.addWidget(note, row, 0, 1, 3, aqt.qt.Qt.AlignTop)
+        panel.addWidget(note, row, 0, 1, 3, aqt.qt.Qt.AlignmentFlag.AlignTop)
         panel.setRowStretch(row, 1)
 
     def _on_service_activated_set(self, svc_id, widget, options,

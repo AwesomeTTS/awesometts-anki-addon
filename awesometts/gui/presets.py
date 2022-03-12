@@ -70,7 +70,7 @@ class Presets(ServiceDialog):
 
         buttons = super(Presets, self)._ui_buttons()
         for btn in buttons.buttons():
-            if buttons.buttonRole(btn) == aqt.qt.QDialogButtonBox.RejectRole:
+            if buttons.buttonRole(btn) == aqt.qt.QDialogButtonBox.ButtonRole.RejectRole:
                 buttons.removeButton(btn)
         return buttons
 
