@@ -26,6 +26,7 @@ use with AwesomeTTS.
 import inspect
 
 import aqt.qt
+import aqt.utils
 import pprint
 
 from ..paths import ICONS
@@ -79,10 +80,7 @@ class Dialog(aqt.qt.QDialog):
 
         self.setModal(True)
         self.setLayout(self._ui())
-        self.setWindowFlags(
-            self.windowFlags() &
-            ~aqt.qt.Qt.WindowContextHelpButtonHint
-        )
+        aqt.utils.disable_help_button(self)
         self.setWindowIcon(ICON)
         self.setWindowTitle(
             title if "AwesomeTTS" in title
@@ -165,9 +163,9 @@ class Dialog(aqt.qt.QDialog):
         )
 
         for btn in buttons.buttons():
-            if buttons.buttonRole(btn) == aqt.qt.QDialogButtonBox.AcceptRole:
+            if buttons.buttonRole(btn) == aqt.qt.QDialogButtonBox.ButtonRole.AcceptRole:
                 btn.setObjectName('okay')
-            elif buttons.buttonRole(btn) == aqt.qt.QDialogButtonBox.RejectRole:
+            elif buttons.buttonRole(btn) == aqt.qt.QDialogButtonBox.ButtonRole.RejectRole:
                 btn.setObjectName('cancel')
 
 
