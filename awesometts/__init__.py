@@ -25,13 +25,9 @@ import os
 import sys
 from time import time
 
-import PyQt5
-
-from PyQt5.QtCore import PYQT_VERSION_STR, Qt
-from PyQt5.QtGui import QKeySequence
-
 import anki
 import aqt
+import aqt.qt
 
 from . import conversion as to, gui, paths, service
 from .bundle import Bundle
@@ -81,7 +77,7 @@ VERSION = AWESOMETTS_VERSION
 WEB = 'https://github.com/AwesomeTTS/awesometts-anki-addon'
 
 AGENT = 'AwesomeTTS/%s (Anki %s; PyQt %s; %s)' % (VERSION, anki.version,
-                                                  PYQT_VERSION_STR,
+                                                  aqt.qt.PYQT_VERSION_STR,
                                                   get_platform_info())
 
 
@@ -110,7 +106,7 @@ else:
     logger = Bundle(debug=lambda *a, **k: None, error=lambda *a, **k: None,
                     info=lambda *a, **k: None, warn=lambda *a, **k: None)
 
-sequences = {key: QKeySequence()
+sequences = {key: aqt.qt.QKeySequence()
              for key in ['browser_generator', 'browser_stripper',
                          'configurator', 'editor_generator', 'templater']}
 
@@ -139,15 +135,15 @@ config = Config(
                                   else 'say' if 'darwin' in sys.platform
                                   else 'yandex'), str, str),
         ('last_strip_mode', 'text', 'ours', str, str),
-        ('launch_browser_generator', 'integer', Qt.ControlModifier | Qt.Key_T,
+        ('launch_browser_generator', 'integer',aqt.qt.Qt.ControlModifier |aqt.qt.Qt.Key_T,
          to.nullable_key, to.nullable_int),
         ('launch_browser_stripper', 'integer', None, to.nullable_key,
          to.nullable_int),
-        ('launch_configurator', 'integer', Qt.ControlModifier | Qt.Key_T,
+        ('launch_configurator', 'integer',aqt.qt.Qt.ControlModifier |aqt.qt.Qt.Key_T,
          to.nullable_key, to.nullable_int),
-        ('launch_editor_generator', 'integer', Qt.ControlModifier | Qt.Key_T,
+        ('launch_editor_generator', 'integer',aqt.qt.Qt.ControlModifier |aqt.qt.Qt.Key_T,
          to.nullable_key, to.nullable_int),
-        ('launch_templater', 'integer', Qt.ControlModifier | Qt.Key_T,
+        ('launch_templater', 'integer',aqt.qt.Qt.ControlModifier |aqt.qt.Qt.Key_T,
          to.nullable_key, to.nullable_int),
         ('otf_only_revealed_cloze', 'integer', False, to.lax_bool, int),
         ('otf_remove_hints', 'integer', False, to.lax_bool, int),
@@ -431,12 +427,10 @@ def browser_menus():
     disables and enables it upon selection of items.
     """
 
-    from PyQt5 import QtWidgets
-
     def on_setup_menus(browser):
         """Create an AwesomeTTS menu and add browser actions to it."""
 
-        menu = QtWidgets.QMenu("Awesome&TTS", browser.form.menubar)
+        menu = aqt.qt.QMenu("Awesome&TTS", browser.form.menubar)
         browser.form.menubar.addMenu(menu)
 
         gui.Action(
@@ -581,11 +575,11 @@ def config_menu():
     )
 
     # setup AwesomeTTS resources menu
-    resources_menu = PyQt5.QtWidgets.QMenu('AwesomeTTS Resources', aqt.mw)
+    resources_menu = aqt.qt.QMenu('AwesomeTTS Resources', aqt.mw)
     
     def open_url_lambda(url):
         def open_url():
-            PyQt5.QtGui.QDesktopServices.openUrl(PyQt5.QtCore.QUrl(url))
+            aqt.qt.QDesktopServices.openUrl(aqt.qt.QUrl(url))
         return open_url
 
     links = [
@@ -598,7 +592,7 @@ def config_menu():
         {'name': 'Get Access to All Voices / All Services', 'url_path': 'awesometts-plus'},
     ]    
     for link in links:
-        action = PyQt5.QtWidgets.QAction(link['name'], aqt.mw)
+        action = aqt.qt.QAction(link['name'], aqt.mw)
         url_path = link['url_path']
         url = f'https://languagetools.anki.study/{url_path}?utm_campaign=atts_resources&utm_source=awesometts&utm_medium=addon'
         action.triggered.connect(open_url_lambda(url))
@@ -679,9 +673,6 @@ def reviewer_hooks():
     context menu.
     """
 
-    from PyQt5.QtCore import QEvent
-    from PyQt5.QtWidgets import QMenu
-
 
     # context menu playback
 
@@ -726,7 +717,7 @@ def reviewer_hooks():
 
         say_text = config['presets'] and strip(web_view.selectedText())
 
-        submenu = QMenu("Awesome&TTS", menu)
+        submenu = aqt.qt.QMenu("Awesome&TTS", menu)
         submenu.setIcon(gui.ICON)
 
         needs_separator = False

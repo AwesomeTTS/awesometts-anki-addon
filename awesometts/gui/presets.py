@@ -18,7 +18,7 @@
 
 """Presets management dialog"""
 
-from PyQt5 import QtWidgets
+import aqt.qt
 
 from .base import ServiceDialog
 from .common import Label, Note
@@ -70,7 +70,7 @@ class Presets(ServiceDialog):
 
         buttons = super(Presets, self)._ui_buttons()
         for btn in buttons.buttons():
-            if buttons.buttonRole(btn) == QtWidgets.QDialogButtonBox.RejectRole:
+            if buttons.buttonRole(btn) == aqt.qt.QDialogButtonBox.RejectRole:
                 buttons.removeButton(btn)
         return buttons
 

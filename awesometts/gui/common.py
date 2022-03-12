@@ -25,8 +25,7 @@ As everything done from the add-on code has to do with AwesomeTTS, these
 all carry a speaker icon (if supported by the desktop environment).
 """
 
-from PyQt5 import QtCore, QtWidgets, QtGui
-from PyQt5.QtCore import Qt
+import aqt.qt
 
 from ..paths import ICONS
 
@@ -35,7 +34,7 @@ __all__ = ['ICON', 'key_event_combo', 'key_combo_desc', 'Action', 'Button',
 
 
 ICON_FILE = f'{ICONS}/speaker.png'
-ICON = QtGui.QIcon(ICON_FILE)
+ICON = aqt.qt.QIcon(ICON_FILE)
 
 
 def key_event_combo(event):
@@ -48,7 +47,7 @@ def key_event_combo(event):
     an event. When used by themselves or exclusively with modifiers,
     these keys cause various problems: gibberish strings returned from
     QKeySequence#toString() and in menus, inability to capture the
-    keystroke because the window manager does not forward it to Qt,
+    keystroke because the window manager does not forward it toaqt.qt.Qt.
     ambiguous shortcuts where order would matter (e.g. Ctrl + Alt would
     produce a different numerical value than Alt + Ctrl, because the
     key codes for Alt and Ctrl are different from the modifier flag
@@ -65,23 +64,23 @@ def key_event_combo(event):
                      if modifiers & flag)
 
 
-key_event_combo.MOD_FLAGS = [Qt.AltModifier, Qt.ControlModifier,
-                             Qt.MetaModifier, Qt.ShiftModifier]
+key_event_combo.MOD_FLAGS = [aqt.qt.Qt.AltModifier,aqt.qt.Qt.ControlModifier,
+                            aqt.qt.Qt.MetaModifier,aqt.qt.Qt.ShiftModifier]
 
 key_event_combo.BLACKLIST = [
-    Qt.Key_Alt, Qt.Key_AltGr, Qt.Key_Backspace, Qt.Key_Backtab,
-    Qt.Key_CapsLock, Qt.Key_Control, Qt.Key_Dead_Abovedot,
-    Qt.Key_Dead_Abovering, Qt.Key_Dead_Acute, Qt.Key_Dead_Belowdot,
-    Qt.Key_Dead_Breve, Qt.Key_Dead_Caron, Qt.Key_Dead_Cedilla,
-    Qt.Key_Dead_Circumflex, Qt.Key_Dead_Diaeresis, Qt.Key_Dead_Doubleacute,
-    Qt.Key_Dead_Grave, Qt.Key_Dead_Hook, Qt.Key_Dead_Horn, Qt.Key_Dead_Iota,
-    Qt.Key_Dead_Macron, Qt.Key_Dead_Ogonek, Qt.Key_Dead_Semivoiced_Sound,
-    Qt.Key_Dead_Tilde, Qt.Key_Dead_Voiced_Sound, Qt.Key_Delete, Qt.Key_Down,
-    Qt.Key_End, Qt.Key_Enter, Qt.Key_Equal, Qt.Key_Escape, Qt.Key_Home,
-    Qt.Key_Insert, Qt.Key_Left, Qt.Key_Menu, Qt.Key_Meta, Qt.Key_Minus,
-    Qt.Key_Mode_switch, Qt.Key_NumLock, Qt.Key_PageDown, Qt.Key_PageUp,
-    Qt.Key_Plus, Qt.Key_Return, Qt.Key_Right, Qt.Key_ScrollLock, Qt.Key_Shift,
-    Qt.Key_Space, Qt.Key_Tab, Qt.Key_Underscore, Qt.Key_Up,
+   aqt.qt.Qt.Key_Alt,aqt.qt.Qt.Key_AltGr,aqt.qt.Qt.Key_Backspace,aqt.qt.Qt.Key_Backtab,
+   aqt.qt.Qt.Key_CapsLock,aqt.qt.Qt.Key_Control,aqt.qt.Qt.Key_Dead_Abovedot,
+   aqt.qt.Qt.Key_Dead_Abovering,aqt.qt.Qt.Key_Dead_Acute,aqt.qt.Qt.Key_Dead_Belowdot,
+   aqt.qt.Qt.Key_Dead_Breve,aqt.qt.Qt.Key_Dead_Caron,aqt.qt.Qt.Key_Dead_Cedilla,
+   aqt.qt.Qt.Key_Dead_Circumflex,aqt.qt.Qt.Key_Dead_Diaeresis,aqt.qt.Qt.Key_Dead_Doubleacute,
+   aqt.qt.Qt.Key_Dead_Grave,aqt.qt.Qt.Key_Dead_Hook,aqt.qt.Qt.Key_Dead_Horn,aqt.qt.Qt.Key_Dead_Iota,
+   aqt.qt.Qt.Key_Dead_Macron,aqt.qt.Qt.Key_Dead_Ogonek,aqt.qt.Qt.Key_Dead_Semivoiced_Sound,
+   aqt.qt.Qt.Key_Dead_Tilde,aqt.qt.Qt.Key_Dead_Voiced_Sound,aqt.qt.Qt.Key_Delete,aqt.qt.Qt.Key_Down,
+   aqt.qt.Qt.Key_End,aqt.qt.Qt.Key_Enter,aqt.qt.Qt.Key_Equal,aqt.qt.Qt.Key_Escape,aqt.qt.Qt.Key_Home,
+   aqt.qt.Qt.Key_Insert,aqt.qt.Qt.Key_Left,aqt.qt.Qt.Key_Menu,aqt.qt.Qt.Key_Meta,aqt.qt.Qt.Key_Minus,
+   aqt.qt.Qt.Key_Mode_switch,aqt.qt.Qt.Key_NumLock,aqt.qt.Qt.Key_PageDown,aqt.qt.Qt.Key_PageUp,
+   aqt.qt.Qt.Key_Plus,aqt.qt.Qt.Key_Return,aqt.qt.Qt.Key_Right,aqt.qt.Qt.Key_ScrollLock,aqt.qt.Qt.Key_Shift,
+   aqt.qt.Qt.Key_Space,aqt.qt.Qt.Key_Tab,aqt.qt.Qt.Key_Underscore,aqt.qt.Qt.Key_Up,
 ]
 
 
@@ -91,7 +90,7 @@ def key_combo_desc(combo):
     human-readable description.
     """
 
-    return QtGui.QKeySequence(combo).toString(QtGui.QKeySequence.NativeText) \
+    return aqt.qt.QKeySequence(combo).toString(aqt.qt.QKeySequence.NativeText) \
         if combo else "unassigned"
 
 
@@ -128,7 +127,7 @@ class _Connector:  # used like a mixin, pylint:disable=R0903
 
 class _QtConnector(_Connector):
     """
-    Connector for Qt Widgets.
+    Connector for aqt.qt.Qt.Widgets.
     """
     def __init__(self, target, signal_name, **kwargs):
         """
@@ -140,12 +139,12 @@ class _QtConnector(_Connector):
         signal.connect(self._show)
 
 
-class Action(QtWidgets.QAction, _QtConnector):
+class Action(aqt.qt.QAction, _QtConnector):
     """
     Provides a menu action to show a dialog when triggered.
     """
 
-    NO_SEQUENCE = QtGui.QKeySequence()
+    NO_SEQUENCE = aqt.qt.QKeySequence()
 
     __slots__ = [
         '_sequence',  # the key sequence that activates this action
@@ -182,7 +181,7 @@ class Action(QtWidgets.QAction, _QtConnector):
         self.setShortcut(sequence)
         self._sequence = sequence
 
-        if isinstance(parent, QtWidgets.QMenu):
+        if isinstance(parent, aqt.qt.QMenu):
             parent.addAction(self)
 
 
@@ -195,7 +194,7 @@ class AbstractButton:
         return tooltip
 
 
-class Button(QtWidgets.QPushButton, _QtConnector, AbstractButton):
+class Button(aqt.qt.QPushButton, _QtConnector, AbstractButton):
     """
     Provides a button to show a dialog when clicked.
     """
@@ -210,12 +209,12 @@ class Button(QtWidgets.QPushButton, _QtConnector, AbstractButton):
         super().__init__(ICON, text, signal_name='clicked', target=target)
 
         if text:
-            self.setIconSize(QtCore.QSize(15, 15))
+            self.setIconSize(aqt.qt.QSize(15, 15))
 
         else:
             self.setFixedWidth(20)
             self.setFixedHeight(20)
-            self.setFocusPolicy(Qt.NoFocus)
+            self.setFocusPolicy(aqt.qt.Qt.NoFocus)
 
         self.setShortcut(sequence)
         self.setToolTip(self.tooltip_text(tooltip, sequence))
@@ -226,7 +225,7 @@ class Button(QtWidgets.QPushButton, _QtConnector, AbstractButton):
             self.setStyle(style)
 
 
-class Checkbox(QtWidgets.QCheckBox):
+class Checkbox(aqt.qt.QCheckBox):
     """Provides a checkbox with a better constructor."""
 
     def __init__(self, text=None, object_name=None, parent=None):
@@ -234,7 +233,7 @@ class Checkbox(QtWidgets.QCheckBox):
         self.setObjectName(object_name)
 
 
-class Filter(QtCore.QObject):
+class Filter(aqt.qt.QObject):
     """
     Once instantiated, serves as an installEventFilter-compatible object
     instance that supports filtering events with a condition.
@@ -252,31 +251,31 @@ class Filter(QtCore.QObject):
 
     def eventFilter(self, _, event):  # pylint: disable=invalid-name
         """
-        Qt eventFilter method. Returns True if the event has been
+       aqt.qt.Qt.eventFilter method. Returns True if the event has been
         handled and should be filtered out.
 
         The result of and'ing the return values from the `when` and
         `relay` callable is forced to a boolean if it is not already (as
-        Qt blows up quite spectacularly if it is not).
+       aqt.qt.Qt.blows up quite spectacularly if it is not).
         """
 
         return bool(self._when(event) and self._relay(event))
 
 
-class HTML(QtWidgets.QLabel):
+class HTML(aqt.qt.QLabel):
     """Label with HTML enabled."""
 
     def __init__(self, *args, **kwargs):
         super(HTML, self).__init__(*args, **kwargs)
-        self.setTextFormat(QtCore.Qt.RichText)
+        self.setTextFormat(aqt.qt.Qt.RichText)
 
 
-class Label(QtWidgets.QLabel):
+class Label(aqt.qt.QLabel):
     """Label with HTML disabled."""
 
     def __init__(self, *args, **kwargs):
         super(Label, self).__init__(*args, **kwargs)
-        self.setTextFormat(QtCore.Qt.PlainText)
+        self.setTextFormat(aqt.qt.Qt.PlainText)
 
 
 class Note(Label):
@@ -287,7 +286,7 @@ class Note(Label):
         self.setWordWrap(True)
 
 
-class Slate(QtWidgets.QHBoxLayout):  # pylint:disable=too-few-public-methods
+class Slate(aqt.qt.QHBoxLayout):  # pylint:disable=too-few-public-methods
     """Horizontal panel for dealing with lists of things."""
 
     def __init__(self, thing, ListViewClass, list_view_args, list_name,
@@ -299,8 +298,8 @@ class Slate(QtWidgets.QHBoxLayout):  # pylint:disable=too-few-public-methods
                               ("Move Selected Up", 'arrow-up'),
                               ("Move Selected Down", 'arrow-down'),
                               ("Remove Selected", 'editdelete')]:
-            btn = QtWidgets.QPushButton(QtGui.QIcon(f'{ICONS}/{icon}.png'), "")
-            btn.setIconSize(QtCore.QSize(16, 16))
+            btn = aqt.qt.QPushButton(aqt.qt.QIcon(f'{ICONS}/{icon}.png'), "")
+            btn.setIconSize(aqt.qt.QSize(16, 16))
             btn.setFlat(True)
             btn.setToolTip(tooltip)
             buttons.append(btn)
@@ -308,10 +307,10 @@ class Slate(QtWidgets.QHBoxLayout):  # pylint:disable=too-few-public-methods
         list_view_args.append(buttons)
         list_view = ListViewClass(*list_view_args)
         list_view.setObjectName(list_name)
-        list_view.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                QtWidgets.QSizePolicy.Ignored)
+        list_view.setSizePolicy(aqt.qt.QSizePolicy.MinimumExpanding,
+                                aqt.qt.QSizePolicy.Ignored)
 
-        vert = QtWidgets.QVBoxLayout()
+        vert = aqt.qt.QVBoxLayout()
         for btn in buttons:
             vert.addWidget(btn)
         vert.insertStretch(len(buttons) - 1)

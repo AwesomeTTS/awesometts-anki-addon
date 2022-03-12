@@ -20,7 +20,7 @@
 Template generation dialog
 """
 
-from PyQt5 import QtWidgets
+import aqt.qt
 
 from .base import ServiceDialog
 from .common import Checkbox, Label, Note
@@ -96,7 +96,7 @@ class Templater(ServiceDialog):
         """
 
         widgets = {}
-        layout = QtWidgets.QGridLayout()
+        layout = aqt.qt.QGridLayout()
 
         full_language_list = [(x.name, x.lang_name) for x in self._addon.language]
         # sort by human name
@@ -134,7 +134,7 @@ class Templater(ServiceDialog):
         Returns a dropdown with the given list of options.
         """
 
-        dropdown = QtWidgets.QComboBox()
+        dropdown = aqt.qt.QComboBox()
         dropdown.setObjectName(name)
         for value, label in options:
             dropdown.addItem(label, value)
@@ -147,7 +147,7 @@ class Templater(ServiceDialog):
         """
 
         buttons = super(Templater, self)._ui_buttons()
-        buttons.findChild(QtWidgets.QAbstractButton, 'okay').setText("&Insert")
+        buttons.findChild(aqt.qt.QAbstractButton, 'okay').setText("&Insert")
 
         return buttons
 
@@ -157,7 +157,7 @@ class Templater(ServiceDialog):
             target_name = "Front Template"
         elif self.back_template_selected:
             target_name = "Back Template"        
-        self.findChild(QtWidgets.QAbstractButton, 'okay').setText("&Insert into " + target_name)
+        self.findChild(aqt.qt.QAbstractButton, 'okay').setText("&Insert into " + target_name)
 
     def get_target_selected(self):
         self.front_template_selected = False
@@ -251,13 +251,13 @@ class Templater(ServiceDialog):
         combos = {
             name: widget.itemData(widget.currentIndex())
             for name in ['field', 'type', 'language']
-            for widget in [self.findChild(QtWidgets.QComboBox, name)]
+            for widget in [self.findChild(aqt.qt.QComboBox, name)]
         }
 
-        presets = self.findChild(QtWidgets.QComboBox, 'presets_dropdown')
+        presets = self.findChild(aqt.qt.QComboBox, 'presets_dropdown')
         
         #service
-        services = self.findChild(QtWidgets.QComboBox, 'service')
+        services = self.findChild(aqt.qt.QComboBox, 'service')
         service_index = services.currentIndex()
         service_id = services.itemData(service_index)
 

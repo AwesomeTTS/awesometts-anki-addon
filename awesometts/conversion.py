@@ -23,7 +23,7 @@ Helpful type conversions
 import json
 import re
 
-from PyQt5.QtCore import Qt
+import aqt.qt
 
 __all__ = ['compact_json', 'deserialized_dict', 'lax_bool',
            'normalized_ascii', 'nullable_key', 'nullable_int',
@@ -85,16 +85,16 @@ def normalized_ascii(value):
 
 def nullable_key(value):
     """
-    Returns an instance of PyQt5.QtCore.Qt.Key for the given value, if
+    Returns an instance of PyQt5.aqt.qt.Qt.Key for the given value, if
     possible. If the incoming value cannot be represented as a key,
     returns None.
     """
 
-    if isinstance(value, Qt.Key):
+    if isinstance(value,aqt.qt.Qt.Key):
         return value
 
     value = nullable_int(value)
-    return Qt.Key(value) if value else None
+    return aqt.qt.Qt.Key(value) if value else None
 
 
 def nullable_int(value):

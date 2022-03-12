@@ -24,7 +24,7 @@ substitution rules.
 """
 
 import re
-from PyQt5 import QtCore, QtWidgets
+import aqt.qt
 from .common import Checkbox, HTML
 
 __all__ = ['GroupListView', 'SubListView']
@@ -32,7 +32,7 @@ __all__ = ['GroupListView', 'SubListView']
 # all methods might need 'self' in the future, pylint:disable=R0201
 
 
-class _ListView(QtWidgets.QListView):
+class _ListView(aqt.qt.QListView):
     """Abstract list view for use throughout AwesomeTTS."""
 
     __slots__ = ['_add_btn', '_up_btn', '_down_btn', '_del_btn']
@@ -47,7 +47,7 @@ class _ListView(QtWidgets.QListView):
         self._down_btn.clicked.connect(lambda: self._reorder_rules('down'))
         self._del_btn.clicked.connect(self._del_rules)
 
-        self.setSelectionMode(self.ExtendedSelection)
+        self.setSelectionMode(self.SelectionMode.ExtendedSelection)
 
     def setModel(self, *args, **kwargs):  # pylint:disable=C0103
         """Passes on model and sets up event handling."""
@@ -142,7 +142,7 @@ class GroupListView(_ListView):
         )
 
 
-class _Delegate(QtWidgets.QItemDelegate):
+class _Delegate(aqt.qt.QItemDelegate):
     """Abstract delegate view for use throughout AwesomeTTS."""
 
     def sizeHint(self,            # pylint:disable=invalid-name
@@ -150,7 +150,7 @@ class _Delegate(QtWidgets.QItemDelegate):
         """Always return the same size."""
         return self.sizeHint.SIZE
 
-    sizeHint.SIZE = QtCore.QSize(-1, 40)
+    sizeHint.SIZE = aqt.qt.QSize(-1, 40)
 
 
 class _SubRuleDelegate(_Delegate):
@@ -166,34 +166,34 @@ class _SubRuleDelegate(_Delegate):
                      option, index):  # pylint:disable=W0613
         """Return a panel to change rule values."""
 
-        edits = QtWidgets.QHBoxLayout()
-        edits.addWidget(QtWidgets.QLineEdit())
+        edits = aqt.qt.QHBoxLayout()
+        edits.addWidget(aqt.qt.QLineEdit())
         edits.addWidget(HTML("&nbsp;<strong>&rarr;</strong>&nbsp;"))
-        edits.addWidget(QtWidgets.QLineEdit())
+        edits.addWidget(aqt.qt.QLineEdit())
 
-        checkboxes = QtWidgets.QHBoxLayout()
+        checkboxes = aqt.qt.QHBoxLayout()
         for label in ["regex", "case-insensitive", "unicode"]:
             checkboxes.addStretch()
             checkboxes.addWidget(Checkbox(label))
         checkboxes.addStretch()
 
-        layout = QtWidgets.QVBoxLayout()
+        layout = aqt.qt.QVBoxLayout()
         layout.addStretch()
         layout.addLayout(edits)
         layout.addLayout(checkboxes)
         layout.addStretch()
 
-        panel = QtWidgets.QWidget(parent)
+        panel = aqt.qt.QWidget(parent)
         panel.setObjectName('editor')
         panel.setAutoFillBackground(True)
-        panel.setFocusPolicy(QtCore.Qt.StrongFocus)
+        panel.setFocusPolicy(aqt.qt.Qt.StrongFocus)
         panel.setLayout(layout)
 
         for layout in [edits, checkboxes, layout]:
             layout.setContentsMargins(0, 0, 0, 0)
             layout.setSpacing(0)
 
-        for widget in [panel] + panel.findChildren(QtWidgets.QWidget):
+        for widget in [panel] + panel.findChildren(aqt.qt.QWidget):
             widget.setContentsMargins(0, 0, 0, 0)
 
         return panel
@@ -201,9 +201,9 @@ class _SubRuleDelegate(_Delegate):
     def setEditorData(self, editor, index):  # pylint:disable=C0103
         """Populate controls and focus the first edit box."""
 
-        rule = index.data(QtCore.Qt.EditRole)
+        rule = index.data(aqt.qt.Qt.EditRole)
 
-        edits = editor.findChildren(QtWidgets.QLineEdit)
+        edits = editor.findChildren(aqt.qt.QLineEdit)
         edits[0].setText(rule['input'])
         edits[1].setText(rule['replace'])
 
@@ -212,12 +212,12 @@ class _SubRuleDelegate(_Delegate):
         checkboxes[1].setChecked(rule['ignore_case'])
         checkboxes[2].setChecked(rule['unicode'])
 
-        QtCore.QTimer.singleShot(0, edits[0].setFocus)
+        aqt.qt.QTimer.singleShot(0, edits[0].setFocus)
 
     def setModelData(self, editor, model, index):  # pylint:disable=C0103
         """Update the underlying model after edit."""
 
-        edits = editor.findChildren(QtWidgets.QLineEdit)
+        edits = editor.findChildren(aqt.qt.QLineEdit)
         checkboxes = editor.findChildren(Checkbox)
         obj = {'input': edits[0].text(), 'compiled': None,
                'replace': edits[1].text(), 'regex': checkboxes[0].isChecked(),
@@ -275,40 +275,40 @@ class _GroupPresetDelegate(_Delegate):
                      option, index):  # pylint:disable=W0613
         """Return a panel to change selected preset."""
 
-        dropdown = QtWidgets.QComboBox()
+        dropdown = aqt.qt.QComboBox()
         dropdown.addItem("(select preset)")
         dropdown.addItems(self._presets)
 
-        hor = QtWidgets.QHBoxLayout()
+        hor = aqt.qt.QHBoxLayout()
         hor.addWidget(dropdown)
 
-        panel = QtWidgets.QWidget(parent)
+        panel = aqt.qt.QWidget(parent)
         panel.setObjectName('editor')
         panel.setAutoFillBackground(True)
-        panel.setFocusPolicy(QtCore.Qt.StrongFocus)
+        panel.setFocusPolicy(aqt.qt.Qt.StrongFocus)
         panel.setLayout(hor)
         return panel
 
     def setEditorData(self, editor, index):  # pylint:disable=C0103
         """Changes the preset in the dropdown."""
 
-        dropdown = editor.findChild(QtWidgets.QComboBox)
-        value = index.data(QtCore.Qt.EditRole)
+        dropdown = editor.findChild(aqt.qt.QComboBox)
+        value = index.data(aqt.qt.Qt.EditRole)
         dropdown.setCurrentIndex(dropdown.findText(value) if value else 0)
 
-        QtCore.QTimer.singleShot(0, dropdown.setFocus)
+        aqt.qt.QTimer.singleShot(0, dropdown.setFocus)
 
     def setModelData(self, editor, model, index):  # pylint:disable=C0103
         """Update the underlying model after edit."""
 
-        dropdown = editor.findChild(QtWidgets.QComboBox)
+        dropdown = editor.findChild(aqt.qt.QComboBox)
         model.setData(
             index,
             dropdown.currentText() if dropdown.currentIndex() > 0 else ""
         )
 
 
-class _ListModel(QtCore.QAbstractListModel):  # pylint:disable=R0904
+class _ListModel(aqt.qt.QAbstractListModel):  # pylint:disable=R0904
     """Abstract class for list models."""
 
     __slots__ = ['raw_data']
@@ -317,8 +317,8 @@ class _ListModel(QtCore.QAbstractListModel):  # pylint:disable=R0904
         """Always return same item flags."""
         return self.flags.LIST_ITEM
 
-    flags.LIST_ITEM = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable |
-                       QtCore.Qt.ItemIsEnabled)
+    flags.LIST_ITEM = (aqt.qt.Qt.ItemIsSelectable | aqt.qt.Qt.ItemIsEditable |
+                       aqt.qt.Qt.ItemIsEnabled)
 
     def rowCount(self,          # pylint:disable=invalid-name
                  parent=None):  # pylint:disable=unused-argument
@@ -332,7 +332,7 @@ class _ListModel(QtCore.QAbstractListModel):  # pylint:disable=R0904
     def moveRowsDown(self, row, count):  # pylint:disable=C0103
         """Moves the given count of records at the given row down."""
 
-        parent = QtCore.QModelIndex()
+        parent = aqt.qt.QModelIndex()
         self.beginMoveRows(parent, row, row + count - 1,
                            parent, row + count + 1)
         self.raw_data = (self.raw_data[0:row] +
@@ -345,7 +345,7 @@ class _ListModel(QtCore.QAbstractListModel):  # pylint:disable=R0904
     def moveRowsUp(self, row, count):  # pylint:disable=C0103
         """Moves the given count of records at the given row up."""
 
-        parent = QtCore.QModelIndex()
+        parent = aqt.qt.QModelIndex()
         self.beginMoveRows(parent, row, row + count - 1, parent, row - 1)
         self.raw_data = (self.raw_data[0:row - 1] +
                          self.raw_data[row:row + count] +
@@ -357,14 +357,14 @@ class _ListModel(QtCore.QAbstractListModel):  # pylint:disable=R0904
     def removeRows(self, row, count=1, parent=None):  # pylint:disable=C0103
         """Removes the given count of records at the given row."""
 
-        self.beginRemoveRows(parent or QtCore.QModelIndex(),
+        self.beginRemoveRows(parent or aqt.qt.QModelIndex(),
                              row, row + count - 1)
         self.raw_data = self.raw_data[0:row] + self.raw_data[row + count:]
         self.endRemoveRows()
         return True
 
     def setData(self, index, value,        # pylint:disable=C0103
-                role=QtCore.Qt.EditRole):  # pylint:disable=W0613
+                role=aqt.qt.Qt.EditRole):  # pylint:disable=W0613
         """Update the new value into the raw list."""
 
         self.raw_data[index.row()] = value
@@ -378,10 +378,10 @@ class _SubListModel(_ListModel):  # pylint:disable=R0904
         super(_SubListModel, self).__init__(*args, **kwargs)
         self.raw_data = [dict(obj) for obj in self.raw_data]  # deep copy
 
-    def data(self, index, role=QtCore.Qt.DisplayRole):
+    def data(self, index, role=aqt.qt.Qt.DisplayRole):
         """Return display or edit data for the indexed rule."""
 
-        if role == QtCore.Qt.DisplayRole:
+        if role == aqt.qt.Qt.DisplayRole:
             rule = self.raw_data[index.row()]
             if not rule['input']:
                 return "empty match pattern"
@@ -402,7 +402,7 @@ class _SubListModel(_ListModel):  # pylint:disable=R0904
             ])
             return "match " + text + " and " + action + "\n(" + attr + ")"
 
-        elif role == QtCore.Qt.EditRole:
+        elif role == aqt.qt.Qt.EditRole:
             return self.raw_data[index.row()]
 
     def insertRow(self, row=None, parent=None):  # pylint:disable=C0103
@@ -411,7 +411,7 @@ class _SubListModel(_ListModel):  # pylint:disable=R0904
         if not row:
             row = len(self.raw_data)  # defaults to end
 
-        self.beginInsertRows(parent or QtCore.QModelIndex(), row, row)
+        self.beginInsertRows(parent or aqt.qt.QModelIndex(), row, row)
         self.raw_data.insert(row, {'input': '', 'compiled': None,
                                    'replace': '', 'regex': False,
                                    'ignore_case': True, 'unicode': True})
@@ -428,15 +428,15 @@ class _GroupListModel(_ListModel):  # pylint:disable=R0904
         super(_GroupListModel, self).__init__(*args, **kwargs)
         self._presets = presets
 
-    def data(self, index, role=QtCore.Qt.DisplayRole):
+    def data(self, index, role=aqt.qt.Qt.DisplayRole):
         """Return display or edit data for the indexed preset."""
 
         preset = self.raw_data[index.row()]
-        if role == QtCore.Qt.DisplayRole:
+        if role == aqt.qt.Qt.DisplayRole:
             return ("(not selected)" if not preset
                     else preset if preset in self._presets
                     else preset + " [deleted]")
-        elif role == QtCore.Qt.EditRole:
+        elif role == aqt.qt.Qt.EditRole:
             return preset
 
     def insertRow(self, row=None, parent=None):  # pylint:disable=C0103
@@ -445,7 +445,7 @@ class _GroupListModel(_ListModel):  # pylint:disable=R0904
         if not row:
             row = len(self.raw_data)  # defaults to end
 
-        self.beginInsertRows(parent or QtCore.QModelIndex(), row, row)
+        self.beginInsertRows(parent or aqt.qt.QModelIndex(), row, row)
         self.raw_data.insert(row, "")
         self.endInsertRows()
         return True

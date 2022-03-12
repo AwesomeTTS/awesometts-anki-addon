@@ -29,7 +29,7 @@ from socket import error as SocketError
 from time import time
 from urllib.error import URLError
 
-from PyQt5 import QtCore, QtWidgets
+import aqt.qt
 
 from .service import Trait as BaseTrait
 
@@ -893,7 +893,7 @@ class Router(object):
         )
 
 
-class _Pool(QtWidgets.QWidget):
+class _Pool(aqt.qt.QWidget):
     """
     Managers a pool of worker threads to keep the UI responsive.
     """
@@ -995,13 +995,13 @@ class _Pool(QtWidgets.QWidget):
         )
 
 
-class _Worker(QtCore.QThread):
+class _Worker(aqt.qt.QThread):
     """
     Generic worker for running processes in the background.
     """
 
-    tts_thread_done = QtCore.pyqtSignal(int, name='awesomeTtsThreadDone')
-    tts_thread_raised = QtCore.pyqtSignal(int, Exception, str, name='awesomeTtsThreadRaised')
+    tts_thread_done = aqt.qt.pyqtSignal(int, name='awesomeTtsThreadDone')
+    tts_thread_raised = aqt.qt.pyqtSignal(int, Exception, str, name='awesomeTtsThreadRaised')
 
     __slots__ = [
         '_thread_id',  # my thread ID; used to communicate back to main thread
