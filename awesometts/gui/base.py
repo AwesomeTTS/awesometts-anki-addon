@@ -27,7 +27,6 @@ import inspect
 
 import aqt.qt
 import aqt.utils
-import pprint
 
 from ..paths import ICONS
 from .common import Label, Note, ICON
@@ -119,7 +118,7 @@ class Dialog(aqt.qt.QDialog):
             version_str = f'AwesomeTTS <span style="color:#FF0000; font-weight: bold;">Plus</span>' +\
                 f'<br/>v{self._addon.version}'
             version = Label(version_str)
-            version.setTextFormat(aqt.qt.Qt.RichText)
+            version.setTextFormat(aqt.qt.Qt.TextFormat.RichText)
         else:
             version = Label("AwesomeTTS\nv" + self._addon.version)
             version.setFont(self._FONT_INFO)
@@ -596,10 +595,6 @@ class ServiceDialog(Dialog):
                         self._addon.config['last_options'].get(svc_id, {}))
         vinputs = widget.findChildren(self._OPTIONS_WIDGETS)
 
-        pprint.pprint(vinputs)
-
-        if len(vinputs) != len(options):
-            raise Exception(f'len(vinputs): {len(vinputs)} len(options): {len(options)}')
         assert len(vinputs) == len(options)
 
         for i, opt in enumerate(options):

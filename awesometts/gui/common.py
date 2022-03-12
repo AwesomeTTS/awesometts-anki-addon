@@ -267,7 +267,7 @@ class HTML(aqt.qt.QLabel):
 
     def __init__(self, *args, **kwargs):
         super(HTML, self).__init__(*args, **kwargs)
-        self.setTextFormat(aqt.qt.Qt.RichText)
+        self.setTextFormat(aqt.qt.Qt.TextFormat.RichText)
 
 
 class Label(aqt.qt.QLabel):
