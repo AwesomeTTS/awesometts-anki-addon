@@ -275,7 +275,7 @@ class Label(aqt.qt.QLabel):
 
     def __init__(self, *args, **kwargs):
         super(Label, self).__init__(*args, **kwargs)
-        self.setTextFormat(aqt.qt.Qt.PlainText)
+        self.setTextFormat(aqt.qt.Qt.TextFormat.PlainText)
 
 
 class Note(Label):
@@ -307,8 +307,8 @@ class Slate(aqt.qt.QHBoxLayout):  # pylint:disable=too-few-public-methods
         list_view_args.append(buttons)
         list_view = ListViewClass(*list_view_args)
         list_view.setObjectName(list_name)
-        list_view.setSizePolicy(aqt.qt.QSizePolicy.MinimumExpanding,
-                                aqt.qt.QSizePolicy.Ignored)
+        list_view.setSizePolicy(aqt.qt.QSizePolicy.Policy.MinimumExpanding,
+                                aqt.qt.QSizePolicy.Policy.Ignored)
 
         vert = aqt.qt.QVBoxLayout()
         for btn in buttons:

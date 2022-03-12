@@ -101,7 +101,7 @@ class Dialog(aqt.qt.QDialog):
 
         layout = aqt.qt.QVBoxLayout()
         layout.addLayout(self._ui_banner())
-        layout.addWidget(self._ui_divider(aqt.qt.QFrame.HLine))
+        layout.addWidget(self._ui_divider(aqt.qt.QFrame.Shape.HLine))
 
         return layout
 
@@ -143,7 +143,7 @@ class Dialog(aqt.qt.QDialog):
         """
 
         frame = aqt.qt.QFrame()
-        frame.setFrameStyle(orientation_style | aqt.qt.QFrame.Sunken)
+        frame.setFrameStyle(orientation_style | aqt.qt.QFrame.Shadow.Sunken)
 
         return frame
 

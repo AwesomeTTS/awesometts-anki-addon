@@ -144,7 +144,7 @@ class Configurator(Dialog):
         """Returns group box for the given text manipulation context."""
 
         subtabs = aqt.qt.QTabWidget()
-        subtabs.setTabPosition(aqt.qt.QTabWidget.West)
+        subtabs.setTabPosition(aqt.qt.QTabWidget.TabPosition.West)
 
         for sublabel, sublayout in [
                 ("Simple", self._ui_tabs_text_mode_simple(infix, *args,
