@@ -618,14 +618,14 @@ def editor_button():
         return launch
 
     def addAwesomeTTSEditorButton(buttons, editor):
-        cmd_string = 'awesometts_btn'
-        editor._links[cmd_string] = createAwesomeTTSEditorLambda()
-        new_button = editor._addButton(icon = gui.ICON_FILE,
-            cmd = cmd_string,
+        new_button = editor.addButton(gui.ICON_FILE,
+            'AwesomeTTS',
+            createAwesomeTTSEditorLambda(),
             tip = "Record and insert an audio clip here w/ AwesomeTTS")
-        return buttons + [new_button]
+        buttons.append(new_button)
+        return buttons
 
-    anki.hooks.addHook('setupEditorButtons', addAwesomeTTSEditorButton)
+    aqt.gui_hooks.editor_did_init_buttons.append(addAwesomeTTSEditorButton)
 
     def createAwesomeTTSEditorShortcutLambda(editor):
         def launch():
