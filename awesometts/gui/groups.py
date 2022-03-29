@@ -56,8 +56,8 @@ class Groups(Dialog):
 
         groups = aqt.qt.QComboBox()
         groups.setObjectName('groups')
-        groups.setSizePolicy(aqt.qt.QSizePolicy.MinimumExpanding,
-                             aqt.qt.QSizePolicy.Preferred)
+        groups.setSizePolicy(aqt.qt.QSizePolicy.Policy.MinimumExpanding,
+                             aqt.qt.QSizePolicy.Policy.Preferred)
         groups.activated.connect(self._on_group_activated)
 
         # TODO: icons do not work with 2.1
@@ -108,7 +108,7 @@ class Groups(Dialog):
 
         self._pull_presets()
         delete = self.findChild(aqt.qt.QPushButton, 'delete')
-        vert = self.findChild(aqt.qt.QLayout, 'child')
+        vert = self.findChild(aqt.qt.QVBoxLayout, 'child')
 
         while vert.count():
             vert.itemAt(0).widget().setParent(None)
