@@ -27,6 +27,7 @@ import inspect
 
 import aqt.qt
 import aqt.utils
+import PyQt6
 
 from ..paths import ICONS
 from .common import Label, Note, ICON
@@ -193,7 +194,7 @@ class ServiceDialog(Dialog):
     generator, mass file generator, template tag builder).
     """
 
-    _OPTIONS_WIDGETS = (aqt.qt.QComboBox, aqt.qt.QAbstractSpinBox)
+    _OPTIONS_WIDGETS = (PyQt6.QtWidgets.QComboBox, aqt.qt.QDoubleSpinBox, aqt.qt.QSpinBox)
 
     _INPUT_WIDGETS = _OPTIONS_WIDGETS + (aqt.qt.QAbstractButton,
                                          aqt.qt.QLineEdit, aqt.qt.QTextEdit)
@@ -595,12 +596,15 @@ class ServiceDialog(Dialog):
                         self._addon.config['last_options'].get(svc_id, {}))
         vinputs = widget.findChildren(self._OPTIONS_WIDGETS)
 
+        if len(vinputs) != len(options):
+            raise Exception(f'len(vinputs): {len(vinputs)} len(options): {len(options)}')
         assert len(vinputs) == len(options)
 
         for i, opt in enumerate(options):
             vinput = vinputs[i]
 
             if isinstance(opt['values'], tuple):
+                # spinbox
                 try:
                     val = last_options[opt['key']]
                     if not opt['values'][0] <= val <= opt['values'][1]:
@@ -618,6 +622,7 @@ class ServiceDialog(Dialog):
                 vinput.setValue(val)
 
             else:
+                # qcombobox
                 try:
                     idx = vinput.findData(last_options[opt['key']])
                     if idx < 0:
@@ -858,7 +863,7 @@ class ServiceDialog(Dialog):
         return svc_id, {
             options[i]['key']:
                 vinputs[i].value()
-                if isinstance(vinputs[i], aqt.qt.QAbstractSpinBox)
+                if isinstance(vinputs[i], aqt.qt.QDoubleSpinBox) or isinstance(vinputs[i], aqt.qt.QSpinBox)  # aqt.qt.QDoubleSpinBox, aqt.qt.QSpinBox
                 else vinputs[i].itemData(vinputs[i].currentIndex())
             for i in range(len(options))
         }
