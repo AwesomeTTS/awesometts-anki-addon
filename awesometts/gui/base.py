@@ -27,7 +27,13 @@ import inspect
 
 import aqt.qt
 import aqt.utils
-import PyQt6
+
+try:
+    import PyQt6
+    QComboBoxType = PyQt6.QtWidgets.QComboBox
+except:
+    import PyQt5
+    QComboBoxType = PyQt5.QtWidgets.QComboBox
 
 from ..paths import ICONS
 from .common import Label, Note, ICON
@@ -194,7 +200,7 @@ class ServiceDialog(Dialog):
     generator, mass file generator, template tag builder).
     """
 
-    _OPTIONS_WIDGETS = (PyQt6.QtWidgets.QComboBox, aqt.qt.QDoubleSpinBox, aqt.qt.QSpinBox)
+    _OPTIONS_WIDGETS = (QComboBoxType, aqt.qt.QDoubleSpinBox, aqt.qt.QSpinBox)
 
     _INPUT_WIDGETS = _OPTIONS_WIDGETS + (aqt.qt.QAbstractButton,
                                          aqt.qt.QLineEdit, aqt.qt.QTextEdit)
