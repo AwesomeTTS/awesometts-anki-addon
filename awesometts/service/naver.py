@@ -140,7 +140,7 @@ VOICE_CODES = [
 ]
 
 VOICE_LOOKUP = dict(VOICE_CODES)
-HMAC_KEY = 'v1.6.6_b84eb7dae4'
+HMAC_KEY = 'v1.6.9_0f9c783dcc'
 UUID = str(uuid.uuid4())
 
 
