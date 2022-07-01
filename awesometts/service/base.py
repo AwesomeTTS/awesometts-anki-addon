@@ -874,7 +874,7 @@ class Service(object, metaclass=abc.ABCMeta):
 
 if sys.platform == 'win32':
     Service.CLI_DECODINGS.append('mbcs')
-    Service.CLI_LAME = 'lame.exe'
+    Service.CLI_LAME = 'audio/lame.exe'
     Service.CLI_MPLAYER = 'mplayer.exe'
     Service.CLI_SI = subprocess.STARTUPINFO()
     Service.IS_WINDOWS = True
