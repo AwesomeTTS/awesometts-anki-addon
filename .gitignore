@@ -10,5 +10,6 @@ __pycache__/
 *.py[cod]
 .vscode/
 
+meta.json
 /awesometts/.cache/
 /user_files/cache/
