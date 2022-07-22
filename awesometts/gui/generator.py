@@ -739,6 +739,8 @@ class EditorGenerator(ServiceDialog):
         from_unknown = self._addon.strip.from_unknown
         app = aqt.qt.QApplication
 
+        self.currentlySelectedFieldIndex = editor.currentField
+
         def try_clipboard(subtype):
             """Fetch from given system clipboard."""
             return from_unknown(app.clipboard().text(subtype)[0])
@@ -782,15 +784,31 @@ class EditorGenerator(ServiceDialog):
         now = self._get_all()
         text_input, text_value = self._get_service_text()
 
+        def add_audio_tag_to_current_field(path):
+            self._addon.config.update(now)
+            super(EditorGenerator, self).accept()
+
+            current_field_index = self.currentlySelectedFieldIndex
+            if current_field_index != None:
+                # there is currently a selected field
+                if self._editor.note != None:
+                    # add to end of field                    
+                    field_value = self._editor.note.fields[current_field_index]
+                    audio_tag = self._editor._addMedia(path)                    
+                    updated_field_value = f'{field_value} {audio_tag}'
+                    self._editor.note.fields[current_field_index] = updated_field_value
+                    self._editor.set_note(self._editor.note)
+                    return
+
+            # if we didn't return at this point, use fallback method
+            self._editor.addMedia(path)
+
+
         svc_id = now['last_service']
         text_value = self._addon.strip.from_user(text_value)
         callbacks = dict(
             done=lambda: self._disable_inputs(False),
-            okay=lambda path: (
-                self._addon.config.update(now),
-                super(EditorGenerator, self).accept(),
-                self._editor.addMedia(path),
-            ),
+            okay=add_audio_tag_to_current_field,
             fail=lambda exception, text_value: (
                 self._alerts("Cannot record the input phrase with these "
                              "settings.\n\n%s" % exception, self),
