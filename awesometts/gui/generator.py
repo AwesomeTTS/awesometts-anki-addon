@@ -758,7 +758,7 @@ class EditorGenerator(ServiceDialog):
                 # first, check if user has selected any text
                 lambda: from_note(web.selectedText()),
                 # then, try extracting from the field
-                lambda: get_current_field_text(),
+                lambda: from_note(get_current_field_text()),
                 # then, try the HTML clipboard
                 lambda: try_clipboard('html'),
                 # then, try the text clipboard
