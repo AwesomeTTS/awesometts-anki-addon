@@ -743,29 +743,23 @@ class EditorGenerator(ServiceDialog):
             """Fetch from given system clipboard."""
             return from_unknown(app.clipboard().text(subtype)[0])
 
-        def js_callback(val):
-            self.callback_message = val
-            self.javascript_is_ready = True
+        def get_current_field_text():
+            if editor.currentField != None:
+                # there is currently a selected field
+                if editor.note != None:
+                    field_value = editor.note.values()[editor.currentField]
+                    return field_value
+            return False
 
-        def exec_javascript():
-            self.javascript_is_ready = False
-
-            web.page().runJavaScript(
-                    # for jQuery, this needs to be html() instead of text() as
-                    # $('<div>hi<br>there</div>').text() yields "hithere"
-                    # whereas if we have the original HTML, we can convert the
-                    # line break tag into whitespace during input sanitization
-                    'getCurrentField().fieldHTML', js_callback)
-
-            while not self.javascript_is_ready:
-                app.instance().processEvents()
-
-            return self.callback_message
 
         for origin in [
+                # first, check if user has selected any text
                 lambda: from_note(web.selectedText()),
-                lambda: from_note(exec_javascript()),
+                # then, try extracting from the field
+                lambda: get_current_field_text(),
+                # then, try the HTML clipboard
                 lambda: try_clipboard('html'),
+                # then, try the text clipboard
                 lambda: try_clipboard('text'),
         ]:
             try:
