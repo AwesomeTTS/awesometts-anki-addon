@@ -22,6 +22,7 @@ from locale import format as locale
 import os
 import os.path
 from sys import platform
+import pprint
 import aqt.utils
 
 import aqt.qt
@@ -29,7 +30,6 @@ import aqt.qt
 from ..paths import ICONS
 from .base import Dialog
 from .common import Checkbox, Label, Note, Slate
-from .common import key_event_combo, key_combo_desc
 from .listviews import SubListView
 from .presets import Presets
 from .groups import Groups
@@ -45,8 +45,8 @@ class Configurator(Dialog):
     _PROPERTY_KEYS = [
         'cache_days', 'ellip_note_newlines',
         'ellip_template_newlines', 'filenames', 'filenames_human', 'homescreen_show',
-        'lame_flags', 'launch_browser_generator', 'launch_browser_stripper',
-        'launch_configurator', 'launch_editor_generator', 'launch_templater',
+        'lame_flags', 'shortcut_launch_browser_generator', 'shortcut_launch_browser_stripper',
+        'shortcut_launch_configurator', 'shortcut_launch_editor_generator', 'shorcut_launch_templater',
         'otf_only_revealed_cloze', 'otf_remove_hints', 'spec_note_strip',
         'spec_note_ellipsize', 'spec_template_ellipsize', 'spec_note_count',
         'spec_note_count_wrap', 'spec_template_count',
@@ -61,12 +61,14 @@ class Configurator(Dialog):
     ]
 
     _PROPERTY_WIDGETS = (Checkbox, aqt.qt.QComboBox, aqt.qt.QLineEdit,
-                         aqt.qt.QPushButton, aqt.qt.QSpinBox, aqt.qt.QListView)
+                         aqt.qt.QPushButton, aqt.qt.QSpinBox, aqt.qt.QListView,
+                         aqt.qt.QKeySequenceEdit)
 
     __slots__ = ['_alerts', '_ask', '_preset_editor', '_group_editor',
                  '_sul_compiler']
 
-    def __init__(self, alerts, ask, sul_compiler, *args, **kwargs):
+    def __init__(self, logger, alerts, ask, sul_compiler, *args, **kwargs):
+        self._logger = logger
         self._alerts = alerts
         self._ask = ask
         self._preset_editor = None
@@ -403,8 +405,8 @@ class Configurator(Dialog):
                 ("mass remove audio in card browser", 'browser_stripper'),
                 ("generate single MP3 in note editor*", 'editor_generator'),
         ]):
-            grid.addWidget(Label("To " + desc + ", strike"), i, 0)
-            grid.addWidget(self._factory_shortcut('launch_' + sub), i, 1)
+            grid.addWidget(Label("To " + desc + ", use keyboard shortcut: "), i, 0)
+            grid.addWidget(self._get_keyboard_shortcut_textedit('shortcut_launch_' + sub), i, 1)
         grid.setColumnStretch(1, 1)
 
         group = aqt.qt.QGroupBox("Window Shortcuts")
@@ -417,8 +419,7 @@ class Configurator(Dialog):
             "you use math equations and LaTeX with Anki using the %(native)s "
             "E/M/T keystrokes, you may want to reassign or unbind the "
             "shortcut for generating in the note editor." %
-            dict(native=key_combo_desc(aqt.qt.Qt.KeyboardModifier.ControlModifier |
-                                       aqt.qt.Qt.Key.Key_T))
+            dict(native='Ctrl + T')
         ))
         vert.addWidget(Note("Editor and browser shortcuts will take effect "
                             "the next time you open those windows."))
@@ -597,20 +598,9 @@ class Configurator(Dialog):
 
     # Factories ##############################################################
 
-    def _factory_shortcut(self, object_name):
-        """Returns a push button capable of being assigned a shortcut."""
-
-        shortcut = aqt.qt.QPushButton()
-        shortcut.atts_pending = False
+    def _get_keyboard_shortcut_textedit(self, object_name):
+        shortcut = aqt.qt.QKeySequenceEdit()
         shortcut.setObjectName(object_name)
-        shortcut.setCheckable(True)
-        shortcut.toggled.connect(
-            lambda is_down: (
-                shortcut.setText("press keystroke"),
-                shortcut.setFocus(),  # needed for OS X if text inputs present
-            ) if is_down
-            else shortcut.setText(key_combo_desc(shortcut.atts_value))
-        )
         return shortcut
 
     # Events #################################################################
@@ -626,17 +616,19 @@ class Configurator(Dialog):
             if isinstance(widget, Checkbox):
                 widget.setChecked(value)
                 widget.stateChanged.emit(value)
+            elif isinstance(widget, aqt.qt.QKeySequenceEdit):
+                self._logger.debug(f'found keyboard shortcut: {value}')
+                widget.setKeySequence(aqt.qt.QKeySequence(value))
             elif isinstance(widget, aqt.qt.QLineEdit):
                 widget.setText(value)
-            elif isinstance(widget, aqt.qt.QPushButton):
-                widget.atts_value = value
-                widget.setText(key_combo_desc(widget.atts_value))
             elif isinstance(widget, aqt.qt.QComboBox):
                 widget.setCurrentIndex(max(widget.findData(value), 0))
             elif isinstance(widget, aqt.qt.QSpinBox):
                 widget.setValue(value)
             elif isinstance(widget, aqt.qt.QListView):
                 widget.setModel(value)
+            else:
+                raise Exception(f'*** unsupported object type: {type(widget)}')
 
         widget = self.findChild(aqt.qt.QPushButton, 'on_cache')
         widget.atts_list = (
@@ -670,11 +662,13 @@ class Configurator(Dialog):
             for editor in list_view.findChildren(aqt.qt.QWidget, 'editor'):
                 list_view.commitData(editor)  # if an editor is open, save it
 
-        self._addon.config.update({
+        config_update_dict = {
             widget.objectName(): (
                 widget.isChecked() if isinstance(widget, Checkbox)
                 else widget.atts_value if isinstance(widget, aqt.qt.QPushButton)
                 else widget.value() if isinstance(widget, aqt.qt.QSpinBox)
+                # for keyboard shortcuts, get the keysequence, and convert to string
+                else widget.keySequence().toString() if isinstance(widget, aqt.qt.QKeySequenceEdit)
                 else widget.itemData(widget.currentIndex()) if isinstance(
                     widget, aqt.qt.QComboBox)
                 else [
@@ -685,61 +679,13 @@ class Configurator(Dialog):
             )
             for widget in self.findChildren(self._PROPERTY_WIDGETS)
             if widget.objectName() in self._PROPERTY_KEYS
-        })
+        }
+
+        self._logger.debug(f'updating config with: {pprint.pformat(config_update_dict, indent=4)}')
+
+        self._addon.config.update(config_update_dict)
 
         super(Configurator, self).accept()
-
-    def keyPressEvent(self, key_event):  # from PyQt5, pylint:disable=C0103
-        """Assign new combo for shortcut buttons undergoing changes."""
-
-        buttons = self._get_pressed_shortcut_buttons()
-        if not buttons:
-            return super(Configurator, self).keyPressEvent(key_event)
-
-        key = key_event.key()
-
-        if key == aqt.qt.Qt.Key.Key_Escape:
-            for button in buttons:
-                button.atts_pending = False
-                button.setText(key_combo_desc(button.atts_value))
-            return
-
-        if key in [aqt.qt.Qt.Key.Key_Backspace, aqt.qt.Qt.Key.Key_Delete]:
-            combo = None
-        else:
-            combo = key_event_combo(key_event)
-            if not combo:
-                return
-
-        for button in buttons:
-            button.atts_pending = combo
-            button.setText(key_combo_desc(combo))
-
-    def keyReleaseEvent(self, key_event):  # from PyQt5, pylint:disable=C0103
-        """Disengage all shortcut buttons undergoing changes."""
-
-        buttons = self._get_pressed_shortcut_buttons()
-        if not buttons:
-            return super(Configurator, self).keyReleaseEvent(key_event)
-
-        elif key_event.key() in [aqt.qt.Qt.Key.Key_Enter, aqt.qt.Qt.Key.Key_Return]:
-            # need to ignore and eat key release on enter/return so that user
-            # can activate the button without immediately deactivating it
-            return
-
-        for button in buttons:
-            if button.atts_pending is not False:
-                button.atts_value = button.atts_pending
-            button.setChecked(False)
-
-    def _get_pressed_shortcut_buttons(self):
-        """Returns all shortcut buttons that are pressed."""
-
-        return [button
-                for button in self.findChildren(aqt.qt.QPushButton)
-                if (button.isChecked() and
-                    (button.objectName().startswith('launch_') or
-                     button.objectName().startswith('tts_key_')))]
 
     def _on_presets(self):
         """Opens the presets editor."""

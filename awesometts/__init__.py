@@ -135,16 +135,11 @@ config = Config(
                                   else 'say' if 'darwin' in sys.platform
                                   else 'yandex'), str, str),
         ('last_strip_mode', 'text', 'ours', str, str),
-        ('launch_browser_generator', 'integer',aqt.qt.Qt.KeyboardModifier.ControlModifier |aqt.qt.Qt.Key.Key_T,
-         to.nullable_key, to.nullable_int),
-        ('launch_browser_stripper', 'integer', None, to.nullable_key,
-         to.nullable_int),
-        ('launch_configurator', 'integer',aqt.qt.Qt.KeyboardModifier.ControlModifier |aqt.qt.Qt.Key.Key_T,
-         to.nullable_key, to.nullable_int),
-        ('launch_editor_generator', 'integer',aqt.qt.Qt.KeyboardModifier.ControlModifier |aqt.qt.Qt.Key.Key_T,
-         to.nullable_key, to.nullable_int),
-        ('launch_templater', 'integer',aqt.qt.Qt.KeyboardModifier.ControlModifier |aqt.qt.Qt.Key.Key_T,
-         to.nullable_key, to.nullable_int),
+        ('shortcut_launch_browser_generator', 'text', 'Ctrl+T', str, str),
+        ('shortcut_launch_browser_stripper', 'text', 'Ctrl+T', str, str),
+        ('shortcut_launch_configurator', 'text', 'Ctrl+T', str, str),
+        ('shortcut_launch_editor_generator', 'text', 'Ctrl+T', str, str),
+        ('shortcut_launch_templater', 'text', 'Ctrl+T', str, str),
         ('otf_only_revealed_cloze', 'integer', False, to.lax_bool, int),
         ('otf_remove_hints', 'integer', False, to.lax_bool, int),
         ('plus_api_key', 'text', '', str, str),
@@ -564,7 +559,9 @@ def config_menu():
         target=Bundle(
             constructor=gui.Configurator,
             args=(),
-            kwargs=dict(addon=addon, sul_compiler=to.substitution_compiled,
+            kwargs=dict(addon=addon,
+                        logger=logger,
+                        sul_compiler=to.substitution_compiled,
                         alerts=aqt.utils.showWarning,
                         ask=aqt.utils.getText,
                         parent=aqt.mw),
@@ -638,10 +635,11 @@ def editor_button():
         return launch
 
     def editor_init_shortcuts(shortcuts, editor: aqt.editor.Editor):
-        shortcut_sequence = sequences['editor_generator'].toString()
+        shortcut_sequence = config['shortcut_launch_editor_generator']
         lambda_function = createAwesomeTTSEditorShortcutLambda(editor)
         shortcut_entry = (shortcut_sequence, lambda_function, True)
         shortcuts.append(shortcut_entry)
+        logger.debug(f'added editor generator shortcut {shortcut_sequence}')
 
     aqt.gui_hooks.editor_did_init_shortcuts.append(editor_init_shortcuts)
 
@@ -827,7 +825,7 @@ def window_shortcuts():
     def on_sequence_change(new_config):
         """Update sequences on configuration changes."""
         for key, sequence in sequences.items():
-            new_sequence = aqt.qt.QKeySequence(new_config['launch_' + key] or None)
+            new_sequence = aqt.qt.QKeySequence(new_config['shortcut_launch_' + key] or None)
             sequence.swap(new_sequence)
 
         try:
