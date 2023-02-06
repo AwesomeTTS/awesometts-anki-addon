@@ -29,6 +29,7 @@ import shutil
 import sys
 import subprocess
 import requests
+import aqt.sound
 
 __all__ = ['Service']
 
@@ -358,69 +359,10 @@ class Service(object, metaclass=abc.ABCMeta):
     def cli_transcode(self, input_path, output_path, require=None,
                       add_padding=False):
         """
-        Runs the LAME transcoder to create a new MP3 file.
-
-        Note that instead of writing the file immediately to the given
-        output path, this method first writes it a temporary file and
-        then moves it to the output path afterward. This works around a
-        bug on Windows where a user with a non-ASCII username would have
-        a non-ASCII output_path, causing an error when the path is sent
-        via the CLI. However, because the temporary directory on Windows
-        will be of the all-ASCII variety, we can send it through there
-        first and then move it to its final home.
-
-        If add_padding is True, then some additional null padding will
-        be added onto the resulting MP3. This can be helpful to ensure
-        that the generated MP3 will not be clipped by `mplayer`.
+        transcode wav to mp3
         """
 
-        if not os.path.exists(input_path):
-            raise RuntimeError(
-                "The input file to transcode to an MP3 could not be found. "
-                "Please report this problem if it persists."
-            )
-
-        if require and 'size_in' in require and \
-           os.path.getsize(input_path) < require['size_in']:
-            raise ValueError(
-                "Input to transcoder was %d-byte stream; wanted %d+ bytes "
-                "(the service might not have liked your input text)" % (
-                    os.path.getsize(input_path),
-                    require['size_in'],
-                )
-            )
-
-        intermediate_path = self.path_temp('mp3')  # see note above
-
-        try:
-            self.cli_call(
-                self.CLI_LAME,
-                self._lame_flags().split(),
-                input_path,
-                intermediate_path,
-            )
-
-        except OSError as os_error:
-            from errno import ENOENT
-            if os_error.errno == ENOENT:
-                raise OSError(
-                    ENOENT,
-                    "Unable to find lame to transcode the audio. "
-                    "It might not have been installed.",
-                )
-            else:
-                raise
-
-        if not os.path.exists(intermediate_path):
-            raise RuntimeError(
-                "Transcoding the audio stream failed. Are the flags you "
-                "specified for LAME (%s) okay?" % self._lame_flags()
-            )
-
-        if add_padding:
-            self.util_pad(intermediate_path)
-
-        shutil.move(intermediate_path, output_path)  # see note above
+        aqt.sound._encode_mp3(input_path, output_path)
 
     def _cli_exec(self, callee, args, purpose, redirect_stderr=False):
         """
