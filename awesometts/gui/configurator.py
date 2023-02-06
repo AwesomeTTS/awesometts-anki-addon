@@ -423,8 +423,7 @@ class Configurator(Dialog):
             "shortcut for generating in the note editor." %
             dict(native='Ctrl + T')
         ))
-        vert.addWidget(Note("Editor and browser shortcuts will take effect "
-                            "the next time you open those windows."))
+        vert.addWidget(Note("Please restart Anki after changing keyboard shortcuts."))
         vert.addWidget(Note("Some keys cannot be used as shortcuts and some "
                             "keystrokes might not work in some windows, "
                             "depending on your operating system and other "
