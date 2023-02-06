@@ -72,7 +72,6 @@ class TestClass():
         awesometts.editor_button()     # single audio clip generator button
         awesometts.reviewer_hooks()    # on-the-fly playback/shortcuts, context menus
         awesometts.temp_files()        # remove temporary files upon session exit
-        awesometts.window_shortcuts()  # enable/update shortcuts for add-on windows
         # if we didn't hit any exceptions at this point, declare success
         assert True
 

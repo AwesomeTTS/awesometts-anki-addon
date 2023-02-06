@@ -29,7 +29,7 @@ import aqt.qt
 
 from ..paths import ICONS
 
-__all__ = ['ICON', 'key_event_combo', 'key_combo_desc', 'Action', 'Button',
+__all__ = ['ICON', 'Action', 'Button',
            'Checkbox', 'Filter', 'HTML', 'Label', 'Note']
 
 
@@ -133,7 +133,7 @@ class AbstractButton:
     @staticmethod
     def tooltip_text(tooltip, sequence=None):
         if sequence:
-            return f"{tooltip} ({key_combo_desc(sequence)})"
+            return f"{tooltip} ({sequence.toString()})"
         return tooltip
 
 
