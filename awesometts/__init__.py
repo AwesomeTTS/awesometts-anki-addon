@@ -106,10 +106,6 @@ else:
     logger = Bundle(debug=lambda *a, **k: None, error=lambda *a, **k: None,
                     info=lambda *a, **k: None, warn=lambda *a, **k: None)
 
-sequences = {key: aqt.qt.QKeySequence()
-             for key in ['browser_generator', 'browser_stripper',
-                         'configurator', 'editor_generator', 'templater']}
-
 config = Config(
     db=Bundle(path=paths.CONFIG,
               table='general',
@@ -439,7 +435,7 @@ def browser_menus():
                             parent=browser),
             ),
             text="&Add Audio to Selected...",
-            sequence=sequences['browser_generator'],
+            sequence=aqt.qt.QKeySequence(config.get('shortcut_launch_browser_generator')),
             parent=menu,
         )
         gui.Action(
@@ -452,7 +448,7 @@ def browser_menus():
                             parent=browser),
             ),
             text="&Remove Audio from Selected...",
-            sequence=sequences['browser_stripper'],
+            sequence=aqt.qt.QKeySequence(config.get('shortcut_launch_browser_stripper')),
             parent=menu,
         )
 
@@ -533,7 +529,7 @@ def cards_button():
             gui.Button(
                 text="Add &TTS",
                 tooltip="Insert a tag for on-the-fly playback w/ AwesomeTTS",
-                sequence=sequences['templater'],
+                sequence=aqt.qt.QKeySequence(config.get('shortcut_launch_templater')),
                 target=Bundle(
                     constructor=gui.Templater,
                     args=(),
@@ -567,7 +563,7 @@ def config_menu():
                         parent=aqt.mw),
         ),
         text="Awesome&TTS...",
-        sequence=sequences['configurator'],
+        sequence=aqt.qt.QKeySequence(config.get('shortcut_launch_configurator')),
         parent=aqt.mw.form.menuTools,
     )
 
@@ -635,7 +631,7 @@ def editor_button():
         return launch
 
     def editor_init_shortcuts(shortcuts, editor: aqt.editor.Editor):
-        shortcut_sequence = config['shortcut_launch_editor_generator']
+        shortcut_sequence = config.get('shortcut_launch_editor_generator')
         lambda_function = createAwesomeTTSEditorShortcutLambda(editor)
         shortcut_entry = (shortcut_sequence, lambda_function, True)
         shortcuts.append(shortcut_entry)
@@ -817,26 +813,6 @@ def temp_files():
                     pass
 
     anki.hooks.addHook('unloadProfile', on_unload_profile)
-
-
-def window_shortcuts():
-    """Enables shortcuts to launch windows."""
-
-    def on_sequence_change(new_config):
-        """Update sequences on configuration changes."""
-        for key, sequence in sequences.items():
-            new_sequence = aqt.qt.QKeySequence(new_config['shortcut_launch_' + key] or None)
-            sequence.swap(new_sequence)
-
-        try:
-            aqt.mw.form.menuTools.findChild(gui.Action). \
-                setShortcut(sequences['configurator'])
-        except AttributeError:  # we do not have a config menu
-            pass
-
-    on_sequence_change(config)  # set config menu if created before we ran
-    config.bind(['launch_' + key for key in sequences.keys()],
-                on_sequence_change)
 
 
 def register_tts_tag():
