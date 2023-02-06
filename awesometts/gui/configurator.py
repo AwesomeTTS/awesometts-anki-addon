@@ -405,8 +405,10 @@ class Configurator(Dialog):
                 ("mass remove audio in card browser", 'browser_stripper'),
                 ("generate single MP3 in note editor*", 'editor_generator'),
         ]):
+            object_name = 'shortcut_launch_' + sub
             grid.addWidget(Label("To " + desc + ", use keyboard shortcut: "), i, 0)
-            grid.addWidget(self._get_keyboard_shortcut_textedit('shortcut_launch_' + sub), i, 1)
+            grid.addWidget(self._get_keyboard_shortcut_textedit(object_name), i, 1)
+            grid.addWidget(self._get_keyboard_shortcut_clear_button(object_name), i, 2)
         grid.setColumnStretch(1, 1)
 
         group = aqt.qt.QGroupBox("Window Shortcuts")
@@ -602,6 +604,15 @@ class Configurator(Dialog):
         shortcut = aqt.qt.QKeySequenceEdit()
         shortcut.setObjectName(object_name)
         return shortcut
+
+    def _get_keyboard_shortcut_clear_button(self, sequence_edit_object_name):
+        def clear_fn():
+            sequence_edit = self.findChild(aqt.qt.QKeySequenceEdit, sequence_edit_object_name)
+            sequence_edit.clear()
+        button = aqt.qt.QPushButton('Clear')
+        button.pressed.connect(clear_fn)
+        return button
+                
 
     # Events #################################################################
 
