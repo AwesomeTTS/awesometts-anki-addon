@@ -20,6 +20,7 @@ from aqt.taskman import TaskManager
 from aqt.sound import OnDoneCallback, av_player
 from aqt.tts import TTSProcessPlayer, TTSVoice
 import aqt.utils
+import anki.utils
 
 
 class AwesomeTTSPlayer(TTSProcessPlayer):
@@ -36,7 +37,10 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         voices = []
         for language in self._addon.language:
             language_name = language.name
-            voices.append(TTSVoice(name="AwesomeTTS", lang=language_name))
+            if anki.utils.point_version() >= 58:
+                voices.append(TTSVoice(name="AwesomeTTS", lang=language_name, available=True))
+            else:
+                voices.append(TTSVoice(name="AwesomeTTS", lang=language_name))
 
         return voices  # type: ignore
 
