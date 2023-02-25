@@ -37,7 +37,7 @@ class AwesomeTTSPlayer(TTSProcessPlayer):
         voices = []
         for language in self._addon.language:
             language_name = language.name
-            if anki.utils.point_version() >= 58:
+            if anki.utils.point_version() == 58: # this regression only concerns anki 2.1.58
                 voices.append(TTSVoice(name="AwesomeTTS", lang=language_name, available=True))
             else:
                 voices.append(TTSVoice(name="AwesomeTTS", lang=language_name))
