@@ -340,7 +340,7 @@ VOICES = [
     ('ti','Tigrinya'),
     ('tli','Tlingit'),
     ('tpi','Tok Pisin'),
-    ('x-tp','Toki Pona'),
+    ('tok','Toki Pona'),
     ('tdn','Tondano'),
     ('to','Tongan'),
     ('ts','Tsonga'),
