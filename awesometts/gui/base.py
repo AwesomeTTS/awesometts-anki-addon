@@ -445,17 +445,18 @@ class ServiceDialog(Dialog):
         super(ServiceDialog, self).show(*args, **kwargs)
 
     def clean_built_services(self):
+        # clear the set of built panels
         self._panel_built = {}
         self._panel_set = {}
+        # actually empty out the widgets in the panels
         stack = self.findChild(aqt.qt.QStackedWidget, 'panels')
         for stack_id in range(stack.count()):
-            print(f'cleaning stack_id: {stack_id}')
             widget = stack.widget(stack_id)
             widget_layout = widget.layout()
 
-            print(f'*** clean_built_services num children: {widget_layout.count()}')
-            for i in reversed(range(widget_layout.count())): 
-                print(f'processing child {i}')
+            # print(f'*** clean_built_services num children: {widget_layout.count()}')
+            for i in reversed(range(1, widget_layout.count())): 
+                # print(f'processing child {i}')
                 widget = widget_layout.itemAt(i).widget()
                 if widget != None:
                     widget.setParent(None)
