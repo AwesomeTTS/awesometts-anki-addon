@@ -287,20 +287,28 @@ class ServiceDialog(Dialog):
         plus_mode_url = 'https://languagetools.anki.study/awesometts-plus?utm_campaign=atts_services&utm_source=awesometts&utm_medium=addon'
         plus_mode_label = 'Get All Voices'
         plus_mode_button = aqt.qt.QPushButton(plus_mode_label) 
+        night_mode = aqt.theme.theme_manager.night_mode
         plus_mode_button.setStyleSheet('background-color: #69F0AE;')
         font_large = aqt.qt.QFont()
         font_large.setBold(True)
         plus_mode_button.setFont(font_large)
-        def open_url_lambda(url):
-            def open_url():
-                aqt.qt.QDesktopServices.openUrl(aqt.qt.QUrl(url))
-            return open_url        
-        plus_mode_button.pressed.connect(open_url_lambda(plus_mode_url))
+        def activate_plus_mode_lambda():
+            def activate_plus():
+                self._addon.languagetools.set_api_key('yoyo')
+                # force currently selected service UI to reload
+                # find index of currently selected service
+                self.clean_built_services()
+                dropdown = self.findChild(aqt.qt.QComboBox, 'service')
+                idx = dropdown.currentIndex()
+                print(f'**** idx from service dropdown: {idx} type: {type(idx)}')
+                self._on_service_activated(idx, force_options_reload=True)
+            return activate_plus
+        plus_mode_button.pressed.connect(activate_plus_mode_lambda())
 
         plus_mode_description=aqt.qt.QLabel()
         font_small = aqt.qt.QFont()
         font_small.setPointSize(8)
-        description_text = '<i>1100+ High quality TTS voices<br/>Free Trial Available. Signup in 5mn.</i>'
+        description_text = '<i>1200+ High quality TTS voices<br/> Signup for trial in one second, just enter your email.</i>'
         plus_mode_description.setText(description_text)
         plus_mode_description.setFont(font_small)
 
@@ -436,13 +444,32 @@ class ServiceDialog(Dialog):
 
         super(ServiceDialog, self).show(*args, **kwargs)
 
+    def clean_built_services(self):
+        self._panel_built = {}
+        self._panel_set = {}
+        stack = self.findChild(aqt.qt.QStackedWidget, 'panels')
+        for stack_id in range(stack.count()):
+            print(f'cleaning stack_id: {stack_id}')
+            widget = stack.widget(stack_id)
+            widget_layout = widget.layout()
 
-    def _on_service_activated(self, idx, initial=False, use_options=None):
+            print(f'*** clean_built_services num children: {widget_layout.count()}')
+            for i in reversed(range(widget_layout.count())): 
+                print(f'processing child {i}')
+                widget = widget_layout.itemAt(i).widget()
+                if widget != None:
+                    widget.setParent(None)
+
+
+
+    def _on_service_activated(self, idx, initial=False, use_options=None, force_options_reload=False):
         """
         Construct the target widget if it has not already been built,
         recall the last-used values for the options, and then switch the
         stack to it.
         """
+
+        print(f'**** _on_service_activated idx: {idx} type: {type(idx)}')
 
         combo = self.findChild(aqt.qt.QComboBox, 'service')
         svc_id = combo.itemData(idx)
@@ -477,7 +504,7 @@ class ServiceDialog(Dialog):
 
         if panel_unbuilt or panel_unset or use_options:
             widget = stack.widget(idx)
-            options = self._addon.router.get_options(svc_id)
+            options = self._addon.router.get_options(svc_id, force_options_reload=force_options_reload)
 
             if panel_unbuilt:
                 self._panel_built[svc_id] = True
@@ -603,6 +630,8 @@ class ServiceDialog(Dialog):
         vinputs = widget.findChildren(self._OPTIONS_WIDGETS)
 
         if len(vinputs) != len(options):
+            print(f'vinputs: {vinputs}')
+            print(f'options: {options}')
             raise Exception(f'len(vinputs): {len(vinputs)} len(options): {len(options)}')
         assert len(vinputs) == len(options)
 

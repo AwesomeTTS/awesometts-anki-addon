@@ -209,13 +209,13 @@ class Router(object):
 
         return service['desc']
 
-    def get_options(self, svc_id):
+    def get_options(self, svc_id, force_options_reload=False):
         """
         Returns a list of options that should be displayed for the
         service, with defaults highlighted.
         """
 
-        svc_id, service = self._fetch_options_and_extras(svc_id)
+        svc_id, service = self._fetch_options_and_extras(svc_id, force_options_reload=force_options_reload)
         return service['options']
 
     def get_extras(self, svc_id):
@@ -717,7 +717,7 @@ class Router(object):
 
         return path
 
-    def _fetch_options_and_extras(self, svc_id):
+    def _fetch_options_and_extras(self, svc_id, force_options_reload=False):
         """
         Identifies the service by its ID, checks to see if the options
         list need construction, and then return back the normalized ID
@@ -726,7 +726,7 @@ class Router(object):
 
         svc_id, service = self._fetch_service(svc_id)
 
-        if 'options' not in service:
+        if 'options' not in service or force_options_reload == True:
             self._logger.debug(
                 "Building the options list for %s",
                 service['name'],
@@ -767,7 +767,7 @@ class Router(object):
 
                 service['options'].append(option)
 
-        if 'extras' not in service:  # extras are like options, but universal
+        if 'extras' not in service or force_options_reload == True:  # extras are like options, but universal
             service['extras'] = []
 
             if hasattr(service['instance'], 'extras'):
