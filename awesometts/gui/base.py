@@ -538,8 +538,6 @@ class ServiceDialog(Dialog):
         stack to it.
         """
 
-        print(f'**** _on_service_activated idx: {idx} type: {type(idx)}')
-
         combo = self.findChild(aqt.qt.QComboBox, 'service')
         svc_id = combo.itemData(idx)
         stack = self.findChild(aqt.qt.QStackedWidget, 'panels')
