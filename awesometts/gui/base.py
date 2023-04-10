@@ -291,16 +291,19 @@ class ServiceDialog(Dialog):
         dropdown.currentIndexChanged.connect(self._on_preset_reset)
 
         self.plus_mode_stack = aqt.qt.QStackedWidget()
+        night_mode = aqt.theme.theme_manager.night_mode
+        signup_button_stylesheet = 'background-color: #69F0AE;'
+        if night_mode:
+            signup_button_stylesheet = 'background-color: #69F0AE; color: #000000;'
+        font_large = aqt.qt.QFont()
+        font_large.setBold(True)            
 
         # first layer: plus mode not activated
         horizontal_layout = aqt.qt.QHBoxLayout()
         plus_mode_url = 'https://languagetools.anki.study/awesometts-plus?utm_campaign=atts_services&utm_source=awesometts&utm_medium=addon'
         plus_mode_label = 'Get All Voices'
         plus_mode_button = aqt.qt.QPushButton(plus_mode_label) 
-        night_mode = aqt.theme.theme_manager.night_mode
-        plus_mode_button.setStyleSheet('background-color: #69F0AE;')
-        font_large = aqt.qt.QFont()
-        font_large.setBold(True)
+        plus_mode_button.setStyleSheet(signup_button_stylesheet)
         plus_mode_button.setFont(font_large)
         def activate_plus_mode_lambda():
             def activate_plus():
@@ -326,6 +329,8 @@ class ServiceDialog(Dialog):
         email_text_input.setPlaceholderText("enter your email")
         horizontal_layout.addWidget(email_text_input)
         signup_button = aqt.qt.QPushButton('Sign Up')
+        signup_button.setStyleSheet(signup_button_stylesheet)
+        signup_button.setFont(font_large)
         horizontal_layout.addWidget(signup_button)
         signup_status_label = aqt.qt.QLabel()
         horizontal_layout.addWidget(signup_status_label)
