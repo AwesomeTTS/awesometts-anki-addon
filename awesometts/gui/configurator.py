@@ -591,7 +591,10 @@ class Configurator(Dialog):
         hor.addWidget(account_info_button)
         ver.addLayout(hor)
 
-        ver.addWidget(Label('Please restart Anki after entering API key'))
+        help_label = Label("Please restart Anki after entering API key. If you'd like to use free services, or "+
+        "use your own service API keys, remove the above API key and restart Anki.")
+        help_label.setWordWrap(True)
+        ver.addWidget(help_label)
 
         group = aqt.qt.QGroupBox("AwesomeTTS Plus")
         group.setLayout(ver)
