@@ -35,6 +35,13 @@ class LanguageTools:
         data = json.loads(response.content)
         return data
 
+    def request_trial_key(self, email):
+        self.logger.info(f'requesting trial key for email {email}')
+        response = requests.post(self.base_url + '/request_trial_key', json={'email': email})
+        data = json.loads(response.content)
+        self.logger.info(f'retrieved {data}')
+        return data
+
     def generate_audio(self, source_text, service, voice_key, options, path):
         # query cloud language tools API
         url_path = '/audio'

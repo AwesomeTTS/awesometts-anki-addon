@@ -121,20 +121,19 @@ class Dialog(aqt.qt.QDialog):
         title = Label(self._title)
         title.setFont(self._FONT_TITLE)
 
-        if len(self._addon.config['plus_api_key']) > 0:
-            version_str = f'AwesomeTTS <span style="color:#FF0000; font-weight: bold;">Plus</span>' +\
-                f'<br/>v{self._addon.version}'
-            version = Label(version_str)
-            version.setTextFormat(aqt.qt.Qt.TextFormat.RichText)
-        else:
-            version = Label("AwesomeTTS\nv" + self._addon.version)
-            version.setFont(self._FONT_INFO)
+
+
+        self.version_label = Label("AwesomeTTS\nv" + self._addon.version)
+        self.version_label.setFont(self._FONT_INFO)
 
         layout = aqt.qt.QHBoxLayout()
         layout.addWidget(title)
         layout.addSpacing(self._SPACING)
         layout.addStretch()
-        layout.addWidget(version)
+        layout.addWidget(self.version_label)
+
+        if self._addon.languagetools.use_plus_mode():
+            self.show_plus_mode()
 
         return layout
 
@@ -188,6 +187,13 @@ class Dialog(aqt.qt.QDialog):
         super(Dialog, self).show(*args, **kwargs)
 
     # Auxiliary ##############################################################
+
+    def show_plus_mode(self):
+        # when the user has signed up for the plus mode trial
+        version_str = f'AwesomeTTS <span style="color:#FF0000; font-weight: bold;">Plus</span>' +\
+            f'<br/>v{self._addon.version}'
+        self.version_label.setText(version_str)
+        self.version_label.setTextFormat(aqt.qt.Qt.TextFormat.RichText)        
 
     def open_tutorials(self):
         url = 'https://languagetools.anki.study/tutorials?utm_campaign=atts_help&utm_source=awesometts&utm_medium=addon'
@@ -284,6 +290,10 @@ class ServiceDialog(Dialog):
         dropdown.activated.connect(self._on_service_activated)
         dropdown.currentIndexChanged.connect(self._on_preset_reset)
 
+        self.plus_mode_stack = aqt.qt.QStackedWidget()
+
+        # first layer: plus mode not activated
+        horizontal_layout = aqt.qt.QHBoxLayout()
         plus_mode_url = 'https://languagetools.anki.study/awesometts-plus?utm_campaign=atts_services&utm_source=awesometts&utm_medium=addon'
         plus_mode_label = 'Get All Voices'
         plus_mode_button = aqt.qt.QPushButton(plus_mode_label) 
@@ -294,14 +304,7 @@ class ServiceDialog(Dialog):
         plus_mode_button.setFont(font_large)
         def activate_plus_mode_lambda():
             def activate_plus():
-                self._addon.languagetools.set_api_key('yoyo')
-                # force currently selected service UI to reload
-                # find index of currently selected service
-                self.clean_built_services()
-                dropdown = self.findChild(aqt.qt.QComboBox, 'service')
-                idx = dropdown.currentIndex()
-                print(f'**** idx from service dropdown: {idx} type: {type(idx)}')
-                self._on_service_activated(idx, force_options_reload=True)
+                self.plus_mode_stack.setCurrentIndex(1)
             return activate_plus
         plus_mode_button.pressed.connect(activate_plus_mode_lambda())
 
@@ -311,14 +314,77 @@ class ServiceDialog(Dialog):
         description_text = '<i>1200+ High quality TTS voices<br/> Signup for trial in one second, just enter your email.</i>'
         plus_mode_description.setText(description_text)
         plus_mode_description.setFont(font_small)
+        horizontal_layout.addWidget(plus_mode_button)
+        horizontal_layout.addWidget(plus_mode_description)
+        stack_widget = aqt.qt.QWidget()
+        stack_widget.setLayout(horizontal_layout) 
+        self.plus_mode_stack.addWidget(stack_widget)
+        
+        # second layer: user signining up
+        horizontal_layout = aqt.qt.QHBoxLayout()
+        email_text_input = aqt.qt.QLineEdit()
+        email_text_input.setPlaceholderText("enter your email")
+        horizontal_layout.addWidget(email_text_input)
+        signup_button = aqt.qt.QPushButton('Sign Up')
+        horizontal_layout.addWidget(signup_button)
+        signup_status_label = aqt.qt.QLabel()
+        horizontal_layout.addWidget(signup_status_label)
+        horizontal_layout.addStretch()
+        stack_widget = aqt.qt.QWidget()
+        stack_widget.setLayout(horizontal_layout) 
+        self.plus_mode_stack.addWidget(stack_widget)
+
+        def signup_lambda(email_input, status_label):
+            def signup():
+                email = email_input.text().strip()
+                # status_label.setText(email)
+                # try to request a trial key
+                trial_signup_result = self._addon.languagetools.request_trial_key(email)
+                if 'error' in trial_signup_result:
+                    status_label.setText(trial_signup_result['error'])
+                elif 'api_key' in trial_signup_result:
+                    api_key = trial_signup_result['api_key']
+                    # save in the config
+                    self._addon.config['plus_api_key'] = api_key
+                    # set it in memory in the languagetools object
+                    self._addon.languagetools.set_api_key(api_key)
+                    # this will show AwesomeTTS plus in the version label
+                    self.show_plus_mode()
+                    # force currently selected service UI to reload
+                    # find index of currently selected service
+                    self.clean_built_services()
+                    dropdown = self.findChild(aqt.qt.QComboBox, 'service')
+                    idx = dropdown.currentIndex()
+                    self._on_service_activated(idx, force_options_reload=True)
+                    # show signed up message
+                    self.plus_mode_stack.setCurrentIndex(3)
+            return signup
+        signup_button.pressed.connect(signup_lambda(email_text_input, signup_status_label))
+
+        # third layer: empty (plus mode activated)
+        horizontal_layout = aqt.qt.QHBoxLayout()
+        stack_widget = aqt.qt.QWidget()
+        stack_widget.setLayout(horizontal_layout) 
+        self.plus_mode_stack.addWidget(stack_widget)       
+
+        # fourth layer: show that you are now signed up to plus mode
+        horizontal_layout = aqt.qt.QHBoxLayout()
+        signed_up_text = """You are now signed up for AwesomeTTS Plus"""
+        horizontal_layout.addWidget(aqt.qt.QLabel(signed_up_text))
+        stack_widget = aqt.qt.QWidget()
+        stack_widget.setLayout(horizontal_layout) 
+        self.plus_mode_stack.addWidget(stack_widget)         
+
+        if not self._addon.languagetools.use_plus_mode():
+            self.plus_mode_stack.setCurrentIndex(0)
+        else:
+            self.plus_mode_stack.setCurrentIndex(2)
 
 
         hor = aqt.qt.QHBoxLayout()
         hor.addWidget(Label("Generate using"))
         hor.addWidget(dropdown)
-        if not self._addon.languagetools.use_plus_mode():
-            hor.addWidget(plus_mode_button)
-            hor.addWidget(plus_mode_description)
+        hor.addWidget(self.plus_mode_stack)
         hor.addStretch()
 
         header = Label("Configure Service")
