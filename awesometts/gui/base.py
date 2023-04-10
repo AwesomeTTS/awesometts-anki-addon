@@ -369,8 +369,10 @@ class ServiceDialog(Dialog):
 
         # fourth layer: show that you are now signed up to plus mode
         horizontal_layout = aqt.qt.QHBoxLayout()
-        signed_up_text = """You are now signed up for AwesomeTTS Plus"""
-        horizontal_layout.addWidget(aqt.qt.QLabel(signed_up_text))
+        signed_up_text = """<i>You now have access to all premium voices from Azure, Google, Amazon, Watson, Naver, Forvo.</i>"""
+        signed_up_label = aqt.qt.QLabel(signed_up_text)
+        signed_up_label.setFont(font_small)
+        horizontal_layout.addWidget(signed_up_label)
         stack_widget = aqt.qt.QWidget()
         stack_widget.setLayout(horizontal_layout) 
         self.plus_mode_stack.addWidget(stack_widget)         
