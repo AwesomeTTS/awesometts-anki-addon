@@ -694,6 +694,11 @@ class Configurator(Dialog):
             if widget.objectName() in self._PROPERTY_KEYS
         }
 
+        # don't overwrite api_key
+        if config_update_dict['plus_api_key'] == '' and self._addon.languagetools.trial_instant_signed_up:
+            # we just signed up for the instant trial, don't set the api key to empty string now
+            del config_update_dict['plus_api_key']
+
         self._logger.debug(f'updating config with: {pprint.pformat(config_update_dict, indent=4)}')
 
         self._addon.config.update(config_update_dict)

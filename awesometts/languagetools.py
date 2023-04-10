@@ -10,6 +10,7 @@ class LanguageTools:
             self.base_url = os.environ['ANKI_LANGUAGE_TOOLS_BASE_URL']
         self.api_key = api_key
         self.client_version = client_version
+        self.trial_instant_signed_up = False
 
     def get_base_url(self):
         return self.base_url
@@ -40,6 +41,8 @@ class LanguageTools:
         response = requests.post(self.base_url + '/request_trial_key', json={'email': email})
         data = json.loads(response.content)
         self.logger.info(f'retrieved {data}')
+        if 'api_key' in data:
+            self.trial_instant_signed_up = True
         return data
 
     def generate_audio(self, source_text, service, voice_key, options, path):
