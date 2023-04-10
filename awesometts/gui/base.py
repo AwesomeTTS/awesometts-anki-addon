@@ -371,6 +371,7 @@ class ServiceDialog(Dialog):
         horizontal_layout = aqt.qt.QHBoxLayout()
         signed_up_text = """<i>You now have access to all premium voices from Azure, Google, Amazon, Watson, Naver, Forvo.</i>"""
         signed_up_label = aqt.qt.QLabel(signed_up_text)
+        signed_up_label.setWordWrap(True)
         signed_up_label.setFont(font_small)
         horizontal_layout.addWidget(signed_up_label)
         stack_widget = aqt.qt.QWidget()
