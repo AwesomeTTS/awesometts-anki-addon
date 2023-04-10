@@ -150,8 +150,6 @@ class Azure(Service):
             
         ]
 
-        print(f'**** azure options(): use_plus_mode: {self.languagetools.use_plus_mode()}')
-
         if not self.languagetools.use_plus_mode():
             result.append(dict(key='region',
                  label='Region',
