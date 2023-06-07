@@ -209,6 +209,7 @@ router = Router(
             ('collins', service.Collins),
             ('duden', service.Duden),
             ('ekho', service.Ekho),
+            ('elevenlabs', service.ElevenLabs),
             ('espeak', service.ESpeak),
             ('festival', service.Festival),
             ('fptai', service.FptAi),

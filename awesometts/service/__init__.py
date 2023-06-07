@@ -30,6 +30,7 @@ from .cereproc import CereProc
 from .collins import Collins
 from .duden import Duden
 from .ekho import Ekho
+from .elevenlabs import ElevenLabs
 from .espeak import ESpeak
 from .festival import Festival
 from .fptai import FptAi
@@ -65,6 +66,7 @@ __all__ = [
     'Collins',
     'Duden',
     'Ekho',
+    'ElevenLabs',
     'ESpeak',
     'Festival',
     'FPT.AI',
