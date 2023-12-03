@@ -279,7 +279,7 @@ class Configurator(Dialog):
             """Fixes original text and resets cursor to end of line."""
 
             filtered = self.fixup(original)
-            return aqt.qt.QValidator.Acceptable, filtered, len(filtered)
+            return aqt.qt.QValidator.State.Acceptable, filtered, len(filtered)
 
     _ui_tabs_text_mode_simple_spec.ucsv = _UniqueCharacterStringValidator()
 
