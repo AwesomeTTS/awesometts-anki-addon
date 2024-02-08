@@ -464,7 +464,7 @@ class Router(object):
                     if lower == 'text':
                         return text
                     if lower == 'voice':
-                        return options['voice'].lower()
+                        return options['voice'].lower() if isinstance(options['voice'], str) else 'unknown'
 
                     try:
                         return note[key]  # exact field match
