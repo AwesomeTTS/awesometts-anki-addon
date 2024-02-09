@@ -186,7 +186,7 @@ class _SubRuleDelegate(_Delegate):
         panel = aqt.qt.QWidget(parent)
         panel.setObjectName('editor')
         panel.setAutoFillBackground(True)
-        panel.setFocusPolicy(aqt.qt.Qt.StrongFocus)
+        panel.setFocusPolicy(aqt.qt.Qt.FocusPolicy.StrongFocus)
         panel.setLayout(layout)
 
         for layout in [edits, checkboxes, layout]:
@@ -285,7 +285,7 @@ class _GroupPresetDelegate(_Delegate):
         panel = aqt.qt.QWidget(parent)
         panel.setObjectName('editor')
         panel.setAutoFillBackground(True)
-        panel.setFocusPolicy(aqt.qt.Qt.StrongFocus)
+        panel.setFocusPolicy(aqt.qt.Qt.FocusPolicy.StrongFocus)
         panel.setLayout(hor)
         return panel
 
