@@ -8,9 +8,12 @@ class LanguageTools:
         self.base_url = 'https://cloudlanguagetools-api.vocab.ai'
         if 'ANKI_LANGUAGE_TOOLS_BASE_URL' in os.environ:
             self.base_url = os.environ['ANKI_LANGUAGE_TOOLS_BASE_URL']
+        self.vocab_api_base_url = 'https://app.vocabai.app/languagetools-api/v2'
         self.api_key = api_key
         self.client_version = client_version
         self.trial_instant_signed_up = False
+        self.api_key_verified = False
+        self.use_vocabai_api = False
 
     def get_base_url(self):
         return self.base_url
@@ -25,11 +28,42 @@ class LanguageTools:
         return len(self.api_key) > 0
 
     def verify_api_key(self, api_key):
-        response = requests.post(self.base_url + '/verify_api_key', json={
+        # first , try to verify API key with vocab API
+        response = requests.get(self.vocab_api_base_url + '/account', headers={'Authorization': f'Api-Key {api_key}'})
+        if response.status_code == 200:
+            # API key is valid on vocab API
+            self.api_key = api_key
+            self.api_key_verified = True
+            self.use_vocabai_api = True
+            return {
+                'key_valid': True,
+            }
+
+        # now check with cloudlanguagetools API
+        response = requests.get(self.base_url + '/account', headers={
             'api_key': api_key
         })
-        data = json.loads(response.content)
-        return data
+        if response.status_code == 200:
+            data = response.json()
+            if 'error' in data:
+                return {
+                    'key_valid': False,
+                    'msg': data['error']
+                }                    
+            # key valid
+            self.api_key = api_key
+            self.api_key_verified = True
+            self.use_vocabai_api = False
+            return {
+                'key_valid': True,
+                'msg': f'api key: {api_key}'
+            }
+        
+        # by default, key is invalid
+        return {
+            'key_valid': False,
+            'msg': f'api key not valid'
+        }
     
     def account_info(self, api_key):
         response = requests.get(self.base_url + '/account', headers={'api_key': api_key})
