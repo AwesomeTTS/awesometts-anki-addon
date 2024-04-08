@@ -97,8 +97,6 @@ class LanguageTools:
         self.ensure_key_verified()
 
         # query cloud language tools API
-        url_path = '/audio_v2'
-        full_url = self.base_url + url_path
         data = {
             'text': source_text,
             'service': service,
@@ -108,8 +106,19 @@ class LanguageTools:
             'voice_key': voice_key,
             'options': options
         }
-        self.logger.info(f'request url: {full_url}, data: {data}')
-        response = requests.post(full_url, json=data, headers={'api_key': self.get_api_key(), 'client': 'awesometts', 'client_version': self.client_version})
+
+        if self.use_vocabai_api:
+            headers={
+                'Authorization': f'Api-Key {self.api_key}',
+                'User-Agent': f'anki-awesometts/{self.client_version}',
+            }
+            full_url = self.vocab_api_base_url + '/audio'         
+            response = requests.post(full_url, json=data, headers=headers)
+        else:
+            url_path = '/audio_v2'
+            full_url = self.base_url + url_path
+            self.logger.info(f'request url: {full_url}, data: {data}')
+            response = requests.post(full_url, json=data, headers={'api_key': self.get_api_key(), 'client': 'awesometts', 'client_version': self.client_version})
 
         if response.status_code == 200:
             self.logger.info('success, receiving audio')
