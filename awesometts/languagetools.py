@@ -45,27 +45,6 @@ class LanguageTools:
             self.trial_instant_signed_up = True
         return data
 
-    def generate_audio(self, source_text, service, voice_key, options, path):
-        # query cloud language tools API
-        url_path = '/audio'
-        full_url = self.base_url + url_path
-        data = {
-            'text': source_text,
-            'service': service,
-            'voice_key': voice_key,
-            'options': options
-        }
-        self.logger.info(f'request url: {full_url}, data: {data}')
-        response = requests.post(full_url, json=data, headers={'api_key': self.get_api_key()})
-
-        if response.status_code == 200:
-            self.logger.info('success, receiving audio')
-            with open(path, 'wb') as f:
-                f.write(response.content)
-        else:
-            error_message = f"Status code: {response.status_code} ({response.content})"
-            self.logger.error(error_message)
-            raise ValueError(error_message)        
 
     def generate_audio_v2(self, source_text, service, request_mode, language_code, deck_name, voice_key, options, path):
         # query cloud language tools API
