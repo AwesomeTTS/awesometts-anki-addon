@@ -588,7 +588,7 @@ def config_menu():
     for link in links:
         action = aqt.qt.QAction(link['name'], aqt.mw)
         url_path = link['url_path']
-        url = f'https://languagetools.anki.study/{url_path}?utm_campaign=atts_resources&utm_source=awesometts&utm_medium=addon'
+        url = f'https://www.vocab.ai/{url_path}?utm_campaign=atts_resources&utm_source=awesometts&utm_medium=addon'
         action.triggered.connect(open_url_lambda(url))
         resources_menu.addAction(action)
     # and add it to the tools menu

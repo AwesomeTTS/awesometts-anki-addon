@@ -566,7 +566,7 @@ class Configurator(Dialog):
     def _ui_tabs_advanced_plus(self):
 
         ver = aqt.qt.QVBoxLayout()
-        urlLink="<a href=\"https://languagetools.anki.study/awesometts-plus?utm_campaign=atts_settings&utm_source=awesometts&utm_medium=addon\">1100+ High Quality TTS voices - free trial</a>" 
+        urlLink="<a href=\"https://www.vocab.ai/awesometts-plus?utm_campaign=atts_settings&utm_source=awesometts&utm_medium=addon\">1100+ High Quality TTS voices - free trial</a>" 
         url_label = aqt.qt.QLabel(urlLink)
         url_label.setOpenExternalLinks(True)
         ver.addWidget(url_label)

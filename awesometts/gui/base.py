@@ -196,7 +196,7 @@ class Dialog(aqt.qt.QDialog):
         self.version_label.setTextFormat(aqt.qt.Qt.TextFormat.RichText)        
 
     def open_tutorials(self):
-        url = 'https://languagetools.anki.study/tutorials?utm_campaign=atts_help&utm_source=awesometts&utm_medium=addon'
+        url = 'https://www.vocab.ai/tutorials?utm_campaign=atts_help&utm_source=awesometts&utm_medium=addon'
         self._addon.logger.debug("Launching %s", url)
         aqt.qt.QDesktopServices.openUrl(aqt.qt.QUrl(url))
 
@@ -300,7 +300,7 @@ class ServiceDialog(Dialog):
 
         # first layer: plus mode not activated
         horizontal_layout = aqt.qt.QHBoxLayout()
-        plus_mode_url = 'https://languagetools.anki.study/awesometts-plus?utm_campaign=atts_services&utm_source=awesometts&utm_medium=addon'
+        plus_mode_url = 'https://www.vocab.ai/awesometts-plus?utm_campaign=atts_services&utm_source=awesometts&utm_medium=addon'
         plus_mode_label = 'Get All Voices'
         plus_mode_button = aqt.qt.QPushButton(plus_mode_label) 
         plus_mode_button.setStyleSheet(signup_button_stylesheet)
