@@ -785,7 +785,8 @@ class Configurator(Dialog):
         if len(api_key) == 0:
             aqt.utils.showCritical('Please enter AwesomeTTS Plus API Key', parent=parent_dialog, title='AwesomeTTS Plus Account Info')
             return
-        data = self._addon.languagetools.account_info(api_key)
+        self._addon.languagetools.set_api_key(api_key)
+        data = self._addon.languagetools.account_info()
         lines = []
         for key, value in data.items():
             html = f'<b>{key}</b>: {value}'

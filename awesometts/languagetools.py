@@ -20,6 +20,8 @@ class LanguageTools:
 
     def set_api_key(self, api_key):
         self.api_key = api_key
+        self.api_key_verified = False
+        self.use_vocabai_api = False        
 
     def get_api_key(self):
         return self.api_key
@@ -65,8 +67,19 @@ class LanguageTools:
             'msg': f'api key not valid'
         }
     
-    def account_info(self, api_key):
-        response = requests.get(self.base_url + '/account', headers={'api_key': api_key})
+    def ensure_key_verified(self):
+        if self.api_key == None:
+            raise ValueError('API Key not set')
+        if self.api_key_verified == False:
+            self.verify_api_key(self.api_key)
+
+    def account_info(self):
+        self.ensure_key_verified()
+
+        if self.use_vocabai_api:
+            response = requests.get(self.vocab_api_base_url + '/account', headers={'Authorization': f'Api-Key {self.api_key}'})
+        else:
+            response = requests.get(self.base_url + '/account', headers={'api_key': self.api_key})
         data = json.loads(response.content)
         return data
 
@@ -81,6 +94,8 @@ class LanguageTools:
 
 
     def generate_audio_v2(self, source_text, service, request_mode, language_code, deck_name, voice_key, options, path):
+        self.ensure_key_verified()
+
         # query cloud language tools API
         url_path = '/audio_v2'
         full_url = self.base_url + url_path
