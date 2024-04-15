@@ -8,7 +8,7 @@ class LanguageTools:
         self.base_url = 'https://cloudlanguagetools-api.vocab.ai'
         if 'ANKI_LANGUAGE_TOOLS_BASE_URL' in os.environ:
             self.base_url = os.environ['ANKI_LANGUAGE_TOOLS_BASE_URL']
-        self.vocab_api_base_url = 'https://app.vocabai.app/languagetools-api/v2'
+        self.vocab_api_base_url = 'https://app.vocab.ai/languagetools-api/v2'
         self.api_key = api_key
         self.client_version = client_version
         self.trial_instant_signed_up = False
