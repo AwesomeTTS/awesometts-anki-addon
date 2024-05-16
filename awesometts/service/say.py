@@ -61,17 +61,19 @@ class Say(Service):
         # know, the `say -v ?` output always includes something in the
         # language code column, so this should be fine)
         import re
-        re_voice = re.compile(r'^\s*([-\w]+( [-\w]+)*)\s+([-\w]+)')
+        # Updated regex to handle voice names with brackets
+        re_voice = re.compile(r'^\s*([-\w() ]+)\s+([-\w]+)')
 
         self._voice_list = [
-            (name, "%s (%s)" % (name, code.replace('_', '-')))
+            (name.strip(), "%s (%s)" % (name.strip(), code.replace('_', '-')))
             for code, name in sorted(
-                (match.group(3), match.group(1))
+                (match.group(2), match.group(1))
                 for match in [re_voice.match(line)
                               for line in self.cli_output('say', '-v', '?')]
                 if match
             )
         ]
+
 
         if not self._voice_list:
             raise EnvironmentError("No usable output from call to `say -v ?`")
